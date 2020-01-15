@@ -33,8 +33,7 @@ unsigned char ** cut2DImageEdge(unsigned char **imageData);
 // RGB  R 0 G 1 B 2  
 // input the position of current pixel
 // the row and col indicates the position of the pixel, the start pixel is at position (0,0)   
-int judgePixelColor(int row, int col); 
-
+int judgePixelColor(int row , int col);
 
 
 

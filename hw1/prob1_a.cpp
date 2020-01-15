@@ -10,21 +10,62 @@ using namespace std;
 // the source code from the class is useless !!!!
 
 
-unsigned char ***  gray2RGB(unsigned char **imageData, unsigned char ***imageRGB , int width , int height,int pixelperByte); 
 
 
-unsigned char *** gray2RGB(unsigned char **imageData, unsigned char ***imageRGB , int width , int height,int pixelperByte){
-	unsigned char ***imageRGBData; 
-	imageRGBData = new unsigned char**[height](); 
-	for(int row = 0 ; row< height ; row++){
-		imageRGBData[row] = new unsigned char*[width](); 
-		for(int col = 0 ;col<width ;col++){
-			imageRGBData[row][col] = new unsigned char[3]();
+
+void gray2RGB(unsigned char **imageExtendedData ,unsigned char ***&imageRGBData,  int width , int height,int pixelperByte =1){
+//	cout<<"***********image info**************"<<endl; 
+//	cout<<"  height: " << height<<"    width: "<<width<<endl; 
+//	for(int row = 0 ;row<8;row++){
+//		for(int col = 0 ; col<width ;col++){
+//			cout<<bitset<8>(imageExtendedData[row][col]); 
+//		}
+//		cout<<endl; 
+//	}
+
+	
+	for(int row = 2 ; row< height-2 ; row++){
+		
+		for(int col = 2 ;col<width-2 ;col++){
+			cout<<"test command 1"<<endl; 
 			//color is red  
-			if(judgePixelColor(row,col)=='0'){
-				
+			int color = judgePixelColor(row ,col); 
+			cout<<color<<endl;
+			if(judgePixelColor(row,col) == 0){
+				cout<<"test command 2"<<endl; 
+				cout<<"This is red "<<imageExtendedData[row][col]<<endl; 
+				imageRGBData[row][col][0] =  imageExtendedData[row][col];
+				imageRGBData[row][col][1] =  0.25*(imageExtendedData[row-1][col]+imageExtendedData[row+1][col]+imageExtendedData[row][col-1]+imageExtendedData[row][col+1]);
+				imageRGBData[row][col][2] =  0.25*(imageExtendedData[row-1][col-1]+imageExtendedData[row+1][col+1]+imageExtendedData[row+1][col-1]+imageExtendedData[row-1][col+1]);
 			}
+			//color is green 
+			if(judgePixelColor(row,col) == 1){
+				if(row%2==0){
+					imageRGBData[row][col][0] =  0.5*(imageExtendedData[row][col+1]+imageExtendedData[row][col-1]);
+					imageRGBData[row][col][1] =  imageExtendedData[row][col]; 
+					imageRGBData[row][col][2] =  0.5*(imageExtendedData[row-1][col]+imageExtendedData[row+1][col]);	
+				}else{
+					imageRGBData[row][col][0] =  0.25*(imageExtendedData[row-1][col-1]+imageExtendedData[row+1][col+1]+imageExtendedData[row+1][col-1]+imageExtendedData[row-1][col+1]);
+					imageRGBData[row][col][1] =  0.25*(imageExtendedData[row-1][col]+imageExtendedData[row+1][col]+imageExtendedData[row][col-1]+imageExtendedData[row][col+1]);
+					imageRGBData[row][col][2] =  imageExtendedData[row][col]; 
+				}
+			}
+			//color is blue 
+			if(judgePixelColor(row,col)==2){
+				imageRGBData[row][col][0] =  imageExtendedData[row][col];
+				imageRGBData[row][col][1] =  0.25*(imageExtendedData[row-1][col]+imageExtendedData[row+1][col]+imageExtendedData[row][col-1]+imageExtendedData[row][col+1]);
+				imageRGBData[row][col][2] =  imageExtendedData[row][col];
+			}
+			cout<<"test command 3"<<endl; 
 		}
+	}
+	cout<<"***********image info**************"<<endl; 
+	cout<<"  height: " << height<<"    width: "<<width<<endl; 
+	for(int row = 0 ;row<8;row++){
+		for(int col = 0 ; col<width ;col++){
+			cout<<bitset<8>(imageRGBData[row][col][0]); 
+		}
+		cout<<endl; 
 	}
 
 
@@ -43,7 +84,7 @@ int main(int argc, char *argv[])
 	int cols = 256; 
     int width ; 
     int height ; 
-	
+	testHeaderIncluded();
 	// Check for proper syntax
 	if (argc < 3){
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
@@ -66,13 +107,17 @@ int main(int argc, char *argv[])
 	rows = height ;
     cols = width ; 
 	// Allocate image data array   ?? when the width and height of image is not equal  ??
-	unsigned char Imagedata[rows][cols];
+	unsigned char **imageData;
+	imageData = new unsigned char*[height]; 
+	for(int row ; row<height ; row++){
+		imageData[row] = new unsigned char [width]; 
+	}
 	// Read image (filename specified by first argument) into image data matrix
 	if (!(file=fopen(argv[1],"rb"))) {
 		cout << "Cannot open file: " << argv[1] <<endl;
 		exit(1);
 	}
-	fread(Imagedata, sizeof(unsigned char), height*width*BytesPerPixel, file);
+	fread(imageData, sizeof(unsigned char), height*width*BytesPerPixel, file);
 	fclose(file);
 
 	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
@@ -81,12 +126,22 @@ int main(int argc, char *argv[])
 //	cout<<"  height: " << height<<"    width: "<<width<<endl; 
 //	for(int row = 0 ;row<8;row++){
 //		for(int col = 0 ; col<width ;col++){
-//			Imagedata[row][col] = 0 ; 
+//			cout<<bitset<8>(imageData[row][col]); 
 //		}
 //		cout<<endl; 
 //	}
-	
+//	
+	unsigned char ***imageRGBData; 
+	imageRGBData = new unsigned char**[height]; 
+	for(int row ; row<height ; row++){
+		imageRGBData[row] = new unsigned char *[width];
+		for(int col; col<width; col++){
+			imageRGBData[row][width] = new unsigned char[3]; 
+		}
+	}
 
+	imageRGBData[0][0][0] =1;  
+	gray2RGB(imageData,imageRGBData, width,height,1);
 
 	// Write image data (filename specified by second argument) from image data matrix
 
@@ -94,8 +149,8 @@ int main(int argc, char *argv[])
 		cout << "Cannot open file: " << argv[2] << endl;
 		exit(1);
 	}
-	fwrite(Imagedata, sizeof(unsigned char), height*width*BytesPerPixel, file);
+	fwrite(imageRGBData, sizeof(unsigned char), height*width*3, file);
 	fclose(file);
-
+    cout<<"writing"; 
 	return 0;
 }
