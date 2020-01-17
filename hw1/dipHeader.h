@@ -108,3 +108,7 @@ unsigned char ** extend2DImageEdge(unsigned char **imageData,  int width , int h
 }
 
 
+unsigned char compRedPixelBL(unsigned char **imageData, int width, int height) {
+    unsigned char result; 
+
+}
