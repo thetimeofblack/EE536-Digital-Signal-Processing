@@ -8,7 +8,7 @@
 #include <stdio.h>
 #include <iostream>
 #include <stdlib.h>
-
+#include"dipHeader.h"
 using namespace std;
 
 int main(int argc, char *argv[])

@@ -27,8 +27,25 @@ void test2Darray(unsigned char **input, int rows, int cols ){
 	cout<<bitset<8>(sum)<<endl;
 }
 
+void testUnsignedCharOverflow() {
+	unsigned char a = 255; 
+	unsigned char b = 255; 
+	//unsigned char c = a + b; 
+	int d = a + b; 
+//	cout << c << endl; 
+	cout << d << endl; 
+//	unsigned char* arr;  
+//	arr = new unsigned char[10]; 
+//	arr[0] = a + b; 
+//	cout << arr[1] << endl;
+//	cout << arr[0] << endl; 
 
-void gray2RGB(unsigned char **ImageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte =1){
+
+
+}
+
+
+void gray2RGB(unsigned char ***ImageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte =1){
 //	cout<<"***********image info**************"<<endl; 
 //	cout<<"  height: " << height<<"    width: "<<width<<endl;
 	// we need to prevent overflow for the unsigned char 
@@ -44,29 +61,29 @@ void gray2RGB(unsigned char **ImageData ,unsigned char ***imageRGBData,  int wid
 			//cout<<"width  "<<width<<endl; 
 			if(judgePixelColor(row,col) == 0){
 				//cout<<"test command 2"<<endl; 
-				imageRGBData[row][col][0] = (unsigned char)ImageData[row][col];
-				imageRGBData[row][col][1] =(unsigned char) 0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
-				imageRGBData[row][col][2] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ ImageData[row-1][col+1]) ;
+				imageRGBData[row][col][0] = (unsigned char)ImageData[row][col][1];
+				imageRGBData[row][col][1] =(unsigned char) 0.25*(ImageData[row-1][col][1]+ ImageData[row+1][col][1]+ ImageData[row][col-1][1]+ ImageData[row][col+1][1]);
+				imageRGBData[row][col][2] = (unsigned char)0.25*(ImageData[row-1][col-1][1]+ ImageData[row+1][col+1][0]+ ImageData[row+1][col-1][0]+ ImageData[row-1][col+1][0]) ;
 			}
 			//color is green 
 			if(judgePixelColor(row,col) == 1){
 				//cout<<"test command 4"<<endl; 
 				if(row%2==0){
-					imageRGBData[row][col][0] = (unsigned char)0.5*(ImageData[row][col+1]+ ImageData[row][col-1]);
+					imageRGBData[row][col][0] = (unsigned char)0.5*(ImageData[row][col+1][0]+ ImageData[row][col-1][0]);
 					//cout<<"test command 6"<<endl; 
-					imageRGBData[row][col][1] = (unsigned char)ImageData[row][col];
-					imageRGBData[row][col][2] = (unsigned char)0.5*(ImageData[row-1][col]+ ImageData[row+1][col]);
+					imageRGBData[row][col][1] = (unsigned char)ImageData[row][col][0];
+					imageRGBData[row][col][2] = (unsigned char)0.5*(ImageData[row-1][col][0]+ ImageData[row+1][col][0]);
 				}else{
-					imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ImageData[row-1][col+1]);
-					imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
-					imageRGBData[row][col][2] = (unsigned char)ImageData[row][col];
+					imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row-1][col-1][0]+ ImageData[row+1][col+1][0]+ ImageData[row+1][col-1][0]+ImageData[row-1][col+1][0]);
+					imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col][0]+ ImageData[row+1][col][0]+ ImageData[row][col-1][0]+ ImageData[row][col+1][0]);
+					imageRGBData[row][col][2] = (unsigned char)ImageData[row][col][0];
 				}
 			}
 			//color is blue 
 			if(judgePixelColor(row,col)==2){
-				imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row - 1][col - 1] + ImageData[row + 1][col + 1] + ImageData[row + 1][col - 1] + ImageData[row - 1][col + 1]);
-				imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
-				imageRGBData[row][col][2] =  ImageData[row][col]; 
+				imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row - 1][col - 1][0] + ImageData[row + 1][col + 1][0] + ImageData[row + 1][col - 1][0] + ImageData[row - 1][col + 1][0]);
+				imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col][0]+ ImageData[row+1][col][0]+ ImageData[row][col-1][0]+ ImageData[row][col+1][0]);
+				imageRGBData[row][col][2] =  ImageData[row][col][0]; 
 			}
 			//cout<<"test command 3"<<endl; 
 		}
@@ -103,7 +120,7 @@ int main(int argc, char *argv[])
 	else {
 		BytesPerPixel = atoi(argv[3]);
 		// Check if width and height is specified
-		if (argc >= 6){
+		if (argc >= 5){
 			width = atoi(argv[4]);
             height = atoi(argv[5]); 
         }
@@ -112,13 +129,15 @@ int main(int argc, char *argv[])
     cols = width ; 
 	// Allocate image data array   ?? when the width and height of image is not equal  ??
 	
-	unsigned char ** imageData;
-	imageData = new unsigned char *[height];
+	unsigned char *** imageData;
+	imageData = new unsigned char **[height];
 	for (int row = 0; row < height; row++) {
-		imageData[row] = new unsigned char[width];
-
+		imageData[row] = new unsigned char*[width];
+		for (int col = 0; col < width; col++) {
+			imageData[row][col] = new unsigned char[BytesPerPixel]; 
+		}
 	}
-
+//	imageData[height][width]; 
 	// Read image (filename specified by first argument) into image data matrix
 	if (!(file=fopen(argv[1],"rb"))) {
 		cout << "Cannot open file: " << argv[1] <<endl;
@@ -135,7 +154,7 @@ int main(int argc, char *argv[])
 //	cout<<"  height: " << height<<"    width: "<<width<<endl; 
 //	for(int row = 0 ;row<8;row++){
 //		for(int col = 0 ; col<width ;col++){
-//			cout<<bitset<8>(imageData[row][col]); 
+//			cout<<bitset<8>(imageData[row][col][1]); 
 //		}
 //		cout<<endl; 
 //	}
@@ -152,8 +171,9 @@ int main(int argc, char *argv[])
 //	test2Darray(imageData,height, width); 
 //	imageRGBData[0][0][0] =(unsigned char)10;  
 //	cout<<imageRGBData[0][0][0]; 
-	gray2RGB(imageData,imageRGBData, width,height,1);
+	//gray2RGB(imageData,imageRGBData, width,height,1);
 	// Write image data (filename specified by second argument) from image data matrix
+	//testUnsignedCharOverflow(); 
 	if (!(file=fopen(argv[2],"wb"))) {
 		cout << "Cannot open file: " << argv[2] << endl;
 		exit(1);
@@ -162,25 +182,26 @@ int main(int argc, char *argv[])
 	cout << "  height: " << height << "    width: " << width << endl;
 	for (int row = 0; row < 8; row++) {
 		for (int col = 0; col < width; col++) {
-			cout << bitset<8>(imageRGBData[row][col][2]);
+			cout << bitset<8>(imageRGBData[row][col][1])<<" ";
 		}
 		cout << endl;
 	}
 	fwrite(imageRGBData, sizeof(unsigned char), height*width*3, file);
 	fclose(file);
     cout<<"writing image successfully"; 
-	for (int row = 0; row < height; row++) {
-		delete[] imageData[row]; 
-	}
-	delete[] imageData;  
+
+//	for (int row = 0; row < height; row++) {
+//		delete[] imageData[row]; 
+//	}
+//	delete[] imageData;  
 
 
-	for (int row = 0; row < height; row++) {
-		for (int col = 0; col < width; col++) {
-			delete[] imageRGBData[row][col];
-		}
-		delete[] imageRGBData[row];
-	}
-	delete[] imageRGBData;
+//	for (int row = 0; row < height; row++) {
+//		for (int col = 0; col < width; col++) {
+//			delete[] imageRGBData[row][col];
+//		}
+//		delete[] imageRGBData[row];
+//	}
+//	delete[] imageRGBData;
 	return 0;
 }
