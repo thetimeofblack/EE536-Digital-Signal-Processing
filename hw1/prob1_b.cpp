@@ -27,7 +27,7 @@ void MHC_Demosaicing(unsigned char **imageData,unsigned char ***imageRGBData, in
 		for (int col = 0; col < width; col++) {
 			if (judgePixelColor(row, col) == 0) {
 				imageRGBData[row][col][0] = imageData[row+2][col+2];
-				imageRGBData[row][col][1] = imageData[row+2][col+2] + 
+				imageRGBData[row][col][1] = imageData[row + 2][col + 2];
 			}
 			if (judgePixelColor(row, col) == 1) {
 				imageRGBData[row][col][1] = imageData[row + 2][col + 2];

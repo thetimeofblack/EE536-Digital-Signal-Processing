@@ -16,17 +16,25 @@
 #include<stdlib.h>
 using namespace std; 
 
-
+// Allocate memory for image
+void alloc2DImage(unsigned char** imageData, int width , int height, int BytePerPixel);
+void alloc3DImage(unsigned char** imageData, int width, int height, int BytePerPixel); 
 
 
 // IO function for image input and output 
-void readImage(char *imagepath, unsigned char*imageData, int width , int height ); 
-void writeGrayImage(char *imagepath , unsigned char **imageData, int width , int height); 
+void read2DImage(FILE *file, unsigned char**imageData, int width , int height , int BytePerPixel  ); 
+void read3DImage(FILE *file, unsigned char*** imageData, int width, int height , int channels); 
+void write2DImage(FILE *file , unsigned char **imageData, int width , int height); 
+void write3DImage(FILE* file, unsigned char*** imageData, int width, int height , int channels);
+
+
 
 // extend image edges to avoid the different solution for edge pixels 
-unsigned char ** extend2DImageEdge(unsigned char **imageData, int width , int height, int pixelperByte); 
-unsigned char *** extend3DImageEdge(unsigned char ***imageData, int width , int height, int pixelperByte); 
-unsigned char ** cut2DImageEdge(unsigned char **imageData); 
+void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
+void  extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
+
+
+
 
 
 // return a number that indicates color of current pixels 
@@ -56,54 +64,55 @@ void testHeaderIncluded(){
 
 // if the input image only contains one pixel, this will return null ;  
 // the copied image obeys the reflection rule
-unsigned char ** extend2DImageEdge(unsigned char **imageData,  int width , int height , int pixelperByte){
+void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage,  int width , int height , int BytePerPixel){
     unsigned char **extendedImage ;
     int extendedWidth = width +4 ; 
-    int extednedHeight = height+4; 
-    extendedImage = new unsigned char *[extednedHeight](); 
-    for (int row=0 ;row<height;row++){
-        
-        //assign space for columns 
-        extendedImage[row]  = new unsigned char [extendedWidth](); 
-        
-        if(row==0){
-            extendedImage[0][0] = imageData[1][1] ; 
-            extendedImage[0][1] = imageData[0][1] ; 
-            extendedImage[0][width+2] = imageData[0][width-2];
-            extendedImage[0][width+3] = imageData[0][width-1];
-            for(int col=2 ; col<extendedWidth-2;col++){
-                extendedImage[0][col] = imageData[1][col-2]; 
-            }  
-        }
+    int extendedHeight = height+4; 
+    for (int row=0 ;row<extendedHeight;row++){
+        for (int col = 0; col < extendedWidth; col++) {
+            //assign space for columns 
 
-        if(row==1){
-            extendedImage[1][0] = imageData[1][1] ; 
-            extendedImage[1][1] = imageData[0][1] ; 
-            extendedImage[1][width+2] = imageData[0][width-2];
-            extendedImage[1][width+3] = imageData[0][width-1];
-            for(int col=2 ; col<extendedWidth-2;col++){
-                extendedImage[1][col] = imageData[0][col-2]; 
-            }  
-        }
-
-        if(row==extednedHeight-1){
-
-        }
-
-        if(row==extednedHeight-2){
-
-        }
-
-        if(row>=2||row<=extednedHeight-3){
-            for(int col = 0 ;col<width ;col++){
-                    if(col==0){
-                        extendedImage[0][0] = imageData[0][0];
-                        extendedImage[height+1][0]= extendedImage[0][0]; 
-                    }
+            if (row == 0) {
+                extendedImage[0][0] = imageData[1][1];
+                extendedImage[0][1] = imageData[0][1];
+                extendedImage[0][width + 2] = imageData[0][width - 2];
+                extendedImage[0][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[0][col] = imageData[1][col - 2];
+                }
             }
+
+            if (row == 1) {
+                extendedImage[1][0] = imageData[1][1];
+                extendedImage[1][1] = imageData[0][1];
+                extendedImage[1][width + 2] = imageData[0][width - 2];
+                extendedImage[1][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[1][col] = imageData[0][col - 2];
+                }
+            }
+
+            if (row == extendedHeight - 1) {
+                extendedImage[extendedHeight - 1][0] = imageData[height - 1][1];
+                extendedImage[extendedHeight - 1][1] = imageData[height - 1][0];
+            }
+
+            if (row == extendedHeight - 2) {
+
+            }
+            if (row>=2&&col == 0&&row<extendedHeight-2) {
+
+            }
+            if (col == 1&& row>=2&&row<extendedHeight-2) {
+
+            }
+
+
+
         }
+       
     }
-    return extendedImage ;
+
 
 }
 
@@ -147,4 +156,59 @@ unsigned char compBlueforGreenBL(unsigned char** imageData, int row, int col) {
     result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
 
     return result; 
+}
+
+void read2DImage(FILE *file, unsigned char** imageData, int width, int height ,int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+       fread(imageData[row], sizeof(unsigned char),  width * BytesPerPixel, file);
+    }
+}
+
+void read3DImage(FILE* file, unsigned char*** imageData, int width, int height, int channels) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            fread(imageData[row][col], sizeof(unsigned char), channels, file); 
+        }
+    }
+}
+
+void write2DImage(FILE* file, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        fwrite(imageData[row], sizeof(unsigned char), width * BytesPerPixel, file); 
+    }
+
+}
+
+void write3DImage(FILE* file, unsigned char*** imageData, int width, int height, int channels) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            fwrite(imageData[row][col], sizeof(unsigned char), channels, file); 
+        }
+    }
+}
+
+
+void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel,int widsize) {
+    for (int row = 0; row < height+2*widsize; row++) {
+        for (int col = 0; col < width + 2 * widsize; col++) {
+            if (row < widsize && col < widsize) {
+            
+            }
+            if (row<widsize && col>=width + widsize&& col<width+widsize) {
+            
+            }
+            if (row < widsize && col >= widsize + width) {
+            
+            }
+            if (row >= widsize && row < widsize + height && col < widsize) {
+            
+            }
+            if (row >= widsize + height && row < widsize * 2 + height && col < widsize) {
+            
+            }
+
+        }
+    
+    }
+
 }

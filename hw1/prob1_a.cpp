@@ -45,7 +45,7 @@ void testUnsignedCharOverflow() {
 }
 
 
-void gray2RGB(unsigned char ***ImageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte =1){
+void gray2RGB(unsigned char **ImageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte =1){
 //	cout<<"***********image info**************"<<endl; 
 //	cout<<"  height: " << height<<"    width: "<<width<<endl;
 	// we need to prevent overflow for the unsigned char 
@@ -61,29 +61,29 @@ void gray2RGB(unsigned char ***ImageData ,unsigned char ***imageRGBData,  int wi
 			//cout<<"width  "<<width<<endl; 
 			if(judgePixelColor(row,col) == 0){
 				//cout<<"test command 2"<<endl; 
-				imageRGBData[row][col][0] = (unsigned char)ImageData[row][col][1];
-				imageRGBData[row][col][1] =(unsigned char) 0.25*(ImageData[row-1][col][1]+ ImageData[row+1][col][1]+ ImageData[row][col-1][1]+ ImageData[row][col+1][1]);
-				imageRGBData[row][col][2] = (unsigned char)0.25*(ImageData[row-1][col-1][1]+ ImageData[row+1][col+1][0]+ ImageData[row+1][col-1][0]+ ImageData[row-1][col+1][0]) ;
+				imageRGBData[row][col][0] = (unsigned char)ImageData[row][col];
+				imageRGBData[row][col][1] =(unsigned char) 0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
+				imageRGBData[row][col][2] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ ImageData[row-1][col+1]) ;
 			}
 			//color is green 
 			if(judgePixelColor(row,col) == 1){
 				//cout<<"test command 4"<<endl; 
 				if(row%2==0){
-					imageRGBData[row][col][0] = (unsigned char)0.5*(ImageData[row][col+1][0]+ ImageData[row][col-1][0]);
+					imageRGBData[row][col][0] = (unsigned char)0.5*(ImageData[row][col+1]+ ImageData[row][col-1]);
 					//cout<<"test command 6"<<endl; 
-					imageRGBData[row][col][1] = (unsigned char)ImageData[row][col][0];
-					imageRGBData[row][col][2] = (unsigned char)0.5*(ImageData[row-1][col][0]+ ImageData[row+1][col][0]);
+					imageRGBData[row][col][1] = (unsigned char)ImageData[row][col];
+					imageRGBData[row][col][2] = (unsigned char)0.5*(ImageData[row-1][col]+ ImageData[row+1][col]);
 				}else{
-					imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row-1][col-1][0]+ ImageData[row+1][col+1][0]+ ImageData[row+1][col-1][0]+ImageData[row-1][col+1][0]);
-					imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col][0]+ ImageData[row+1][col][0]+ ImageData[row][col-1][0]+ ImageData[row][col+1][0]);
-					imageRGBData[row][col][2] = (unsigned char)ImageData[row][col][0];
+					imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ImageData[row-1][col+1]);
+					imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
+					imageRGBData[row][col][2] = (unsigned char)ImageData[row][col];
 				}
 			}
 			//color is blue 
 			if(judgePixelColor(row,col)==2){
-				imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row - 1][col - 1][0] + ImageData[row + 1][col + 1][0] + ImageData[row + 1][col - 1][0] + ImageData[row - 1][col + 1][0]);
-				imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col][0]+ ImageData[row+1][col][0]+ ImageData[row][col-1][0]+ ImageData[row][col+1][0]);
-				imageRGBData[row][col][2] =  ImageData[row][col][0]; 
+				imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row - 1][col - 1] + ImageData[row + 1][col + 1] + ImageData[row + 1][col - 1] + ImageData[row - 1][col + 1]);
+				imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
+				imageRGBData[row][col][2] =  ImageData[row][col]; 
 			}
 			//cout<<"test command 3"<<endl; 
 		}
@@ -129,13 +129,10 @@ int main(int argc, char *argv[])
     cols = width ; 
 	// Allocate image data array   ?? when the width and height of image is not equal  ??
 	
-	unsigned char *** imageData;
-	imageData = new unsigned char **[height];
+	unsigned char ** imageData;
+	imageData = new unsigned char *[height];
 	for (int row = 0; row < height; row++) {
-		imageData[row] = new unsigned char*[width];
-		for (int col = 0; col < width; col++) {
-			imageData[row][col] = new unsigned char[BytesPerPixel]; 
-		}
+		imageData[row] = new unsigned char[width];
 	}
 //	imageData[height][width]; 
 	// Read image (filename specified by first argument) into image data matrix
@@ -144,8 +141,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-
-	fread(imageData, sizeof(unsigned char), height*width*BytesPerPixel, file);
+	read2DImage(file, imageData, width, height, BytesPerPixel); 
 	fclose(file);
 
 	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
@@ -158,7 +154,7 @@ int main(int argc, char *argv[])
 //		}
 //		cout<<endl; 
 //	}
-	
+
 	unsigned char ***imageRGBData; 
 	imageRGBData = new unsigned char**[height]; 
 	for(int row=0 ; row<height ; row++){
@@ -171,9 +167,9 @@ int main(int argc, char *argv[])
 //	test2Darray(imageData,height, width); 
 //	imageRGBData[0][0][0] =(unsigned char)10;  
 //	cout<<imageRGBData[0][0][0]; 
-	//gray2RGB(imageData,imageRGBData, width,height,1);
-	// Write image data (filename specified by second argument) from image data matrix
-	//testUnsignedCharOverflow(); 
+	gray2RGB(imageData,imageRGBData, width,height,1);
+//	 Write image data (filename specified by second argument) from image data matrix
+//	testUnsignedCharOverflow(); 
 	if (!(file=fopen(argv[2],"wb"))) {
 		cout << "Cannot open file: " << argv[2] << endl;
 		exit(1);
@@ -186,7 +182,8 @@ int main(int argc, char *argv[])
 		}
 		cout << endl;
 	}
-	fwrite(imageRGBData, sizeof(unsigned char), height*width*3, file);
+
+	write3DImage(file, imageRGBData, width, height, 3); 
 	fclose(file);
     cout<<"writing image successfully"; 
 

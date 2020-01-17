@@ -41,6 +41,7 @@ int main(int argc, char* argv[]) {
 //			imageData[row][col] = new unsigned char[BytesPerPixel+1];
 //		}
 	}
+
 //	cout <<bitset<8>( imageData[height - 1][width - 1][0]) << endl;
 	unsigned char*** imageRGBData;
 	imageRGBData = new unsigned char** [height];
@@ -58,8 +59,9 @@ int main(int argc, char* argv[]) {
 		exit(1);
 	}
 
-
-	fread(imageData, sizeof(unsigned char), height * width * BytesPerPixel, file);
+	for (int row = 0; row < height; row++) {
+		fread(imageData[row], sizeof(unsigned char), width * BytesPerPixel, file);
+	}
 	fclose(file);
 
 	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
@@ -88,7 +90,9 @@ int main(int argc, char* argv[]) {
 			//cout << bitset<8>(imageRGBData[row][col][1]) << " ";
 		}
 	}
-	fwrite(imageData, sizeof(unsigned char), height * width * 3, file);
+	for (int row = 0; row < height; row++) {
+		fwrite(imageData[row], sizeof(unsigned char), width, file);
+	}
 	fclose(file);
 	cout << "writing image successfully";
 
