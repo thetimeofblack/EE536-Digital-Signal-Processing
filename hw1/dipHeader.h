@@ -108,7 +108,33 @@ unsigned char ** extend2DImageEdge(unsigned char **imageData,  int width , int h
 }
 
 
-unsigned char compRedPixelBL(unsigned char **imageData, int width, int height) {
+unsigned char compRedForGreenBL(unsigned char **imageData, int row, int col) {
     unsigned char result; 
+    result = 0.5 * (imageData[row+1][col]+imageData[row-1][col]); 
+    return result; 
+}
 
+
+unsigned char compRedforBlueBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] +imageData[row+1][col-1] +imageData[row-1][col+1]+imageData[row-1][col-1]);
+    return result; 
+}
+
+unsigned char compGreenforRedBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    return result; 
+}
+
+unsigned char compGreenforBlueBL(unsigned char** imageData, int row, int col) {
+    unsigned char result;
+
+}   
+
+unsigned char compBlueforRedBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+}
+
+unsigned char compBlueforGreenBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
 }
