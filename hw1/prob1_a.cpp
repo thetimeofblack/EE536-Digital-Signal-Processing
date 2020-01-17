@@ -28,20 +28,10 @@ void test2Darray(unsigned char **input, int rows, int cols ){
 }
 
 
-void gray2RGB(unsigned char **ImageData ,unsigned char ***&imageRGBData,  int width , int height,int pixelperByte =1){
+void gray2RGB(unsigned char **ImageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte =1){
 //	cout<<"***********image info**************"<<endl; 
 //	cout<<"  height: " << height<<"    width: "<<width<<endl;
-	unsigned char** tempImageData; 
-	tempImageData =  new unsigned char *[height]; 
-	for(int row = 0 ;row<height;row++){
-		tempImageData[row] = new unsigned char [width]; 
-	}
-	for (int row = 0; row < height; row++) {
-		for (int col = 0; col < width; col++) {
-			tempImageData[row][col] = *((unsigned char*)(ImageData + row) + col);
-		}
-	}
-
+	// we need to prevent overflow for the unsigned char 
 	for(int row = 2 ; row< height-2 ; row++){
 		
 		for(int col = 2 ;col<width-2 ;col++){
@@ -54,35 +44,33 @@ void gray2RGB(unsigned char **ImageData ,unsigned char ***&imageRGBData,  int wi
 			//cout<<"width  "<<width<<endl; 
 			if(judgePixelColor(row,col) == 0){
 				//cout<<"test command 2"<<endl; 
-				imageRGBData[row][col][0] = (unsigned char)tempImageData[row][col];
-				imageRGBData[row][col][1] =(unsigned char)  0.25*((double)tempImageData[row-1][col]+ (double)tempImageData[row+1][col]+ (double)tempImageData[row][col-1]+ (double)tempImageData[row][col+1]);
-				imageRGBData[row][col][2] = (unsigned char)0.25*((double)tempImageData[row-1][col-1]+ (double)tempImageData[row+1][col+1]+ (double)tempImageData[row+1][col-1]+ (double)tempImageData[row-1][col+1]) ;
+				imageRGBData[row][col][0] = (unsigned char)ImageData[row][col];
+				imageRGBData[row][col][1] =(unsigned char) 0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
+				imageRGBData[row][col][2] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ ImageData[row-1][col+1]) ;
 			}
 			//color is green 
 			if(judgePixelColor(row,col) == 1){
 				//cout<<"test command 4"<<endl; 
 				if(row%2==0){
-					imageRGBData[row][col][0] = (unsigned char)0.5*((double)tempImageData[row][col+1]+ (double)tempImageData[row][col-1]);
+					imageRGBData[row][col][0] = (unsigned char)0.5*(ImageData[row][col+1]+ ImageData[row][col-1]);
 					//cout<<"test command 6"<<endl; 
-					imageRGBData[row][col][1] = (unsigned char)(double)tempImageData[row][col];
-					imageRGBData[row][col][2] = (unsigned char)0.5*((double)tempImageData[row-1][col]+ (double)tempImageData[row+1][col]);
+					imageRGBData[row][col][1] = (unsigned char)ImageData[row][col];
+					imageRGBData[row][col][2] = (unsigned char)0.5*(ImageData[row-1][col]+ ImageData[row+1][col]);
 				}else{
-					imageRGBData[row][col][0] = (unsigned char)0.25*((double)tempImageData[row-1][col-1]+ (double)tempImageData[row+1][col+1]+ (double)tempImageData[row+1][col-1]+ (double)tempImageData[row-1][col+1]);
-					imageRGBData[row][col][1] = (unsigned char)0.25*((double)tempImageData[row-1][col]+ (double)tempImageData[row+1][col]+ (double)tempImageData[row][col-1]+ (double)tempImageData[row][col+1]);
-					imageRGBData[row][col][2] = (unsigned char)tempImageData[row][col];
+					imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ImageData[row-1][col+1]);
+					imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
+					imageRGBData[row][col][2] = (unsigned char)ImageData[row][col];
 				}
 			}
 			//color is blue 
 			if(judgePixelColor(row,col)==2){
-				imageRGBData[row][col][0] = (unsigned char)0.25*((double)tempImageData[row - 1][col - 1] + (double)tempImageData[row + 1][col + 1] + (double)tempImageData[row + 1][col - 1] + (double)tempImageData[row - 1][col + 1]);
-				imageRGBData[row][col][1] = (unsigned char)0.25*((double)tempImageData[row-1][col]+ (double)tempImageData[row+1][col]+ (double)tempImageData[row][col-1]+ (double)tempImageData[row][col+1]);
-				imageRGBData[row][col][2] =  tempImageData[row][col]; 
+				imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row - 1][col - 1] + ImageData[row + 1][col + 1] + ImageData[row + 1][col - 1] + ImageData[row - 1][col + 1]);
+				imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
+				imageRGBData[row][col][2] =  ImageData[row][col]; 
 			}
 			//cout<<"test command 3"<<endl; 
 		}
 	}
-
-
 
 
 }
@@ -101,12 +89,7 @@ int main(int argc, char *argv[])
     int height =256; 
 	//testHeaderIncluded();
 	// Check for proper syntax
-	unsigned char** imageData;
-	imageData = new unsigned char* [height];
-	for (int row = 0; row < height; row++) {
-		imageData[row] = new unsigned char[width];
 
-	}
 	if (argc < 3){
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
 		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
@@ -129,16 +112,25 @@ int main(int argc, char *argv[])
     cols = width ; 
 	// Allocate image data array   ?? when the width and height of image is not equal  ??
 	
+	unsigned char ** imageData;
+	imageData = new unsigned char *[height];
+	for (int row = 0; row < height; row++) {
+		imageData[row] = new unsigned char[width];
+
+	}
+
 	// Read image (filename specified by first argument) into image data matrix
 	if (!(file=fopen(argv[1],"rb"))) {
 		cout << "Cannot open file: " << argv[1] <<endl;
 		exit(1);
 	}
+
+
 	fread(imageData, sizeof(unsigned char), height*width*BytesPerPixel, file);
 	fclose(file);
 
 	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
-//  test the index of picture is or not swapped   	
+//  test the i0x771BF94D (ntdll.dll) (hm1.exe 中)处有未经处理的异常: 0xC0000374: 堆已损坏。 (参数: 0x771FB960ndex of picture is or not swapped   	
 //	cout<<"***********image info**************"<<endl; 
 //	cout<<"  height: " << height<<"    width: "<<width<<endl; 
 //	for(int row = 0 ;row<8;row++){
@@ -177,7 +169,18 @@ int main(int argc, char *argv[])
 	fwrite(imageRGBData, sizeof(unsigned char), height*width*3, file);
 	fclose(file);
     cout<<"writing image successfully"; 
-	delete imageRGBData; 
-	delete imageData; 
+	for (int row = 0; row < height; row++) {
+		delete[] imageData[row]; 
+	}
+	delete[] imageData;  
+
+
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			delete[] imageRGBData[row][col];
+		}
+		delete[] imageRGBData[row];
+	}
+	delete[] imageRGBData;
 	return 0;
 }

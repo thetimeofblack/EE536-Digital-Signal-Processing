@@ -5,7 +5,7 @@
 #ifndef dipHeader_h
 #define dipHeader_h 
 #endif
-
+#define _CRT_SECURE_NO_WARNINGS
 // these definition may cause confusion for the compiler 
 // #define R 0  
 // #define G 1
@@ -123,18 +123,28 @@ unsigned char compRedforBlueBL(unsigned char** imageData, int row, int col) {
 
 unsigned char compGreenforRedBL(unsigned char** imageData, int row, int col) {
     unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
     return result; 
 }
 
 unsigned char compGreenforBlueBL(unsigned char** imageData, int row, int col) {
     unsigned char result;
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
 
+    return result; 
 }   
 
 unsigned char compBlueforRedBL(unsigned char** imageData, int row, int col) {
     unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result;
 }
 
 unsigned char compBlueforGreenBL(unsigned char** imageData, int row, int col) {
-    unsigned char result; 
+    unsigned char result;
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result; 
 }
