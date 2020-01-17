@@ -6,22 +6,29 @@
 #define dipHeader_h 
 #endif
 #define _CRT_SECURE_NO_WARNINGS
-// these definition may cause confusion for the compiler 
+
+// not implemented now  
 // #define R 0  
 // #define G 1
 // #define B 2 
+
 
 #include<iostream>
 #include<stdio.h>
 #include<stdlib.h>
 using namespace std; 
 
+// Initialize system for argument input 
+void dip_init();
+
+// print image error information 
+void print_image_info();
 // Allocate memory for image
-void alloc2DImage(unsigned char** imageData, int width , int height, int BytePerPixel);
-void alloc3DImage(unsigned char** imageData, int width, int height, int BytePerPixel); 
+unsigned char*** alloc2DImage( int width , int height, int BytePerPixel);
+unsigned char*** alloc3DImage(int width, int height, int BytePerPixel); 
 
 
-// IO function for image input and output 
+// IO function for image input and output for file 
 void read2DImage(FILE *file, unsigned char**imageData, int width , int height , int BytePerPixel  ); 
 void read3DImage(FILE *file, unsigned char*** imageData, int width, int height , int channels); 
 void write2DImage(FILE *file , unsigned char **imageData, int width , int height); 
@@ -29,9 +36,9 @@ void write3DImage(FILE* file, unsigned char*** imageData, int width, int height 
 
 
 
-// extend image edges to avoid the different solution for edge pixels 
+// extend image edges 
 void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
-void  extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
+void extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
 
 
 
@@ -65,7 +72,6 @@ void testHeaderIncluded(){
 // if the input image only contains one pixel, this will return null ;  
 // the copied image obeys the reflection rule
 void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage,  int width , int height , int BytePerPixel){
-    unsigned char **extendedImage ;
     int extendedWidth = width +4 ; 
     int extendedHeight = height+4; 
     for (int row=0 ;row<extendedHeight;row++){
@@ -192,23 +198,47 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
     for (int row = 0; row < height+2*widsize; row++) {
         for (int col = 0; col < width + 2 * widsize; col++) {
             if (row < widsize && col < widsize) {
-            
+                extendedImage[row][col] = imageData[widsize - 1 - row][widsize - 1 - col];
             }
             if (row<widsize && col>=width + widsize&& col<width+widsize) {
-            
+                extendedImage[row][col] = imageData[widsize - 1 - row][col]; 
             }
             if (row < widsize && col >= widsize + width) {
-            
+                extendedImage[row][col] = imageData[widsize - 1 - row][widsize + 2 * width - 1-col]; 
             }
             if (row >= widsize && row < widsize + height && col < widsize) {
+                extendedImage[row][col] = imageData[row][widsize-1-col]; 
+            }
+            if (row >= widsize && row < widsize + height && col >= widsize && col < widsize + width) {
+            
+            }
+            if (row >= widsize && row < widsize + height && col >= widsize+width&&col<widsize*2+width) {
             
             }
             if (row >= widsize + height && row < widsize * 2 + height && col < widsize) {
             
             }
+            if (row >= widsize + height && row < widsize * 2 + height && col >= widsize && col < widsize + width) {
+            
+            }
+            if (row >= widsize + height && row < widsize * 2 + height && col >= widsize + width && col < widsize * 2 + width) {
+            }
+
 
         }
     
     }
 
+}
+
+unsigned char *** alloc3DImage(int width, int height, int BytePerPixel) {
+    unsigned char*** imageData; 
+    imageData = new unsigned char**[height]; 
+	for(int row=0 ; row<height ; row++){
+		imageData[row] = new unsigned char *[width];
+		for(int col=0; col<width; col++){
+			imageData[row][col] = new unsigned char[3]; 
+		}
+	}
+    return imageData; 
 }

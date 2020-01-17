@@ -155,14 +155,18 @@ int main(int argc, char *argv[])
 //		cout<<endl; 
 //	}
 
-	unsigned char ***imageRGBData; 
-	imageRGBData = new unsigned char**[height]; 
-	for(int row=0 ; row<height ; row++){
-		imageRGBData[row] = new unsigned char *[width];
-		for(int col=0; col<width; col++){
-			imageRGBData[row][col] = new unsigned char[3]; 
-		}
-	}
+
+	unsigned char ***imageRGBData = NULL; 
+//	imageRGBData = new unsigned char** [height]; 
+	imageRGBData= alloc3DImage( width, height, 3); 
+	
+//	imageRGBData = new unsigned char**[height]; 
+//	for(int row=0 ; row<height ; row++){
+//		imageRGBData[row] = new unsigned char *[width];
+//		for(int col=0; col<width; col++){
+//			imageRGBData[row][col] = new unsigned char[3]; 
+//		}
+//	}
 
 //	test2Darray(imageData,height, width); 
 //	imageRGBData[0][0][0] =(unsigned char)10;  
@@ -174,6 +178,8 @@ int main(int argc, char *argv[])
 		cout << "Cannot open file: " << argv[2] << endl;
 		exit(1);
 	}
+
+
 	cout << "***********image info**************" << endl;
 	cout << "  height: " << height << "    width: " << width << endl;
 	for (int row = 0; row < 8; row++) {
