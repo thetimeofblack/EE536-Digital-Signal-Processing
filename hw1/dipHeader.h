@@ -16,6 +16,7 @@
 #include<iostream>
 #include<stdio.h>
 #include<stdlib.h>
+#include<cmath>
 using namespace std; 
 
 // Initialize system for argument input 
@@ -312,3 +313,15 @@ int dip_init(int argc , char *argv[] ) {
     return 0;
 
 }
+
+double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int width ,int height, int BytesPerPixel) {
+    double result;  
+
+    
+}
+
+double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, int width , int height , int BytesPerPixel) {
+
+
+}
+
