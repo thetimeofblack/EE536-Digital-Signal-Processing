@@ -42,7 +42,7 @@ int main(int argc, char *argv[])
 	}
 	
 	// Allocate image data array
-	unsigned char Imagedata[Size][Size][BytesPerPixel];
+	unsigned char Imagedata[1][1][1];
 
 	// Read image (filename specified by first argument) into image data matrix
 	if (!(file=fopen(argv[1],"rb"))) {

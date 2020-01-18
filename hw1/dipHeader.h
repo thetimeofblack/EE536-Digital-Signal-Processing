@@ -24,7 +24,7 @@ void dip_init();
 // print image error information 
 void print_image_info();
 // Allocate memory for image
-unsigned char*** alloc2DImage( int width , int height, int BytePerPixel);
+unsigned char** alloc2DImage( int width , int height, int BytePerPixel);
 unsigned char*** alloc3DImage(int width, int height, int BytePerPixel); 
 
 
@@ -125,7 +125,11 @@ void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage,
 
 unsigned char compRedForGreenBL(unsigned char **imageData, int row, int col) {
     unsigned char result; 
-    result = 0.5 * (imageData[row+1][col]+imageData[row-1][col]); 
+    if (row % 2 == 0) {
+        result = 0.5 * (imageData[row][col+1] + imageData[row][col-1]);
+    }else {
+        result = 0.5 * (imageData[row + 1][col] + imageData[row - 1][col]); 
+    }
     return result; 
 }
 
@@ -159,8 +163,11 @@ unsigned char compBlueforRedBL(unsigned char** imageData, int row, int col) {
 
 unsigned char compBlueforGreenBL(unsigned char** imageData, int row, int col) {
     unsigned char result;
-    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
-
+    if (row % 2 == 0) {
+        result = 0.5 * (imageData[row + 1][col] + imageData[row - 1][col]); 
+    }else {
+        result = 0.5 * (imageData[row][col + 1] + imageData[row][col - 1]); 
+    }
     return result; 
 }
 
@@ -231,6 +238,15 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
 
 }
 
+unsigned char** alloc2DImage(int width, int height, int BytePerPixel) {
+    unsigned char** imageData; 
+    imageData = new unsigned char* [height]; 
+    for (int row = 0; row < height; row++) {
+        imageData[row] = new unsigned char[width]; 
+    }
+    return imageData;  
+}
+
 unsigned char *** alloc3DImage(int width, int height, int BytePerPixel) {
     unsigned char*** imageData; 
     imageData = new unsigned char**[height]; 
@@ -241,4 +257,58 @@ unsigned char *** alloc3DImage(int width, int height, int BytePerPixel) {
 		}
 	}
     return imageData; 
+}
+
+int dip_init(int argc , char *argv[] ) {
+    // Define file pointer and variables
+    FILE* file;
+//    const  int BytesPerPixel;
+    const  int Size = 256;
+    int rows;
+    int cols;
+
+
+    // Check for proper syntax
+    if (argc < 3) {
+        cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+        cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Size = 256]" << endl;
+        return 0;
+    }
+
+    // Check if image is grayscale or color
+    if (argc < 4) {
+       // BytesPerPixel = 1; // default is grey image
+    }
+    else {
+       // BytesPerPixel = atoi(argv[3]);
+        // Check if size is specified
+        if (argc >= 5) {
+       //     Size = atoi(argv[4]);
+        }
+    }
+
+    // Allocate image data array
+ //   unsigned char Imagedata[Size][Size][BytesPerPixel];
+
+    // Read image (filename specified by first argument) into image data matrix
+    if (!(file = fopen(argv[1], "rb"))) {
+        cout << "Cannot open file: " << argv[1] << endl;
+        exit(1);
+    }
+ //   fread(Imagedata, sizeof(unsigned char), Size * Size * BytesPerPixel, file);
+    fclose(file);
+
+    ///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
+
+    // Write image data (filename specified by second argument) from image data matrix
+
+    if (!(file = fopen(argv[2], "wb"))) {
+        cout << "Cannot open file: " << argv[2] << endl;
+        exit(1);
+    }
+//    fwrite(Imagedata, sizeof(unsigned char), Size * Size * BytesPerPixel, file);
+    fclose(file);
+
+    return 0;
+
 }
