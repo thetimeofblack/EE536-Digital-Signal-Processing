@@ -1,15 +1,29 @@
 ﻿  prob2_a.cpp
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(134,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(136,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(144,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(150,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(157,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(164,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(172,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(174,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(318,9): warning C4101: “rows”: 未引用的局部变量
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(319,9): warning C4101: “cols”: 未引用的局部变量
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(387,9): warning C4101: “result”: 未引用的局部变量
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(139,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(141,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(149,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(155,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(162,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(169,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(177,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(179,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(323,9): warning C4101: “rows”: 未引用的局部变量
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(324,9): warning C4101: “cols”: 未引用的局部变量
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(392,9): warning C4101: “result”: 未引用的局部变量
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_a.cpp(12,6): warning C4101: “total”: 未引用的局部变量
+  prob2_b.cpp
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(139,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(141,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(149,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(155,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(162,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(169,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(177,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(179,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(323,9): warning C4101: “rows”: 未引用的局部变量
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(324,9): warning C4101: “cols”: 未引用的局部变量
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(392,9): warning C4101: “result”: 未引用的局部变量
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_b.cpp(9,1): error C2144: 语法错误:“int”的前面应有“;”
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_b.cpp(7,5): error C2182: “computeWeight”: 非法使用“void”类型
+  正在生成代码...
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_a.cpp(60): warning C4715: “checkProperSyntax”: 不是所有的控件路径都返回值
-  vs.vcxproj -> D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\vs\Debug\vs.exe

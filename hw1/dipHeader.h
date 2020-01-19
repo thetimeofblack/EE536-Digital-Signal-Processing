@@ -24,9 +24,14 @@ void dip_init();
 
 // print image error information 
 void print_image_info();
+
 // Allocate memory for image
 unsigned char** alloc2DImage( int width , int height, int BytePerPixel);
 unsigned char*** alloc3DImage(int width, int height, int BytePerPixel); 
+
+// Delete memory for image 
+int delete2DImage(int width, int height, int BytesPerPixe); 
+int delete3DImage(int width, int height, int BytesPerPixe);
 
 
 // IO function for image input and output for file 
