@@ -202,38 +202,38 @@ void write3DImageFile(char* filename, unsigned char*** imageData, int width, int
 }
 
 
-void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel,int widsize) {
-    for (int row = 0; row < height+2*widsize; row++) {
-        for (int col = 0; col < width + 2 * widsize; col++) {
+void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel,int edgesize) {
+    for (int row = 0; row < height+2*edgesize; row++) {
+        for (int col = 0; col < width + 2 * edgesize; col++) {
             //the
-            if (row < widsize && col < widsize) {
-                extendedImage[row][col] = imageData[widsize - 1 - row][widsize - 1 - col];
+            if (row < edgesize && col < edgesize) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][edgesize - 1 - col];
             }
 
-            if (row<widsize && col>= widsize&& col<width+widsize) {
-                extendedImage[row][col] = imageData[widsize - 1 - row][col-widsize]; 
+            if (row<edgesize && col>= edgesize&& col<width+edgesize) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][col-edgesize]; 
             }
 
-            if (row < widsize && col >= widsize + width) {
-                extendedImage[row][col] = imageData[widsize - 1 - row][widsize + 2 * width - 1-col]; 
+            if (row < edgesize && col >= edgesize + width) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][edgesize + 2 * width - 1-col]; 
             }
-            if (row >= widsize && row < widsize + height && col < widsize) {
-                extendedImage[row][col] = imageData[row-widsize][widsize-1-col]; 
+            if (row >= edgesize && row < edgesize + height && col < edgesize) {
+                extendedImage[row][col] = imageData[row-edgesize][edgesize-1-col]; 
             }
-            if (row >= widsize && row < widsize + height && col >= widsize && col < widsize + width) {
-                extendedImage[row][col] = imageData[row-widsize][col-widsize]; 
+            if (row >= edgesize && row < edgesize + height && col >= edgesize && col < edgesize + width) {
+                extendedImage[row][col] = imageData[row-edgesize][col-edgesize]; 
             }
-            if (row >= widsize && row < widsize + height && col >= widsize+width&&col<widsize*2+width) {
-                extendedImage[row][col] = imageData[row-widsize][widsize + 2 * width - 1 - col]; 
+            if (row >= edgesize && row < edgesize + height && col >= edgesize+width&&col<edgesize*2+width) {
+                extendedImage[row][col] = imageData[row-edgesize][edgesize + 2 * width - 1 - col]; 
             }
-            if (row >= widsize + height && row < widsize * 2 + height && col < widsize) {
-                extendedImage[row][col] = imageData[2 * height + widsize - 1 - row][widsize - 1 - col]; 
+            if (row >= edgesize + height && row < edgesize * 2 + height && col < edgesize) {
+                extendedImage[row][col] = imageData[2 * height + edgesize - 1 - row][edgesize - 1 - col]; 
             }
-            if (row >= widsize + height && row < widsize * 2 + height && col >= widsize && col < widsize + width) {
-                extendedImage[row][col] = imageData[2*height+widsize-1-row][col-widsize]; 
+            if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize && col < edgesize + width) {
+                extendedImage[row][col] = imageData[2*height+edgesize-1-row][col-edgesize]; 
             }
-            if (row >= widsize + height && row < widsize * 2 + height && col >= widsize + width && col < widsize * 2 + width) {
-                extendedImage[row][col] = imageData[2 * height + widsize - 1 - row][2 * width + widsize - 1 - col]; 
+            if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                extendedImage[row][col] = imageData[2 * height + edgesize - 1 - row][2 * width + edgesize - 1 - col]; 
             }
 
 
@@ -243,38 +243,39 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
 
 }
 
-void extend3DImageEdge(unsigned char*** imageData, unsigned char*** extendedImage, int width, int height, int BytesPerPixel,int widsize) {
-    for (int row = 0; row < height + 2 * widsize; row++) {
-        for (int col = 0; col < width + 2 * widsize; col++) {
+void extend3DImageEdge(unsigned char*** imageData, unsigned char*** extendedImage, int width, int height, int BytesPerPixel,int edgesize) {
+    for (int row = 0; row < height + 2 * edgesize; row++) {
+        for (int col = 0; col < width + 2 * edgesize; col++) {
             for (int cor = 0; cor < BytesPerPixel; cor++) {
-                if (row < widsize && col < widsize) {
-                    extendedImage[row][col][cor] = imageData[widsize - 1 - row][widsize - 1 - col][cor];
+                if (row < edgesize && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][edgesize - 1 - col][cor];
                 }
 
-                if (row < widsize && col >= width + widsize && col < width + 2*widsize) {
-                    extendedImage[row][col][cor] = imageData[widsize - 1 - row][col][cor];
+                if (row < edgesize && col >= edgesize && col < width + edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][col-edgesize][cor];
                 }
 
-                if (row < widsize && col >= widsize + width) {
-                    extendedImage[row][col][cor] = imageData[widsize - 1 - row][widsize + 2 * width - 1 - col][cor];
+                if (row < edgesize && col >= edgesize + width && col<width + 2*edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][edgesize + 2 * width - 1 - col][cor];
                 }
-                if (row >= widsize && row < widsize + height && col < widsize) {
-                    extendedImage[row][col][cor] = imageData[row][widsize - 1 - col][cor];
+
+                if (row >= edgesize && row < edgesize + height && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[row-edgesize][edgesize - 1 - col][cor];
                 }
-                if (row >= widsize && row < widsize + height && col >= widsize && col < widsize + width) {
-                    extendedImage[row][col][cor] = imageData[row - widsize][col - widsize][cor];
+                if (row >= edgesize && row < edgesize + height && col >= edgesize && col < edgesize + width) {
+                    extendedImage[row][col][cor] = imageData[row - edgesize][col - edgesize][cor];
                 }
-                if (row >= widsize && row < widsize + height && col >= widsize + width && col < widsize * 2 + width) {
-                    extendedImage[row][col][cor] = imageData[row][widsize + 2 * width - 1 - col][cor];
+                if (row >= edgesize && row < edgesize + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[row - edgesize][edgesize + 2 * width - 1 - col][cor];
                 }
-                if (row >= widsize + height && row < widsize * 2 + height && col < widsize) {
-                    extendedImage[row][col][cor] = imageData[2 * height + widsize - 1 - row][widsize - 1 - col][cor];
+                if (row >= edgesize + height && row < edgesize * 2 + height && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][edgesize - 1 - col][cor];
                 }
-                if (row >= widsize + height && row < widsize * 2 + height && col >= widsize && col < widsize + width) {
-                    extendedImage[row][col][cor] = imageData[2 * height + widsize - 1 - row][col][cor];
+                if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize && col < edgesize + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][col-edgesize][cor];
                 }
-                if (row >= widsize + height && row < widsize * 2 + height && col >= widsize + width && col < widsize * 2 + width) {
-                    extendedImage[row][col][cor] = imageData[2 * height + widsize - 1 - row][2 * width + widsize - 1 - col][cor];
+                if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][2 * width + edgesize - 1 - col][cor];
                 }
 
             }
