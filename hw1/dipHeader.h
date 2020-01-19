@@ -35,14 +35,18 @@ void read3DImage(FILE *file, unsigned char*** imageData, int width, int height ,
 void write2DImage(FILE *file , unsigned char **imageData, int width , int height); 
 void write3DImage(FILE* file, unsigned char*** imageData, int width, int height , int channels);
 
-
+// contained file open function and use IO function for image data read 
+void read2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel); 
+void read3DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel); 
+void write2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel);
+void write3DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel);
 
 // extend image edges 
 void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
 void extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
 
-
-
+// for linear filter
+int aver2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, int widsize);
 
 
 // return a number that indicates color of current pixels 
@@ -172,6 +176,8 @@ unsigned char compBlueforGreenBL(unsigned char** imageData, int row, int col) {
     return result; 
 }
 
+
+
 void read2DImage(FILE *file, unsigned char** imageData, int width, int height ,int BytesPerPixel) {
     for (int row = 0; row < height; row++) {
        fread(imageData[row], sizeof(unsigned char),  width * BytesPerPixel, file);
@@ -201,16 +207,59 @@ void write3DImage(FILE* file, unsigned char*** imageData, int width, int height,
     }
 }
 
+void read2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "rb"))) {
+        cout << "Cannot open file: " << filename<< endl;
+        exit(1);
+    }
+    read2DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void read3DImageFile(char* filename, unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "rb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    read3DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void write2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    write2DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void write3DImageFile(char* filename, unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "rb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    write3DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
 
 void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel,int widsize) {
     for (int row = 0; row < height+2*widsize; row++) {
         for (int col = 0; col < width + 2 * widsize; col++) {
+            //the
             if (row < widsize && col < widsize) {
                 extendedImage[row][col] = imageData[widsize - 1 - row][widsize - 1 - col];
             }
+
             if (row<widsize && col>=width + widsize&& col<width+widsize) {
                 extendedImage[row][col] = imageData[widsize - 1 - row][col]; 
             }
+
             if (row < widsize && col >= widsize + width) {
                 extendedImage[row][col] = imageData[widsize - 1 - row][widsize + 2 * width - 1-col]; 
             }
@@ -218,18 +267,19 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
                 extendedImage[row][col] = imageData[row][widsize-1-col]; 
             }
             if (row >= widsize && row < widsize + height && col >= widsize && col < widsize + width) {
-            
+                extendedImage[row][col] = imageData[row-widsize][col-widsize]; 
             }
             if (row >= widsize && row < widsize + height && col >= widsize+width&&col<widsize*2+width) {
-            
+                extendedImage[row][col] = imageData[row][widsize + 2 * width - 1 - col]; 
             }
             if (row >= widsize + height && row < widsize * 2 + height && col < widsize) {
-            
+                extendedImage[row][col] = imageData[2 * height + widsize - 1 - row][widsize - 1 - col]; 
             }
             if (row >= widsize + height && row < widsize * 2 + height && col >= widsize && col < widsize + width) {
-            
+                extendedImage[row][col] = imageData[2*height+widsize-1-row][col]; 
             }
             if (row >= widsize + height && row < widsize * 2 + height && col >= widsize + width && col < widsize * 2 + width) {
+                extendedImage[row][col] = imageData[2 * height + widsize - 1 - row][2 * width + widsize - 1 - col]; 
             }
 
 
@@ -260,10 +310,10 @@ unsigned char *** alloc3DImage(int width, int height, int BytePerPixel) {
     return imageData; 
 }
 
-int dip_init(int argc , char *argv[] ) {
+int dip_init(int argc , char *argv[],int *height, int *width ,int *BytePerPixel ) {
     // Define file pointer and variables
     FILE* file;
-//    const  int BytesPerPixel;
+//  const  int BytesPerPixel;
     const  int Size = 256;
     int rows;
     int cols;
@@ -285,6 +335,8 @@ int dip_init(int argc , char *argv[] ) {
         // Check if size is specified
         if (argc >= 5) {
        //     Size = atoi(argv[4]);
+            *width = atoi(argv[4]); 
+            *height = atoi(argv[5]); 
         }
     }
 
@@ -315,13 +367,35 @@ int dip_init(int argc , char *argv[] ) {
 }
 
 double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int width ,int height, int BytesPerPixel) {
-    double result;  
-
-    
+    double result = 0.0;  
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            
+        }
+    }
+        return result; 
 }
 
 double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, int width , int height , int BytesPerPixel) {
-
-
+    double result = 0.0; 
+    return result; 
 }
 
+int aver2DImage(unsigned char **imageData ,int row ,int col , int BytesPerPixel , int widsize) {
+    double average;
+    double sum = 0.0; 
+    int result; 
+    int startx = row - widsize / 2; 
+    int endx = row + widsize / 2; 
+    int starty = col - widsize / 2; 
+    int endy = col + widsize / 2; 
+    for (int i = startx; i <= endx; i++) {
+        for (int j = starty; j <= endy; j++) {
+            sum += imageData[i][j]; 
+        }
+    }
+    int total = (endx - startx + 1) * (endx - startx + 1); 
+    average = sum/total; 
+    return (int)average; 
+
+}
