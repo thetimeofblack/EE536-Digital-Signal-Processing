@@ -79,58 +79,7 @@ void testHeaderIncluded(){
 }
 
 
-// if the input image only contains one pixel, this will return null ;  
-// the copied image obeys the reflection rule
-void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage,  int width , int height , int BytePerPixel){
-    int extendedWidth = width +4 ; 
-    int extendedHeight = height+4; 
-    for (int row=0 ;row<extendedHeight;row++){
-        for (int col = 0; col < extendedWidth; col++) {
-            //assign space for columns 
 
-            if (row == 0) {
-                extendedImage[0][0] = imageData[1][1];
-                extendedImage[0][1] = imageData[0][1];
-                extendedImage[0][width + 2] = imageData[0][width - 2];
-                extendedImage[0][width + 3] = imageData[0][width - 1];
-                for (int col = 2; col < extendedWidth - 2; col++) {
-                    extendedImage[0][col] = imageData[1][col - 2];
-                }
-            }
-
-            if (row == 1) {
-                extendedImage[1][0] = imageData[1][1];
-                extendedImage[1][1] = imageData[0][1];
-                extendedImage[1][width + 2] = imageData[0][width - 2];
-                extendedImage[1][width + 3] = imageData[0][width - 1];
-                for (int col = 2; col < extendedWidth - 2; col++) {
-                    extendedImage[1][col] = imageData[0][col - 2];
-                }
-            }
-
-            if (row == extendedHeight - 1) {
-                extendedImage[extendedHeight - 1][0] = imageData[height - 1][1];
-                extendedImage[extendedHeight - 1][1] = imageData[height - 1][0];
-            }
-
-            if (row == extendedHeight - 2) {
-
-            }
-            if (row>=2&&col == 0&&row<extendedHeight-2) {
-
-            }
-            if (col == 1&& row>=2&&row<extendedHeight-2) {
-
-            }
-
-
-
-        }
-       
-    }
-
-
-}
 
 
 unsigned char compRedForGreenBL(unsigned char **imageData, int row, int col) {
@@ -404,3 +353,81 @@ int aver2DImage(unsigned char **imageData ,int row ,int col , int BytesPerPixel 
     return (int)average; 
 
 }
+
+int delete2DImage(unsigned char ** imageData, int width, int height, int BytesPerPixe) {
+    for (int row = 0; row < height; row++) {
+        delete[] imageData[row]; 
+    }
+    delete imageData; 
+    return 1; 
+}
+
+int delete3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixe) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            delete[] imageData[row][col];
+        }
+        delete[] imageData[row]; 
+    }
+    delete[] imageData; 
+    return 1; 
+}
+
+
+
+
+/*
+// if the input image only contains one pixel, this will return null ;  
+// the copied image obeys the reflection rule
+void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel) {
+    int extendedWidth = width + 4;
+    int extendedHeight = height + 4;
+    for (int row = 0; row < extendedHeight; row++) {
+        for (int col = 0; col < extendedWidth; col++) {
+            //assign space for columns 
+
+            if (row == 0) {
+                extendedImage[0][0] = imageData[1][1];
+                extendedImage[0][1] = imageData[0][1];
+                extendedImage[0][width + 2] = imageData[0][width - 2];
+                extendedImage[0][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[0][col] = imageData[1][col - 2];
+                }
+            }
+
+            if (row == 1) {
+                extendedImage[1][0] = imageData[1][1];
+                extendedImage[1][1] = imageData[0][1];
+                extendedImage[1][width + 2] = imageData[0][width - 2];
+                extendedImage[1][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[1][col] = imageData[0][col - 2];
+                }
+            }
+
+            if (row == extendedHeight - 1) {
+                extendedImage[extendedHeight - 1][0] = imageData[height - 1][1];
+                extendedImage[extendedHeight - 1][1] = imageData[height - 1][0];
+            }
+
+            if (row == extendedHeight - 2) {
+
+            }
+            if (row >= 2 && col == 0 && row < extendedHeight - 2) {
+
+            }
+            if (col == 1 && row >= 2 && row < extendedHeight - 2) {
+
+            }
+
+
+
+       }
+//
+//   }
+//
+//
+//}
+
+*/

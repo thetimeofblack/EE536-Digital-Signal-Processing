@@ -1,9 +1,8 @@
 #include"dipHeader.h"
 
 void testExtendEdgeFunction(unsigned char** imageData , unsigned char** extendedData, int width , int height) {
-	for (int row = 0; row < height; row++) {
-	
-	}
+	extend2DImageEdge(imageData, extendedData, width ,height, 1 );
+
 }
 
 double computeGaussWeight(unsigned char **imageData, int row,int col,int i,int j) {
@@ -39,6 +38,10 @@ int main(int argc, char* argv[]) {
 			height = atoi(argv[5]);
 		}
 	}
+	unsigned char** imageData; 
+	unsigned char** extendedData; 
+	unsigned char** resultData; 
+
 
 	return 0;
 	
