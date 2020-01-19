@@ -1,7 +1,7 @@
 #include"dipHeader.h"
 
-void testExtendEdgeFunction(unsigned char** imageData , unsigned char** extendedData, int width , int height) {
-	extend2DImageEdge(imageData, extendedData, width ,height, 1 );
+void testExtendEdgeFunction(unsigned char** imageData , unsigned char** extendedData, int width , int height,int widsize) {
+	extend2DImageEdge(imageData, extendedData, width ,height, 1 ,widsize);
 
 }
 
@@ -38,11 +38,15 @@ int main(int argc, char* argv[]) {
 			height = atoi(argv[5]);
 		}
 	}
+	int widsize = 9; 
 	unsigned char** imageData; 
 	unsigned char** extendedData; 
 	unsigned char** resultData; 
-
-
+	imageData = alloc2DImage(width , height ,1);
+	extendedData = alloc2DImage(width+2*widsize,height+2*widsize, 1); 
+	read2DImageFile(argv[1], imageData, width, height, 1); 
+	extend2DImageEdge(imageData, extendedData, width, height, 1,widsize); 
+	write2DImageFile(argv[2], extendedData, width+2*widsize, height+2*widsize, 1); 
 	return 0;
 	
 }

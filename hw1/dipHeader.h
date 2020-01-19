@@ -47,8 +47,8 @@ void write2DImageFile(char* filename, unsigned char** imageData, int width, int 
 void write3DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel);
 
 // extend image edges 
-void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
-void extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel); 
+void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel,int widsize); 
+void extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel, int widsize); 
 
 // for linear filter
 int aver2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, int widsize);
@@ -210,27 +210,27 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
                 extendedImage[row][col] = imageData[widsize - 1 - row][widsize - 1 - col];
             }
 
-            if (row<widsize && col>=width + widsize&& col<width+widsize) {
-                extendedImage[row][col] = imageData[widsize - 1 - row][col]; 
+            if (row<widsize && col>= widsize&& col<width+widsize) {
+                extendedImage[row][col] = imageData[widsize - 1 - row][col-widsize]; 
             }
 
             if (row < widsize && col >= widsize + width) {
                 extendedImage[row][col] = imageData[widsize - 1 - row][widsize + 2 * width - 1-col]; 
             }
             if (row >= widsize && row < widsize + height && col < widsize) {
-                extendedImage[row][col] = imageData[row][widsize-1-col]; 
+                extendedImage[row][col] = imageData[row-widsize][widsize-1-col]; 
             }
             if (row >= widsize && row < widsize + height && col >= widsize && col < widsize + width) {
                 extendedImage[row][col] = imageData[row-widsize][col-widsize]; 
             }
             if (row >= widsize && row < widsize + height && col >= widsize+width&&col<widsize*2+width) {
-                extendedImage[row][col] = imageData[row][widsize + 2 * width - 1 - col]; 
+                extendedImage[row][col] = imageData[row-widsize][widsize + 2 * width - 1 - col]; 
             }
             if (row >= widsize + height && row < widsize * 2 + height && col < widsize) {
                 extendedImage[row][col] = imageData[2 * height + widsize - 1 - row][widsize - 1 - col]; 
             }
             if (row >= widsize + height && row < widsize * 2 + height && col >= widsize && col < widsize + width) {
-                extendedImage[row][col] = imageData[2*height+widsize-1-row][col]; 
+                extendedImage[row][col] = imageData[2*height+widsize-1-row][col-widsize]; 
             }
             if (row >= widsize + height && row < widsize * 2 + height && col >= widsize + width && col < widsize * 2 + width) {
                 extendedImage[row][col] = imageData[2 * height + widsize - 1 - row][2 * width + widsize - 1 - col]; 
@@ -241,6 +241,46 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
     
     }
 
+}
+
+void extend3DImageEdge(unsigned char*** imageData, unsigned char*** extendedImage, int width, int height, int BytesPerPixel,int widsize) {
+    for (int row = 0; row < height + 2 * widsize; row++) {
+        for (int col = 0; col < width + 2 * widsize; col++) {
+            for (int cor = 0; cor < BytesPerPixel; cor++) {
+                if (row < widsize && col < widsize) {
+                    extendedImage[row][col][cor] = imageData[widsize - 1 - row][widsize - 1 - col][cor];
+                }
+
+                if (row < widsize && col >= width + widsize && col < width + 2*widsize) {
+                    extendedImage[row][col][cor] = imageData[widsize - 1 - row][col][cor];
+                }
+
+                if (row < widsize && col >= widsize + width) {
+                    extendedImage[row][col][cor] = imageData[widsize - 1 - row][widsize + 2 * width - 1 - col][cor];
+                }
+                if (row >= widsize && row < widsize + height && col < widsize) {
+                    extendedImage[row][col][cor] = imageData[row][widsize - 1 - col][cor];
+                }
+                if (row >= widsize && row < widsize + height && col >= widsize && col < widsize + width) {
+                    extendedImage[row][col][cor] = imageData[row - widsize][col - widsize][cor];
+                }
+                if (row >= widsize && row < widsize + height && col >= widsize + width && col < widsize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[row][widsize + 2 * width - 1 - col][cor];
+                }
+                if (row >= widsize + height && row < widsize * 2 + height && col < widsize) {
+                    extendedImage[row][col][cor] = imageData[2 * height + widsize - 1 - row][widsize - 1 - col][cor];
+                }
+                if (row >= widsize + height && row < widsize * 2 + height && col >= widsize && col < widsize + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + widsize - 1 - row][col][cor];
+                }
+                if (row >= widsize + height && row < widsize * 2 + height && col >= widsize + width && col < widsize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + widsize - 1 - row][2 * width + widsize - 1 - col][cor];
+                }
+
+            }
+        }
+
+    }
 }
 
 unsigned char** alloc2DImage(int width, int height, int BytePerPixel) {
@@ -335,6 +375,7 @@ double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, in
     return result; 
 }
 
+
 int aver2DImage(unsigned char **imageData ,int row ,int col , int BytesPerPixel , int widsize) {
     double average;
     double sum = 0.0; 
@@ -351,8 +392,8 @@ int aver2DImage(unsigned char **imageData ,int row ,int col , int BytesPerPixel 
     int total = (endx - startx + 1) * (endx - startx + 1); 
     average = sum/total; 
     return (int)average; 
-
 }
+
 
 int delete2DImage(unsigned char ** imageData, int width, int height, int BytesPerPixe) {
     for (int row = 0; row < height; row++) {
@@ -361,6 +402,7 @@ int delete2DImage(unsigned char ** imageData, int width, int height, int BytesPe
     delete imageData; 
     return 1; 
 }
+
 
 int delete3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixe) {
     for (int row = 0; row < height; row++) {
