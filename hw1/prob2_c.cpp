@@ -1,52 +1,71 @@
 #include"dipHeader.h"
 
-void GaussWeightedPixel(unsigned char** imageData, int row, int col, int i, int j, int BytesPerPixel){
-		
+
+void testGaussOutput() {
+	double result1;
+	const double pi = 3.1415926535897;
+	result1 = (1 / (2 * sqrt(2 * pi))) * exp(-0.01);
+	double exp2 = exp(0); 
+	cout << result1 << endl;
+	cout << exp2 << endl;
 }
 
-
-double GaussCoefficients(int n1, int n2 , double stanDevia) {
-	double result;
-	const double pi = 3.1415926535897;
-	double sumsquare = n1 ^ 2 + n2 ^ 2; 
-	result = 1 / ((sqrt(2 * pi)) * stanDevia) * exp((-1) * (sumsquare / (2*stanDevia^2))); 
-	return result; 
-}
-
-
-double GaussWeightedEuclidianDistance(unsigned char** imageData, int row, int col, int i, int j) {
-	const double pi = 3.1415926535897;
-	int rpx = row - i;
-	int rpy = col-j;
-	double result; 
-	double squaresum = rpx ^ 2 + rpy ^ 2; 
-	result = 1 / sqrt(2 * pi)*exp(-(squaresum)); 
+void compPoint2PointGW(unsigned char** imageData, int row, int col, int i, int j, int BytesPerPixel){
 	
 }
 
 
+double NLM_Coeffcient(unsigned char** imageData, int width, int height, int BytesPerPixel, int row, int col, int i, int j, int widwidth, int widheight, int hparm) {
+	double result; 
+	result = exp((-1) * EuclidianDistanceArea2Area(imageData, row, col, i, j, widwidth, widheight) / pow(hparm, 2));
+	return 	result; 
+}
 
-void NLM_filtering(unsigned char** ImageData, unsigned char** filteredData , int width, int height, int BytesPerPixel) {
-	for (int row = 0; row < height; row++) {
-		for(int col = 0; col<width ; col++){
-						
+double GaussianKernel(int n1, int n2 , double stdev) {
+	double result;
+	const double pi = 3.1415926535897;
+	double sumsquare = pow(n1,2) + pow(n2,2); 
+	result = 1 / ((sqrt(2 * pi)) * stdev) * exp((-1) * (sumsquare / (2*pow(stdev,2)))); 
+	return result; 
+}
+
+
+double EuclidianDistanceArea2Area(unsigned char** imageData, int row, int col, int i, int j ,int widwidth , int widheight) {
+	const double pi = 3.1415926535897;
+	double result = 0 ; 
+	for (int k = -widwidth/2; k <= widwidth/2; k++) {
+		for (int l = -widheight / 2; l <= widheight / 2; l++) {
+			result += GaussianKernel(abs(k), abs(l), 1) * pow(imageData[row - k][col - l] - imageData[i - k][j - l], 2); 
 		}
 	}
+	return result; 
 }
 
-double compPixelByWindow(unsigned char** imageData,  int row, int col, int i, int j, int BytesPerPixel, int widwidth, int widheight) {
 
+
+
+
+double compPixelByArea(unsigned char** imageData,  int row, int col, int i, int j, int BytesPerPixel, int widwidth, int widheight) {
+	double result = 0 ; 
+	return result; 
 }
 
-double computeNLMPixel(unsigned char** imageData, unsigned char** filteredImageData, int row, int col, int BytesPerPixel, int widwidth, int widheight) {
+double computeNLMPixel(unsigned char** imageData,  int row, int col, int BytesPerPixel, int widwidth, int widheight) {
 	double result;
 	for (int i = row-widheight/2; i <= row+widheight/2; i++) {
 		for (int j = col-widwidth/2; j <= col+widwidth/2; j++) {
-			result = compPixelByWindow( imageData,row,col ,i , j , BytesPerPixel,  widwidth ,widheight); 
+			result = compPixelByArea( imageData,row,col ,i , j , BytesPerPixel,  widwidth ,widheight); 
 		}
 	}
-
 	return result;
+}
+
+void NLM_filtering(unsigned char** imageData, unsigned char** filteredData, int width, int height, int BytesPerPixel,int edgesize ,int widwidth, int widheight) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			filteredData[row][col] = computeNLMPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel,widwidth, widheight );
+		}
+	}
 }
 
 int main(int argc , char *argv[]) {
@@ -74,16 +93,18 @@ int main(int argc , char *argv[]) {
 	}
 	int edgesize = 3; 
 	int widsize = 3; 
+	int widwidth;
+	int widheight;
 	unsigned char** imageData; 
 	unsigned char** filteredImageData; 
-	unsigned char** extendedData;
-	extend2DImageEdge(imageData, extendedData, width, height, BytesPerPixel, edgesize); 
-	imageData = alloc2DImage(width, height, BytesPerPixel); 
-	extendedData = alloc2DImage(width + 2 * widsize, height + 2 * widsize, 1); 
-	filteredImageData = alloc2DImage(width, height, BytesPerPixel); 
-
+	unsigned char** extendedImageData;
+	imageData = alloc2DImage(width, height, BytesPerPixel);
+	extendedImageData = alloc2DImage(width + 2 * widsize, height + 2 * widsize, 1);
+	filteredImageData = alloc2DImage(width, height, BytesPerPixel);
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel ); 
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
 
+	testGaussOutput();
 	write2DImageFile(argv[2], filteredImageData, width, height, BytesPerPixel); 
 	
 

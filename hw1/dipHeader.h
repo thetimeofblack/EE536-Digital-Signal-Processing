@@ -33,7 +33,7 @@ unsigned char** alloc2DImage( int width , int height, int BytePerPixel);
 unsigned char*** alloc3DImage(int width, int height, int BytePerPixel); 
 unsigned char* alloc1DArray(int len); 
 unsigned char** alloc2DArray(int rows, int cols); 
-unsigned char*** alloc3DArray(int rows, int cols, int cors); 
+unsigned char*** alloc3DArray(int rows, int cols, int deps); 
 double* alloc1DArrayDouble(int len); 
 double** alloc2DArrayDouble(int rows, int cols); 
 double*** alloc3DArrayDouble(int rows, int cols, int deps); 
@@ -330,13 +330,13 @@ unsigned char** alloc2DArray(int rows, int cols) {
 
 }
 
-unsigned char*** alloc3DArray(int rows, int cols , int cors) {
+unsigned char*** alloc3DArray(int rows, int cols , int deps) {
     unsigned char*** arr;
     arr = new unsigned char** [rows];
     for (int row = 0; row < rows; row++) {
         arr[row] = new unsigned char*[cols];
         for (int col = 0; col < cols; col++) {
-            arr[row][col] = new unsigned char[cors]; 
+            arr[row][col] = new unsigned char[deps]; 
         }
     }
     return arr;
@@ -438,10 +438,10 @@ double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int 
 
 double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, int width , int height , int BytesPerPixel) {
     double result = 0.0; 
-    double sum = alloc1DArray(3);
+    double *sum = alloc1DArrayDouble(3);
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
-            sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]);
+            sum[0] += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]);
         }
     }
 

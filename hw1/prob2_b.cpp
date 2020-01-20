@@ -6,8 +6,8 @@ void testExtendEdgeFunction(unsigned char** imageData , unsigned char** extended
 
 double computeGaussWeight(unsigned char **imageData, int row,int col,int i,int j, double cigmaC, double cigmaS) {
 	double result ; 
-	double indexl2 = (row - i) ^ 2 + (col - j) ^ 2; 
-	double pixell2 = (imageData[row][col] - imageData[i][j]) ^ 2; 
+	double indexl2 = pow((row - i), 2) + pow((col - j) , 2); 
+	double pixell2 = pow((imageData[row][col] - imageData[i][j]),2); 
 	result = exp(0 - indexl2 / 2 / (cigmaC * cigmaC) - pixell2/2/(cigmaS*cigmaS)); 
 	return result;
 }
@@ -30,7 +30,7 @@ int computeBilateralFilteredPixel(unsigned char** imageData, int row, int col,in
 void bilateral_filtering(unsigned char** imageData, unsigned char** filteredImageData, int width, int height,int BytesPerPixel, int widsize , double cigmaC , double cigmaS) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			filteredImageData[row][col] = computeBilateralFilteredPixel(imageData, row + widsize, col + widsize, 1, widsize, cigmaC, cigmaS); 
+			filteredImageData[row][col] = computeBilateralFilteredPixel(imageData, row + widsize, col + widsize, BytesPerPixel, widsize, cigmaC, cigmaS); 
 		}
 	}
 }
