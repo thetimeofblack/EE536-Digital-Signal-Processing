@@ -52,30 +52,36 @@ void transferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsi
 	}
 }
 
-
-void cumulativeProbabilityBasedHistogramEqualization(unsigned char*** imageData, unsigned char equalizedData, int width, int height, int BytesPerPixel) {
-	const int MAX_INTENSITY = 255;
-	int* histogramR = new int[256];
-	int* sumHistogramR = new int[256];
-	int* histogramG = new int[256];
-	int* sumHistogramG = new int[256];
-	int* histogramB = new int[256];
-	int* sumHistogramB = new int[256];
-	int* pdfR = new int[256]; 
-	int* pdfG = new int[256];
-	int* pdfB = new int[256]; 
-	int* cdfR = new int[256];
-	int* cdfG = new int[256];
-	int* cdfB = new int[256];
-	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0);
-	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 1);
-	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 2);
-	for (int i = 0; i < 256; i++) {
-		sumHistogramR[i] += histogramR[i];
-		sumHistogramG[i] += histogramG[i];
-		sumHistogramB[i] += histogramB[i];
+void pdfPixelCountByChannel(unsigned char*** imageData, double* pdf, int row, int col, int width, int height, int channel) {
+	int pixelCount = row * width + col + 1; 
+	for (int i = 0; i <= row; i++) {
+		for (int j = 0; j <= col; j++) {
+			pdf[imageData[i][j][channel]]+= 1/pixelCount ; 
+		}
 	}
-	const int totalPixels = height * width; 
+}
+
+double sumPdfByPixel(unsigned char*** imageData,int PixelValue,  double* pdf, double * cdf, int row, int col, int width, int height, int channel) {
+	double result = 0; 
+	for (int i = 0; i <= PixelValue; i++) {
+		result += pdf[i]; 
+	}
+	return result;
+}
+
+void cumulativeProbabilityBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
+	const int MAX_INTENSITY = 255;
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			double* tempPdfR = new double[256];
+			double* tempPdfG = new double[256];
+			double* tempPdfB = new double[256];
+			pdfPixelCountByChannel(imageData, tempPdfR, row, col, width, height, 0); 
+			pdfPixelCountByChannel(imageData, tempPdfG, row, col, width, height, 1);
+			pdfPixelCountByChannel(imageData, tempPdfB, row, col, width, height, 2);
+
+		}
+	}
 
 
 }
