@@ -29,8 +29,8 @@ int median2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel
 
 
 void linear_filter(unsigned char** imageData, unsigned char** targetImage, int width, int height, int BytesPerPixel , int widsize) {
-	for (int row = widsize; row < height-widsize; row++) {
-		for (int col = widsize; col < width-widsize; col++) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
 			targetImage[row][col] = (unsigned char)aver2DImage(imageData, row+widsize , col+widsize ,1,  widsize);
 		}
 	}

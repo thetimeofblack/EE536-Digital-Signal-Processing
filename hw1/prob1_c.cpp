@@ -28,12 +28,16 @@ void writeHistDataFile(char* filename, int histData[256]) {
 
 void transferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
 	const int MAX_INTENSITY = 255; 
+	int totalpixel = width * height; 
 	int* histogramR = new int[256]; 
 	int* sumHistogramR = new int[256]; 
 	int* histogramG = new int[256];
 	int* sumHistogramG = new int[256];
 	int* histogramB = new int[256];
 	int* sumHistogramB = new int[256];
+	memset(sumHistogramR, 0, 256 * sizeof(int));
+	memset(sumHistogramG, 0, 256 * sizeof(int));
+	memset(sumHistogramB, 0, 256 * sizeof(int));
 	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0); 
 	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 1);
 	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 2);
@@ -44,44 +48,46 @@ void transferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsi
 	}
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			int pixelCount = row * width + col+1; 
-			equalizedData[row][col][0] = sumHistogramR[imageData[row][col][0]] * MAX_INTENSITY / pixelCount; 
-			equalizedData[row][col][1] = sumHistogramG[imageData[row][col][1]] * MAX_INTENSITY / pixelCount;
-			equalizedData[row][col][2] = sumHistogramB[imageData[row][col][2]] * MAX_INTENSITY / pixelCount;
+			equalizedData[row][col][0] = sumHistogramR[imageData[row][col][0]] * MAX_INTENSITY / totalpixel; 
+			equalizedData[row][col][1] = sumHistogramG[imageData[row][col][1]] * MAX_INTENSITY / totalpixel;
+			equalizedData[row][col][2] = sumHistogramB[imageData[row][col][2]] * MAX_INTENSITY / totalpixel;
 		}
 	}
 }
 
-void pdfPixelCountByChannel(unsigned char*** imageData, double* pdf, int row, int col, int width, int height, int channel) {
-	int pixelCount = row * width + col + 1; 
-	for (int i = 0; i <= row; i++) {
-		for (int j = 0; j <= col; j++) {
-			pdf[imageData[i][j][channel]]+= 1/pixelCount ; 
-		}
-	}
-}
-
-double sumPdfByPixel(unsigned char*** imageData,int PixelValue,  double* pdf, double * cdf, int row, int col, int width, int height, int channel) {
-	double result = 0; 
-	for (int i = 0; i <= PixelValue; i++) {
-		result += pdf[i]; 
-	}
-	return result;
-}
 
 void cumulativeProbabilityBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
 	const int MAX_INTENSITY = 255;
+	int totalpixels = width * height; 
+	int* histogramR = new int[256];
+	int* histogramG = new int[256];
+	int* histogramB = new int[256];
+	int* transformArrayR = new int[256];
+	int* transformArrayG = new int[256];
+	int* transformArrayB = new int[256];
+	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0); 
+	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 0);
+	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 0);
+	int currR = 0;
+	int currG = 0;
+	int currB = 0;
+	for (int i = 0; i < 256; i++) {
+		currR += histogramR[i];
+		currG += histogramG[i];
+		currB += histogramB[i];
+		transformArrayR[i] = round((((float)currR) * 255) / totalpixels);
+		transformArrayG[i] = round((((float)currG) * 255) / totalpixels);
+		transformArrayB[i] = round((((float)currB) * 255) / totalpixels);
+	}
+	
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			double* tempPdfR = new double[256];
-			double* tempPdfG = new double[256];
-			double* tempPdfB = new double[256];
-			pdfPixelCountByChannel(imageData, tempPdfR, row, col, width, height, 0); 
-			pdfPixelCountByChannel(imageData, tempPdfG, row, col, width, height, 1);
-			pdfPixelCountByChannel(imageData, tempPdfB, row, col, width, height, 2);
-
+			equalizedData[row][col][0] = transformArrayR[imageData[row][col][0]]; 
+			equalizedData[row][col][1] = transformArrayG[imageData[row][col][1]];
+			equalizedData[row][col][2] = transformArrayB[imageData[row][col][2]];
 		}
 	}
+	
 
 
 }
@@ -96,7 +102,8 @@ int main(int argc, char* argv[]) {
 	int cols = 256;
 	int width = 256;
 	int height = 256;
-	// method A is 0  method B is 1 
+	// method A transfer function based  is 0  
+	// method B cumulative probability distribution function based is 1 
 	int method = 0;  
 	if (argc < 3) {
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
@@ -118,13 +125,16 @@ int main(int argc, char* argv[]) {
 		}
 	}
 	unsigned char*** imageData; 
-	unsigned char*** extendedImageData; 
 	unsigned char*** equalizedImageData; 
 	imageData = alloc3DImage(width, height, BytesPerPixel); 
-	extendedImageData = alloc3DImage(width, height, BytesPerPixel); 
 	equalizedImageData = alloc3DImage(width, height, BytesPerPixel);
 	read3DImageFile(argv[1],imageData, width ,height, BytesPerPixel);
-
+	if (method == 0) {
+		cumulativeProbabilityBasedHistogramEqualization(imageData, equalizedImageData, width, height, BytesPerPixel); 
+	}
+	else{
+		transferFunctionBasedHistogramEqualization(imageData,equalizedImageData,width,height,BytesPerPixel);
+	}
 
 	write3DImageFile(argv[2], equalizedImageData,width,height, BytesPerPixel); 
 	return 0;
