@@ -141,10 +141,11 @@
     <ClInclude Include="..\dipHeader.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\prob2_b.cpp" />
+    <None Include="..\HW1_images\Corn_noisy.raw" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\HW1_images\Corn_noisy.raw" />
+    <ClCompile Include="..\prob2_b.cpp" />
+    <ClCompile Include="..\prob2_c.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

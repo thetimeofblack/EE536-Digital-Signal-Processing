@@ -17,6 +17,8 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<cmath>
+#include<math.h>
+#define _USE_MATH_DEFINES
 using namespace std; 
 
 // Initialize system for argument input 
@@ -25,9 +27,16 @@ void dip_init();
 // print image error information 
 void print_image_info();
 
+
 // Allocate memory for image
 unsigned char** alloc2DImage( int width , int height, int BytePerPixel);
 unsigned char*** alloc3DImage(int width, int height, int BytePerPixel); 
+unsigned char* alloc1DArray(int len); 
+unsigned char** alloc2DArray(int rows, int cols); 
+unsigned char*** alloc3DArray(int rows, int cols, int cors); 
+double* alloc1DArrayDouble(int len); 
+double** alloc2DArrayDouble(int rows, int cols); 
+double*** alloc3DArrayDouble(int rows, int cols, int deps); 
 
 // Delete memory for image 
 int delete2DImage(int width, int height, int BytesPerPixe); 
@@ -305,6 +314,60 @@ unsigned char *** alloc3DImage(int width, int height, int BytePerPixel) {
     return imageData; 
 }
 
+unsigned char* alloc1DArray(int len) {
+    unsigned char* arr;
+    arr = new unsigned char [len]; 
+    return arr; 
+}
+
+unsigned char** alloc2DArray(int rows, int cols) {
+    unsigned char** arr; 
+    arr = new unsigned char* [rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new unsigned char[cols]; 
+    }
+    return arr; 
+
+}
+
+unsigned char*** alloc3DArray(int rows, int cols , int cors) {
+    unsigned char*** arr;
+    arr = new unsigned char** [rows];
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new unsigned char*[cols];
+        for (int col = 0; col < cols; col++) {
+            arr[row][col] = new unsigned char[cors]; 
+        }
+    }
+    return arr;
+
+}
+
+double* alloc1DArrayDouble(int len) {
+    double* arr; 
+    arr = new double[len]; 
+    return arr;
+}
+double** alloc2DArrayDouble(int rows, int cols) {
+    double** arr; 
+    arr = new double*[rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new double[cols]; 
+    }
+    return arr; 
+}
+
+double*** alloc3DArrayDouble(int rows, int cols, int deps) {
+    double*** arr; 
+    arr = new double** [rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new double* [cols]; 
+        for (int col = 0; col < cols; col++) {
+            arr[row][col] = new double[deps];
+        }
+    }
+    return arr; 
+}
 int dip_init(int argc , char *argv[],int *height, int *width ,int *BytePerPixel ) {
     // Define file pointer and variables
     FILE* file;
@@ -363,16 +426,25 @@ int dip_init(int argc , char *argv[],int *height, int *width ,int *BytePerPixel 
 
 double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int width ,int height, int BytesPerPixel) {
     double result = 0.0;  
+    double sum = 0;  
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
-            
+            sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]); 
         }
     }
+    result = sum / (width * height); 
         return result; 
 }
 
 double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, int width , int height , int BytesPerPixel) {
     double result = 0.0; 
+    double sum = alloc1DArray(3);
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]);
+        }
+    }
+
     return result; 
 }
 
