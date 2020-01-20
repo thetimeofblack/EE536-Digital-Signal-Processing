@@ -1,6 +1,86 @@
 #include "dipHeader.h"
 #include <bitset>
 
+void histogramCountByChannel(unsigned char*** imageData, int* histcount ,  int width, int height, int BytesPerPixel , int channel) {
+	memset(histcount, 0, 256 * sizeof(int)); 
+	for (int row = 0; row < height; row++){
+		for (int col = 0; col < width; col++) {
+			histcount[imageData[row][col][channel]] += 1; 
+		}
+	}
+}
+
+
+void writeHistDataFile(char* filename, int histData[256]) {
+	FILE* file;
+	file = fopen(filename, "w");
+	if (file != NULL){
+		for (int i = 0; i < 256; i++){
+			fprintf(file, "%d\t%u\n", i, histData[i]);
+		}
+		fclose(file);
+		//cout << "File " << fileName << " written successfully !!!" << endl;
+	}
+	else{
+		cout << "Cannot open file " << filename << endl;
+	}
+}
+
+void transferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
+	const int MAX_INTENSITY = 255; 
+	int* histogramR = new int[256]; 
+	int* sumHistogramR = new int[256]; 
+	int* histogramG = new int[256];
+	int* sumHistogramG = new int[256];
+	int* histogramB = new int[256];
+	int* sumHistogramB = new int[256];
+	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0); 
+	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 1);
+	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 2);
+	for (int i = 0; i < 256; i++) {
+		sumHistogramR[i] += histogramR[i]; 
+		sumHistogramG[i] += histogramG[i]; 
+		sumHistogramB[i] += histogramB[i]; 
+	}
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			int pixelCount = row * width + col+1; 
+			equalizedData[row][col][0] = sumHistogramR[imageData[row][col][0]] * MAX_INTENSITY / pixelCount; 
+			equalizedData[row][col][1] = sumHistogramG[imageData[row][col][1]] * MAX_INTENSITY / pixelCount;
+			equalizedData[row][col][2] = sumHistogramB[imageData[row][col][2]] * MAX_INTENSITY / pixelCount;
+		}
+	}
+}
+
+
+void cumulativeProbabilityBasedHistogramEqualization(unsigned char*** imageData, unsigned char equalizedData, int width, int height, int BytesPerPixel) {
+	const int MAX_INTENSITY = 255;
+	int* histogramR = new int[256];
+	int* sumHistogramR = new int[256];
+	int* histogramG = new int[256];
+	int* sumHistogramG = new int[256];
+	int* histogramB = new int[256];
+	int* sumHistogramB = new int[256];
+	int* pdfR = new int[256]; 
+	int* pdfG = new int[256];
+	int* pdfB = new int[256]; 
+	int* cdfR = new int[256];
+	int* cdfG = new int[256];
+	int* cdfB = new int[256];
+	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0);
+	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 1);
+	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 2);
+	for (int i = 0; i < 256; i++) {
+		sumHistogramR[i] += histogramR[i];
+		sumHistogramG[i] += histogramG[i];
+		sumHistogramB[i] += histogramB[i];
+	}
+	const int totalPixels = height * width; 
+
+
+}
+
+
 int main(int argc, char* argv[]) {
 	// Define file pointer and variables
 	FILE* file;
@@ -10,7 +90,8 @@ int main(int argc, char* argv[]) {
 	int cols = 256;
 	int width = 256;
 	int height = 256;
-
+	// method A is 0  method B is 1 
+	int method = 0;  
 	if (argc < 3) {
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
 		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
@@ -27,87 +108,18 @@ int main(int argc, char* argv[]) {
 		if (argc >= 5) {
 			width = atoi(argv[4]);
 			height = atoi(argv[5]);
+			method = atoi(argv[6]); 
 		}
 	}
-	rows = height;
-	cols = width;
-
-// allocate memory for arrays 
-	unsigned char** imageData;
-	imageData = new unsigned char* [height];
-	for (int row = 0; row < height; row++) {
-		imageData[row] = new unsigned char [width];
-//		for (int col = 0; col < width; col++) {
-//			imageData[row][col] = new unsigned char[BytesPerPixel+1];
-//		}
-	}
-
-//	cout <<bitset<8>( imageData[height - 1][width - 1][0]) << endl;
-	unsigned char*** imageRGBData;
-	imageRGBData = new unsigned char** [height];
-	for (int row = 0; row < height; row++) {
-		imageRGBData[row] = new unsigned char* [width];
-		for (int col = 0; col < width; col++) {
-			imageRGBData[row][col] = new unsigned char[3];
-		}
-	}
-
-	//	imageData[height][width]; 
-		// Read image (filename specified by first argument) into image data matrix
-	if (!(file = fopen(argv[1], "rb"))) {
-		cout << "Cannot open file: " << argv[1] << endl;
-		exit(1);
-	}
-
-	for (int row = 0; row < height; row++) {
-		fread(imageData[row], sizeof(unsigned char), width * BytesPerPixel, file);
-	}
-	fclose(file);
-
-	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
-//  test the i0x771BF94D (ntdll.dll) (hm1.exe 中)处有未经处理的异常: 0xC0000374: 堆已损坏。 (参数: 0x771FB960ndex of picture is or not swapped   	
-	cout<<"***********image info**************"<<endl; 
-	cout<<"  height: " << height<<"    width: "<<width<<endl; 
-	for(int row = 0 ;row<8;row++){
-		for(int col = 0 ; col<width ;col++){
-			cout<<bitset<8>(imageData[row][col])<<" "; 
-		}
-		cout<<endl; 
-	}
+	unsigned char*** imageData; 
+	unsigned char*** extendedImageData; 
+	unsigned char*** equalizedImageData; 
+	imageData = alloc3DImage(width, height, BytesPerPixel); 
+	extendedImageData = alloc3DImage(width, height, BytesPerPixel); 
+	equalizedImageData = alloc3DImage(width, height, BytesPerPixel);
+	read3DImageFile(argv[1],imageData, width ,height, BytesPerPixel);
 
 
-
-
-	if (!(file = fopen(argv[2], "wb"))) {
-		cout << "Cannot open file: " << argv[2] << endl;
-		exit(1);
-	}
-	cout << "***********image info**************" << endl;
-	cout << "  height: " << height << "    width: " << width << endl;
-	for (int row = 0; row < height; row++) {
-		for (int col = 0; col < width; col++) {
-			imageRGBData[row][col][1] = 231; 
-			//cout << bitset<8>(imageRGBData[row][col][1]) << " ";
-		}
-	}
-	for (int row = 0; row < height; row++) {
-		fwrite(imageData[row], sizeof(unsigned char), width, file);
-	}
-	fclose(file);
-	cout << "writing image successfully";
-
-	//	for (int row = 0; row < height; row++) {
-	//		delete[] imageData[row]; 
-	//	}
-	//	delete[] imageData;  
-
-
-	//	for (int row = 0; row < height; row++) {
-	//		for (int col = 0; col < width; col++) {
-	//			delete[] imageRGBData[row][col];
-	//		}
-	//		delete[] imageRGBData[row];
-	//	}
-	//	delete[] imageRGBData;
+	write3DImageFile(argv[2], equalizedImageData,width,height, BytesPerPixel); 
 	return 0;
 }

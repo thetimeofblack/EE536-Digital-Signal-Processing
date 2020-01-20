@@ -144,6 +144,7 @@
     <None Include="..\HW1_images\Corn_noisy.raw" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\prob1_c.cpp" />
     <ClCompile Include="..\prob2_a.cpp" />
     <ClCompile Include="..\prob2_e.cpp" />
   </ItemGroup>

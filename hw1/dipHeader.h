@@ -449,23 +449,7 @@ double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, in
 }
 
 
-int aver2DImage(unsigned char **imageData ,int row ,int col , int BytesPerPixel , int widsize) {
-    double average;
-    double sum = 0.0; 
-    int result; 
-    int startx = row - widsize / 2; 
-    int endx = row + widsize / 2; 
-    int starty = col - widsize / 2; 
-    int endy = col + widsize / 2; 
-    for (int i = startx; i <= endx; i++) {
-        for (int j = starty; j <= endy; j++) {
-            sum += imageData[i][j]; 
-        }
-    }
-    int total = (endx - startx + 1) * (endx - startx + 1); 
-    average = sum/total; 
-    return (int)average; 
-}
+
 
 
 int delete2DImage(unsigned char ** imageData, int width, int height, int BytesPerPixe) {

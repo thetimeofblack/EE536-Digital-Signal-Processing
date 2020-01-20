@@ -1,14 +1,65 @@
-﻿  prob2_c.cpp
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(97,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(99,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(107,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(113,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(120,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(127,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(135,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(137,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(376,9): warning C4101: “rows”: 未引用的局部变量
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(377,9): warning C4101: “cols”: 未引用的局部变量
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(455,9): warning C4101: “result”: 未引用的局部变量
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_c.cpp(67,8): warning C4101: “file”: 未引用的局部变量
-  vs.vcxproj -> D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\vs\Debug\vs.exe
+﻿  prob2_a.cpp
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(97,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(99,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(107,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(113,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(120,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(127,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(135,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(137,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(376,9): warning C4101: “rows”: 未引用的局部变量
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(377,9): warning C4101: “cols”: 未引用的局部变量
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(455,9): warning C4101: “result”: 未引用的局部变量
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_a.cpp(20,25): warning C4244: “初始化”: 从“double”转换到“unsigned int”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_a.cpp(17,6): warning C4101: “total”: 未引用的局部变量
+  prob2_e.cpp
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(97,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(99,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(107,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(113,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(120,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(127,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(135,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(137,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(376,9): warning C4101: “rows”: 未引用的局部变量
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(377,9): warning C4101: “cols”: 未引用的局部变量
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(455,9): warning C4101: “result”: 未引用的局部变量
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_e.cpp(4,8): warning C4101: “file”: 未引用的局部变量
+  正在生成代码...
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_a.cpp(71): warning C4715: “checkProperSyntax”: 不是所有的控件路径都返回值
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_a.cpp(7): warning C4715: “compareMyInt”: 不是所有的控件路径都返回值
+  LINK : 没有找到 C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\vs\Debug\vs.exe 或上一个增量链接没有生成它；正在执行完全链接
+prob2_e.obj : error LNK2005: "unsigned char * __cdecl alloc1DArray(int)" (?alloc1DArray@@YAPAEH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "double * __cdecl alloc1DArrayDouble(int)" (?alloc1DArrayDouble@@YAPANH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char * * __cdecl alloc2DArray(int,int)" (?alloc2DArray@@YAPAPAEHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "double * * __cdecl alloc2DArrayDouble(int,int)" (?alloc2DArrayDouble@@YAPAPANHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char * * __cdecl alloc2DImage(int,int,int)" (?alloc2DImage@@YAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char * * * __cdecl alloc3DArray(int,int,int)" (?alloc3DArray@@YAPAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "double * * * __cdecl alloc3DArrayDouble(int,int,int)" (?alloc3DArrayDouble@@YAPAPAPANHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char * * * __cdecl alloc3DImage(int,int,int)" (?alloc3DImage@@YAPAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "int __cdecl aver2DImage(unsigned char * *,int,int,int,int)" (?aver2DImage@@YAHPAPAEHHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char __cdecl compBlueforGreenBL(unsigned char * *,int,int)" (?compBlueforGreenBL@@YAEPAPAEHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char __cdecl compBlueforRedBL(unsigned char * *,int,int)" (?compBlueforRedBL@@YAEPAPAEHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char __cdecl compGreenforBlueBL(unsigned char * *,int,int)" (?compGreenforBlueBL@@YAEPAPAEHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char __cdecl compGreenforRedBL(unsigned char * *,int,int)" (?compGreenforRedBL@@YAEPAPAEHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char __cdecl compRedForGreenBL(unsigned char * *,int,int)" (?compRedForGreenBL@@YAEPAPAEHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "unsigned char __cdecl compRedforBlueBL(unsigned char * *,int,int)" (?compRedforBlueBL@@YAEPAPAEHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "int __cdecl delete2DImage(unsigned char * *,int,int,int)" (?delete2DImage@@YAHPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "int __cdecl delete3DImage(unsigned char * * *,int,int,int)" (?delete3DImage@@YAHPAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "int __cdecl dip_init(int,char * * const,int *,int *,int *)" (?dip_init@@YAHHQAPADPAH11@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "double __cdecl eval2DImagePSNR(unsigned char * *,unsigned char * *,int,int,int)" (?eval2DImagePSNR@@YANPAPAE0HHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "double __cdecl eval3DImagePSNR(unsigned char * * *,unsigned char * * *,int,int,int)" (?eval3DImagePSNR@@YANPAPAPAE0HHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl extend2DImageEdge(unsigned char * *,unsigned char * *,int,int,int,int)" (?extend2DImageEdge@@YAXPAPAE0HHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl extend3DImageEdge(unsigned char * * *,unsigned char * * *,int,int,int,int)" (?extend3DImageEdge@@YAXPAPAPAE0HHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "int __cdecl judgePixelColor(int,int)" (?judgePixelColor@@YAHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl read2DImage(struct _iobuf *,unsigned char * *,int,int,int)" (?read2DImage@@YAXPAU_iobuf@@PAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl read2DImageFile(char *,unsigned char * *,int,int,int)" (?read2DImageFile@@YAXPADPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl read3DImage(struct _iobuf *,unsigned char * * *,int,int,int)" (?read3DImage@@YAXPAU_iobuf@@PAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl read3DImageFile(char *,unsigned char * * *,int,int,int)" (?read3DImageFile@@YAXPADPAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl testHeaderIncluded(void)" (?testHeaderIncluded@@YAXXZ) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl write2DImage(struct _iobuf *,unsigned char * *,int,int,int)" (?write2DImage@@YAXPAU_iobuf@@PAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl write2DImageFile(char *,unsigned char * *,int,int,int)" (?write2DImageFile@@YAXPADPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl write3DImage(struct _iobuf *,unsigned char * * *,int,int,int)" (?write3DImage@@YAXPAU_iobuf@@PAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: "void __cdecl write3DImageFile(char *,unsigned char * * *,int,int,int)" (?write3DImageFile@@YAXPADPAPAPAEHHH@Z) 已经在 prob2_a.obj 中定义
+prob2_e.obj : error LNK2005: _main 已经在 prob2_a.obj 中定义
+C:\EE 569 Introduction to digital image processing\homework\EE536-Digital-Signal-Processing\hw1\vs\Debug\vs.exe : fatal error LNK1169: 找到一个或多个多重定义的符号
