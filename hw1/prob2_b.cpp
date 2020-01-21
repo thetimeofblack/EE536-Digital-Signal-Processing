@@ -27,10 +27,10 @@ int computeBilateralFilteredPixel(unsigned char** imageData, int row, int col,in
 	return result; 
 }
 
-void bilateral_filtering(unsigned char** imageData, unsigned char** filteredImageData, int width, int height,int BytesPerPixel, int widsize , double cigmaC , double cigmaS) {
+void bilateral_filtering(unsigned char** imageData, unsigned char** filteredImageData, int width, int height,int BytesPerPixel, int edgesize ,int widsize , double cigmaC , double cigmaS) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			filteredImageData[row][col] = computeBilateralFilteredPixel(imageData, row + widsize, col + widsize, BytesPerPixel, widsize, cigmaC, cigmaS); 
+			filteredImageData[row][col] = computeBilateralFilteredPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel, widsize, cigmaC, cigmaS); 
 		}
 	}
 }
@@ -40,6 +40,14 @@ int main(int argc, char* argv[]) {
 	int width;
 	int height;
 	int BytesPerPixel;
+
+	// configuration parameters
+	double cigmaC = 0.1;
+	double cigmaS = 30.0;
+	int edgesize = 10;
+	int widsize = 5;
+
+
 	if (argc < 3) {
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
 		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
@@ -56,20 +64,24 @@ int main(int argc, char* argv[]) {
 		if (argc >= 5) {
 			width = atoi(argv[4]);
 			height = atoi(argv[5]);
+			edgesize = atoi(argv[6]);
+			widsize = atoi(argv[7]);
+			cigmaC = atoi(argv[8]); 
+			cigmaS = atoi(argv[9]);
 		}
 	}
-	int widsize = 2; 
-	double cigmaC = 1.0; 
-	double cigmaS = 1.0; 
+
+
+
 	unsigned char** imageData; 
 	unsigned char** extendedData; 
 	unsigned char** filteredImageData; 
 	imageData = alloc2DImage(width , height ,1);
-	extendedData = alloc2DImage(width+2*widsize,height+2*widsize, 1); 
+	extendedData = alloc2DImage(width+2*edgesize,height+2*edgesize, 1); 
 	filteredImageData = alloc2DImage(width, height, 1); 
 	read2DImageFile(argv[1], imageData, width, height, 1); 
-	extend2DImageEdge(imageData, extendedData, width, height, 1,widsize); 
-	bilateral_filtering(extendedData, filteredImageData, width, height, 1, widsize, cigmaC, cigmaS); 
+	extend2DImageEdge(imageData, extendedData, width, height, 1,edgesize); 
+	bilateral_filtering(extendedData, filteredImageData, width, height, 1,edgesize, widsize, cigmaC, cigmaS); 
 	write2DImageFile(argv[2], filteredImageData, width, height, 1); 
 	return 0;
 	

@@ -129,7 +129,7 @@ int main(int argc, char* argv[]) {
 	imageData = alloc3DImage(width, height, BytesPerPixel); 
 	equalizedImageData = alloc3DImage(width, height, BytesPerPixel);
 	read3DImageFile(argv[1],imageData, width ,height, BytesPerPixel);
-	if (method == 0) {
+	if (method == 1) {
 		cumulativeProbabilityBasedHistogramEqualization(imageData, equalizedImageData, width, height, BytesPerPixel); 
 	}
 	else{

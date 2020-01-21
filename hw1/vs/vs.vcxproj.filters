@@ -28,7 +28,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\prob1_c.cpp">
+    <Text Include="..\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\prob2_c.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

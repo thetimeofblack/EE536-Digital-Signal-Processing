@@ -95,18 +95,18 @@ int main(int argc , char *argv[]) {
 	}
 	int edgesize = 3; 
 	int widsize = 3; 
-	int widwidth;
-	int widheight;
+	int widwidth = 3;
+	int widheight = 3;
+	double hparm  =1.0; 
 	unsigned char** imageData; 
 	unsigned char** filteredImageData; 
 	unsigned char** extendedImageData;
 	imageData = alloc2DImage(width, height, BytesPerPixel);
-	extendedImageData = alloc2DImage(width + 2 * widsize, height + 2 * widsize, 1);
+	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, 1);
 	filteredImageData = alloc2DImage(width, height, BytesPerPixel);
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel ); 
 	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
-
-	testGaussOutput();
+	NLM_filtering(extendedImageData, filteredImageData, width, height, BytesPerPixel, edgesize, widwidth, widheight, hparm);
 	write2DImageFile(argv[2], filteredImageData, width, height, BytesPerPixel); 
 	
 

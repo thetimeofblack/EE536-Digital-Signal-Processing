@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>..\HW1_images\toy.raw toy_a1.raw 3 400 560 1</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>..\HW1_images\Corn_noisy.raw corn_bf1.raw 1 320 320 20 15 30 3 </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

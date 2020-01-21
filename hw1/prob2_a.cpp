@@ -110,8 +110,8 @@ int main(int argc, char* argv[]) {
 	}
 
 
-	int edgesize = 3; 
-	int widsize = 3;  
+	int edgesize = 6; 
+	int widsize = 2;  
 	unsigned char** imageData; 
 	unsigned char** filteredData; 
 	unsigned char** extendedImageData; 
