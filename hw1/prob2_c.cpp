@@ -15,55 +15,57 @@ void compPoint2PointGW(unsigned char** imageData, int row, int col, int i, int j
 }
 
 
-double NLM_Coeffcient(unsigned char** imageData, int width, int height, int BytesPerPixel, int row, int col, int i, int j, int widwidth, int widheight, int hparm) {
-	double result; 
-	result = exp((-1) * EuclidianDistanceArea2Area(imageData, row, col, i, j, widwidth, widheight) / pow(hparm, 2));
-	return 	result; 
-}
 
-double GaussianKernel(int n1, int n2 , double stdev) {
+double GaussianKernel(int n1, int n2 ) {
 	double result;
 	const double pi = 3.1415926535897;
+	const double stdev = 1.0; 
 	double sumsquare = pow(n1,2) + pow(n2,2); 
-	result = 1 / ((sqrt(2 * pi)) * stdev) * exp((-1) * (sumsquare / (2*pow(stdev,2)))); 
+	result = (1 / ((sqrt(2 * pi)) * stdev)) * exp((-1) * (sumsquare/2/pow(stdev,2) )); 
 	return result; 
 }
 
-
-double EuclidianDistanceArea2Area(unsigned char** imageData, int row, int col, int i, int j ,int widwidth , int widheight) {
+double compEuclidianDistanceArea2Area(unsigned char** imageData, int row, int col, int i, int j, int widwidth, int widheight) {
 	const double pi = 3.1415926535897;
-	double result = 0 ; 
-	for (int k = -widwidth/2; k <= widwidth/2; k++) {
-		for (int l = -widheight / 2; l <= widheight / 2; l++) {
-			result += GaussianKernel(abs(k), abs(l), 1) * pow(imageData[row - k][col - l] - imageData[i - k][j - l], 2); 
+	double distance = 0;
+	double sum = 0; 
+	for (int k = -widheight/2; k <= widheight/2; k++) {
+		for (int l = widwidth / 2; l <= widwidth / 2; l++) {
+			sum += GaussianKernel(abs(k),abs(l))*pow(imageData[row + k][col + l] - imageData[i + k][j + l], 2);
 		}
 	}
+
+}
+
+
+double compEuclidianDistanceWeight(unsigned char** imageData, int row, int col, int i, int j, int widwidth, int widheight, double hparm) {
+	
+	double result = 0 ;
+	double distance = compEuclidianDistanceArea2Area(imageData, row, col, i, j, widwidth, widheight); 
+	result = exp(- distance / pow(hparm, 2)); 
 	return result; 
 }
 
 
 
-
-
-double compPixelByArea(unsigned char** imageData,  int row, int col, int i, int j, int BytesPerPixel, int widwidth, int widheight) {
-	double result = 0 ; 
-	return result; 
-}
-
-double computeNLMPixel(unsigned char** imageData,  int row, int col, int BytesPerPixel, int widwidth, int widheight) {
-	double result;
-	for (int i = row-widheight/2; i <= row+widheight/2; i++) {
-		for (int j = col-widwidth/2; j <= col+widwidth/2; j++) {
-			result = compPixelByArea( imageData,row,col ,i , j , BytesPerPixel,  widwidth ,widheight); 
+double computeNLMPixel(unsigned char** imageData,  int row, int col, int BytesPerPixel,int windowsize,  int widwidth, int widheight ,double hparm) {
+	double totalweightedPixel = 0 ;
+	double totalweight = 0 ; 
+	double result = 0;
+	for (int i = row-windowsize/2; i <= row+windowsize/2; i++) {
+		for (int j = col-windowsize/2; j <= col+windowsize/2; j++) {
+			totalweightedPixel += compEuclidianDistanceWeight( imageData,row,col,i,j,BytesPerPixel,widwidth,widheight)*imageData[row][col]; 
+			totalweight += compEuclidianDistanceWeight(imageData,row,col,i,j,BytesPerPixel,widwidth,widheight) ; 
 		}
 	}
+	result = totalweightedPixel / totalweight; 
 	return result;
 }
 
-void NLM_filtering(unsigned char** imageData, unsigned char** filteredData, int width, int height, int BytesPerPixel,int edgesize ,int widwidth, int widheight) {
+void NLM_filtering(unsigned char** imageData, unsigned char** filteredData, int width, int height, int BytesPerPixel,int edgesize ,int widwidth, int widheight , double hparm) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			filteredData[row][col] = computeNLMPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel,widwidth, widheight );
+			filteredData[row][col] = computeNLMPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel,edgesize, widwidth, widheight , hparm );
 		}
 	}
 }

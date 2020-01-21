@@ -138,6 +138,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\denoising.h" />
     <ClInclude Include="..\dipHeader.h" />
   </ItemGroup>
   <ItemGroup>
@@ -147,6 +148,7 @@
     <ClCompile Include="..\prob1_c.cpp" />
     <ClCompile Include="..\prob2_a.cpp" />
     <ClCompile Include="..\prob2_c.cpp" />
+    <ClCompile Include="..\prob2_d.cpp" />
     <ClCompile Include="..\prob2_e.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

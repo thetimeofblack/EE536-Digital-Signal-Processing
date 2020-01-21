@@ -5,6 +5,7 @@ int main(int argc , char* argv[]){
 	int width;
 	int height;
 	int BytesPerPixel;
+	int method; 
 	if (argc < 3) {
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
 		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
@@ -36,7 +37,7 @@ int main(int argc , char* argv[]){
 	// Read image (filename specified by first argument) into image data matrix
 
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel); 
-
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize); 
 
 	
 	write2DImageFile(argv[2], filteredData, width, height, BytesPerPixel); 

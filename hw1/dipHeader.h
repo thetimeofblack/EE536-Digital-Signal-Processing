@@ -438,13 +438,16 @@ double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int 
 
 double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, int width , int height , int BytesPerPixel) {
     double result = 0.0; 
-    double *sum = alloc1DArrayDouble(3);
+    double sum = 0;
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
-            sum[0] += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]);
+            for (int cor = 0; cor < BytesPerPixel; cor++) {
+                sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]);
+            }
         }
     }
-
+    double totalpixels = width * height * BytesPerPixel; 
+    result = sum / totalpixels; 
     return result; 
 }
 
