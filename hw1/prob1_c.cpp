@@ -66,8 +66,8 @@ void cumulativeProbabilityBasedHistogramEqualization(unsigned char*** imageData,
 	int* transformArrayG = new int[256];
 	int* transformArrayB = new int[256];
 	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0); 
-	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 0);
-	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 0);
+	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 1);
+	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 2);
 	int currR = 0;
 	int currG = 0;
 	int currB = 0;

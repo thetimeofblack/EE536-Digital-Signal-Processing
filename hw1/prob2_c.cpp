@@ -34,7 +34,7 @@ double compEuclidianDistanceArea2Area(unsigned char** imageData, int row, int co
 			sum += GaussianKernel(abs(k),abs(l))*pow(imageData[row + k][col + l] - imageData[i + k][j + l], 2);
 		}
 	}
-
+	return sum;
 }
 
 

@@ -69,7 +69,8 @@ int aver2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, 
 // the row and col indicates the position of the pixel, the start pixel is at position (0,0)   
 int judgePixelColor(int row , int col);
 
-
+//print image Data 
+void print2DImage(unsigned char** imageData, int width, int height, int BytesPerPixel); 
 
 int judgePixelColor(int row , int col){
     if(row%2==1 &&col%2==1||row%2==0&&col%2==0){
@@ -91,7 +92,7 @@ void testHeaderIncluded(){
 
 
 
-unsigned char compRedForGreenBL(unsigned char **imageData, int row, int col) {
+unsigned char compRedforGreenBL(unsigned char **imageData, int row, int col) {
     unsigned char result; 
     if (row % 2 == 0) {
         result = 0.5 * (imageData[row][col+1] + imageData[row][col-1]);
@@ -202,11 +203,11 @@ void write2DImageFile(char* filename, unsigned char** imageData, int width, int 
 
 void write3DImageFile(char* filename, unsigned char*** imageData, int width, int height, int BytesPerPixel) {
     FILE* file;
-    if (!(file = fopen(filename, "rb"))) {
+    if (!(file = fopen(filename, "wb"))) {
         cout << "Cannot open file: " << filename << endl;
         exit(1);
     }
-    write3DImage(file, imageData, width, height, BytesPerPixel);
+    write3DImage(file, imageData, width, height, 3);
     fclose(file);
 }
 
@@ -226,8 +227,10 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
             if (row < edgesize && col >= edgesize + width) {
                 extendedImage[row][col] = imageData[edgesize - 1 - row][edgesize + 2 * width - 1-col]; 
             }
+
+
             if (row >= edgesize && row < edgesize + height && col < edgesize) {
-                extendedImage[row][col] = imageData[row-edgesize][edgesize-1-col]; 
+                extendedImage[row][col] = imageData[row-edgesize][edgesize-col-1]; 
             }
             if (row >= edgesize && row < edgesize + height && col >= edgesize && col < edgesize + width) {
                 extendedImage[row][col] = imageData[row-edgesize][col-edgesize]; 
@@ -235,6 +238,9 @@ void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage,
             if (row >= edgesize && row < edgesize + height && col >= edgesize+width&&col<edgesize*2+width) {
                 extendedImage[row][col] = imageData[row-edgesize][edgesize + 2 * width - 1 - col]; 
             }
+
+
+
             if (row >= edgesize + height && row < edgesize * 2 + height && col < edgesize) {
                 extendedImage[row][col] = imageData[2 * height + edgesize - 1 - row][edgesize - 1 - col]; 
             }
@@ -476,8 +482,27 @@ int delete3DImage(unsigned char*** imageData, int width, int height, int BytesPe
 }
 
 
+void print2DImage(unsigned char** imageData, int width, int height, int BytesPerPixel ) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            cout << imageData[row][col] << " "; 
+        }
+        cout << endl;
+    }
+}
 
 
+void print3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            for (int cor = 0; cor < 3; cor++) {
+                cout << imageData[row][col] << " ";
+
+            }
+        }
+        cout << endl;
+    }
+}
 /*
 // if the input image only contains one pixel, this will return null ;  
 // the copied image obeys the reflection rule

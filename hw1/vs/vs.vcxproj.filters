@@ -28,19 +28,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\prob2_e.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\prob2_a.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="..\prob1_c.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\prob2_c.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\prob2_d.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

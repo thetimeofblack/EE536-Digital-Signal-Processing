@@ -45,45 +45,32 @@ void testUnsignedCharOverflow() {
 }
 
 
-void gray2RGB(unsigned char **ImageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte =1){
+void gray2RGB(unsigned char **imageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte ,int edgesize){
 //	cout<<"***********image info**************"<<endl; 
 //	cout<<"  height: " << height<<"    width: "<<width<<endl;
 	// we need to prevent overflow for the unsigned char 
-	for(int row = 2 ; row< height-2 ; row++){
-		
-		for(int col = 2 ;col<width-2 ;col++){
-			//cout<<"test command 1"<<endl;   
+	for(int row = 0 ; row< height ; row++){
+		for(int col = 0 ;col<width ;col++){ 
 			//color is red
-			int color = judgePixelColor(row ,col); 
-			//cout<<color<<endl;
-			//cout<<"height: "<<height<<endl;
-			//cout<<tempImageData[row][col]<<endl;
-			//cout<<"width  "<<width<<endl; 
 			if(judgePixelColor(row,col) == 0){
 				//cout<<"test command 2"<<endl; 
-				imageRGBData[row][col][0] = (unsigned char)ImageData[row][col];
-				imageRGBData[row][col][1] =(unsigned char) 0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
-				imageRGBData[row][col][2] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ ImageData[row-1][col+1]) ;
+				imageRGBData[row][col][0] = imageData[row + edgesize][col + edgesize]; 
+				imageRGBData[row][col][1] = compGreenforRedBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][2] = compBlueforRedBL(imageData, row + edgesize, col + edgesize);
+
+				
 			}
 			//color is green 
 			if(judgePixelColor(row,col) == 1){
-				//cout<<"test command 4"<<endl; 
-				if(row%2==0){
-					imageRGBData[row][col][0] = (unsigned char)0.5*(ImageData[row][col+1]+ ImageData[row][col-1]);
-					//cout<<"test command 6"<<endl; 
-					imageRGBData[row][col][1] = (unsigned char)ImageData[row][col];
-					imageRGBData[row][col][2] = (unsigned char)0.5*(ImageData[row-1][col]+ ImageData[row+1][col]);
-				}else{
-					imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row-1][col-1]+ ImageData[row+1][col+1]+ ImageData[row+1][col-1]+ImageData[row-1][col+1]);
-					imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
-					imageRGBData[row][col][2] = (unsigned char)ImageData[row][col];
-				}
+				imageRGBData[row][col][0] = compRedforGreenBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][1] = imageData[row + edgesize][col + edgesize];
+				imageRGBData[row][col][2] = compBlueforGreenBL(imageData, row + edgesize, col + edgesize);
 			}
 			//color is blue 
 			if(judgePixelColor(row,col)==2){
-				imageRGBData[row][col][0] = (unsigned char)0.25*(ImageData[row - 1][col - 1] + ImageData[row + 1][col + 1] + ImageData[row + 1][col - 1] + ImageData[row - 1][col + 1]);
-				imageRGBData[row][col][1] = (unsigned char)0.25*(ImageData[row-1][col]+ ImageData[row+1][col]+ ImageData[row][col-1]+ ImageData[row][col+1]);
-				imageRGBData[row][col][2] =  ImageData[row][col]; 
+				imageRGBData[row][col][0] = compRedforBlueBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][1] = compGreenforBlueBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][2] = imageData[row + edgesize][col + edgesize];
 			}
 			//cout<<"test command 3"<<endl; 
 		}
@@ -127,71 +114,27 @@ int main(int argc, char *argv[])
 	}
 	rows = height ;
     cols = width ; 
+	int edgesize=4; 
 	// Allocate image data array   ?? when the width and height of image is not equal  ??
 	
 	unsigned char ** imageData;
-	imageData = new unsigned char *[height];
-	for (int row = 0; row < height; row++) {
-		imageData[row] = new unsigned char[width];
-	}
-//	imageData[height][width]; 
-	// Read image (filename specified by first argument) into image data matrix
-	if (!(file=fopen(argv[1],"rb"))) {
-		cout << "Cannot open file: " << argv[1] <<endl;
-		exit(1);
-	}
-
-	read2DImage(file, imageData, width, height, BytesPerPixel); 
-	fclose(file);
+	imageData = alloc2DImage(width, height, BytesPerPixel); 
+	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel); 
 
 	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
-//  test the i0x771BF94D (ntdll.dll) (hm1.exe 中)处有未经处理的异常: 0xC0000374: 堆已损坏。 (参数: 0x771FB960ndex of picture is or not swapped   	
-//	cout<<"***********image info**************"<<endl; 
-//	cout<<"  height: " << height<<"    width: "<<width<<endl; 
-//	for(int row = 0 ;row<8;row++){
-//		for(int col = 0 ; col<width ;col++){
-//			cout<<bitset<8>(imageData[row][col][1]); 
-//		}
-//		cout<<endl; 
-//	}
 
 
 	unsigned char ***imageRGBData = NULL; 
-//	imageRGBData = new unsigned char** [height]; 
 	imageRGBData= alloc3DImage( width, height, 3); 
-	
-//	imageRGBData = new unsigned char**[height]; 
-//	for(int row=0 ; row<height ; row++){
-//		imageRGBData[row] = new unsigned char *[width];
-//		for(int col=0; col<width; col++){
-//			imageRGBData[row][col] = new unsigned char[3]; 
-//		}
-//	}
-
-//	test2Darray(imageData,height, width); 
-//	imageRGBData[0][0][0] =(unsigned char)10;  
-//	cout<<imageRGBData[0][0][0]; 
-	gray2RGB(imageData,imageRGBData, width,height,1);
+	unsigned char** extendedImageData; 
+	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize,BytesPerPixel);
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize); 
+	gray2RGB(extendedImageData,imageRGBData, width,height,BytesPerPixel,edgesize);
 //	 Write image data (filename specified by second argument) from image data matrix
 //	testUnsignedCharOverflow(); 
-	if (!(file=fopen(argv[2],"wb"))) {
-		cout << "Cannot open file: " << argv[2] << endl;
-		exit(1);
-	}
 
-
-	cout << "***********image info**************" << endl;
-	cout << "  height: " << height << "    width: " << width << endl;
-	for (int row = 0; row < 8; row++) {
-		for (int col = 0; col < width; col++) {
-			cout << bitset<8>(imageRGBData[row][col][1])<<" ";
-		}
-		cout << endl;
-	}
-
-	write3DImage(file, imageRGBData, width, height, 3); 
-	fclose(file);
-    cout<<"writing image successfully"; 
+	write3DImageFile(argv[2], imageRGBData, width, height, 3); 
+	
 
 //	for (int row = 0; row < height; row++) {
 //		delete[] imageData[row]; 

@@ -1,47 +1,46 @@
 #include"dipHeader.h"
 #include<bitset>
-int compBluePixelDelta(unsigned char **imageData, int row, int col) {
-	int result = '0';
+int compBluePixelDelta(unsigned char** imageData, int row, int col) {
+	int result = 0;
 	//cout << imageData[row + 2][col] << endl << imageData[row - 2][col] << endl;
-	result = imageData[row][col] - 0.25 * (imageData[row - 2][col] + imageData[row + 2][col] + imageData[row][col + 2] + imageData[row][col - 2]); 
-	
+	result = (int)imageData[row][col] - 0.25 * ((int)imageData[row - 2][col] + (int)imageData[row + 2][col] +(int) imageData[row][col + 2] + (int)imageData[row][col - 2]);
 	return result; 
 }
 
 int  compRedPixelDelta(unsigned char** imageData, int row, int col) {
-	int result ='0';
-	result = imageData[row][col] - 0.25 * (imageData[row - 2][col] + imageData[row + 2][col] + imageData[row][col + 2] + imageData[row][col - 2]); 
+	int result =0;
+	result = (int)imageData[row][col] - 0.25 * ((int)imageData[row - 2][col] + (int)imageData[row + 2][col] + (int)imageData[row][col + 2] + (int)imageData[row][col - 2]);
 	return result; 
 
 }
 
 
 int compGreenPixelDelta(unsigned char** imageData, int row, int col) {
-	int result = '0'; 
-	result = imageData[row][col] - 0.25 * (imageData[row + 1][col-1] + imageData[row + 1][col+1] + imageData[row-1][col-1] + imageData[row-1][col+1]);
+	int result =0; 
+	result = (int)imageData[row][col] - 0.25 * ((int)imageData[row + 1][col-1] + (int)imageData[row + 1][col+1] + (int)imageData[row-1][col-1] + (int)imageData[row-1][col+1]);
 	return result; 
 }
 
-void MHC_Demosaicing(unsigned char **imageData,unsigned char ***imageRGBData, int width, int height) {
-	for (int row = 2; row < height-4; row++) {
-		for (int col = 2; col < width-4; col++) {
+void MHC_Demosaicing(unsigned char **imageData,unsigned char ***imageRGBData, int width, int height , int edgesize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
 			//Red
 			if (judgePixelColor(row, col) == 0) {
-				imageRGBData[row][col][0] = imageData[row][col];
-				imageRGBData[row][col][1] = compGreenforRedBL(imageData,row,col)+0.5*compRedPixelDelta(imageData,row,col);
-				imageRGBData[row][col][2] = compBlueforRedBL(imageData, row, col) + 0.5 * compRedPixelDelta(imageData, row, col); 
+				imageRGBData[row][col][0] = imageData[row+edgesize][col+edgesize];
+				imageRGBData[row][col][1] =round( compGreenforRedBL(imageData,row+edgesize,col+edgesize)+0.5*compRedPixelDelta(imageData,row + edgesize,col + edgesize));
+				imageRGBData[row][col][2] =round( compBlueforRedBL(imageData, row+edgesize, col+edgesize) + 0.5 * compRedPixelDelta(imageData, row + edgesize, col + edgesize));
 			}
 			//Green
-			if (judgePixelColor(row, col) == 1) {
-				imageRGBData[row][col][0] = compRedForGreenBL(imageData, row, col) + 5 / 8 * compGreenPixelDelta(imageData, row, col);
-				imageRGBData[row][col][1] = imageData[row][col]; 
-				imageRGBData[row][col][2] = compBlueforGreenBL(imageData, row, col) + 5 / 8 * compGreenPixelDelta(imageData, row, col); 
+			if (judgePixelColor(row , col) == 1) {
+				imageRGBData[row][col][0] =round( compRedforGreenBL(imageData, row+edgesize, col+edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][1] = imageData[row+edgesize][col+edgesize]; 
+				imageRGBData[row][col][2] = round( compBlueforGreenBL(imageData, row + edgesize, col + edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
 			}
 			//Blue
-			if (judgePixelColor(row, col) == 2) {
-				imageRGBData[row][col][0] = compRedforBlueBL(imageData, row, col) + 0.75 * compBluePixelDelta(imageData, row, col);
-					imageRGBData[row][col][1] = compGreenforBlueBL(imageData, row, col) + 0.75 * compBluePixelDelta(imageData, row, col);
-				imageRGBData[row][col][2] = imageData[row][col];
+			if (judgePixelColor(row , col ) == 2) {
+				imageRGBData[row][col][0] =round( compRedforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][1] =round( compGreenforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][2] = imageData[row + edgesize][col + edgesize];
 			}
 		}
 	
@@ -69,8 +68,6 @@ int main(int argc ,char *argv[]) {
 	int Size = 256;
 	int width; 
 	int height; 
-	int rows;
-	int cols;
 
 
 	// Check for proper syntax
@@ -92,33 +89,27 @@ int main(int argc ,char *argv[]) {
 			height = atoi(argv[5]); 
 		}
 	}
-
+	int edgesize = 2; 
 	// Allocate image data array
 	unsigned char** imageData = NULL; 
 	imageData = alloc2DImage(width, height, BytesPerPixel);
 	unsigned char*** imageRGBData = NULL; 
 	imageRGBData = alloc3DImage(width, height, 3); 
-
+	unsigned char** extendedImageData; 
+	extendedImageData = alloc2DImage(width+2*edgesize, height+2*edgesize, BytesPerPixel); 
 	// Read image (filename specified by first argument) into image data matrix
-	if (!(file = fopen(argv[1], "rb"))) {
-		cout << "Cannot open file: " << argv[1] << endl;
-		exit(1);
-	}
-	read2DImage(file, imageData, width, height, BytesPerPixel);
-	fclose(file);
+	read2DImageFile(argv[1],imageData, width, height, BytesPerPixel);
 	
 	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
-//	testdelta(); 
-	MHC_Demosaicing(imageData, imageRGBData, width, height); 
-
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
+	MHC_Demosaicing(extendedImageData, imageRGBData, width, height,edgesize);
+	cout << width << endl; 
+	cout << height << endl;
 	// Write image data (filename specified by second argument) from image data matrix
-
-	if (!(file = fopen(argv[2], "wb"))) {
-		cout << "Cannot open file: " << argv[2] << endl;
-		exit(1);
-	}
-	write3DImage(file, imageRGBData, width, height, 3); 
-	fclose(file);
+	cout << bitset<8>('0') << endl;
+	cout << bitset<8>(imageRGBData[500][0][0]) << endl;
+	cout << (int)imageRGBData[531][594][1] << endl;
+	write3DImageFile(argv[2], imageRGBData, width, height, 3); 
 
 	return 0;
 }
