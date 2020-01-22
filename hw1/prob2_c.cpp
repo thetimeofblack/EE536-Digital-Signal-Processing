@@ -10,9 +10,8 @@ void testGaussOutput() {
 	cout << exp2 << endl;
 }
 
-void compPoint2PointGW(unsigned char** imageData, int row, int col, int i, int j, int BytesPerPixel){
-	
-}
+
+
 
 
 
@@ -93,21 +92,26 @@ int main(int argc , char *argv[]) {
 			height = atoi(argv[5]);
 		}
 	}
-	int edgesize = 3; 
+	int edgesize = 10; 
 	int widsize = 3; 
-	int widwidth = 3;
-	int widheight = 3;
-	double hparm  =1.0; 
+	int widwidth = 5;
+	int widheight = 5;
+	double hparm  =10.0; 
 	unsigned char** imageData; 
 	unsigned char** filteredImageData; 
 	unsigned char** extendedImageData;
+	unsigned char** desiredImageData; 
+	double psnr; 
 	imageData = alloc2DImage(width, height, BytesPerPixel);
+	desiredImageData = alloc2DImage(width, height, BytesPerPixel);
 	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, 1);
 	filteredImageData = alloc2DImage(width, height, BytesPerPixel);
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel ); 
 	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
 	NLM_filtering(extendedImageData, filteredImageData, width, height, BytesPerPixel, edgesize, widwidth, widheight, hparm);
+	psnr = eval2DImagePSNR(desiredImageData, filteredImageData,width, height,BytesPerPixel); 
 	write2DImageFile(argv[2], filteredImageData, width, height, BytesPerPixel); 
-	
+	cout << "**************"<< endl; 
+	cout << "PSNR: " << psnr << endl; 
 
 }
