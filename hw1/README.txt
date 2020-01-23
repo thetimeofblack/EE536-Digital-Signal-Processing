@@ -26,24 +26,24 @@
 % Problem 1_c:  Histogram Manipulation
 % C++-file name: prob1_c.cpp
 % Command template : prob1_c [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [method]
-% Command: prob1_c imagepath/dog.raw outputpath/dog_BD.raw 1 400 560 [you can choose method to solve this image]
+% Command: prob1_c imagepath/toy.raw outputpath/toy_a(b).raw 1 400 560 [you can choose method to solve this image]
 % Output image: toy_a1.raw toy_b1.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% Problem 2_a: Bilinear Demosaicing
-% C++-file name: linear_amp.m
-% Command template :  prob1_c [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [edgesize] [window size] [standard deviation C] [standard deviation S]
+% Problem 2_a: Linear Denoising
+% C++-file name: prob2_a.cpp
+% Command template :  prob2_a [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [edgesize] [window size] [standard deviation C] [standard deviation S]
 % Command: prob2_b ..\HW1_images\Corn_noisy.raw corn_bf1.raw 1 320 320 10 9 2 2 
 % Output image: corn_bf1.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Problem 2_b: Bilinear Demosaicing
-% C++-file name: linear_amp.m
-% Command template : 
-% Command: prob1_a imagepath/dog.raw outputpath/dog_BD.raw 1 
+% Problem 2_b: Bilateral Denoising
+% C++-file name: prob2_b.cpp
+% Command template : prob2_b [inputfile path] [the compared image path] [output image path] [BytesPerPixel] [width] [height] [variance]  
+% Command: prob2_b imagepath/dog.raw outputpath/dog_BD.raw 1 
 % Output image: linear_amp_lena.256
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
-% Problem 2_c: Bilinear Demosaicing
-% M-file name: linear_amp.m
+% Problem 2_c: Non-Local mean Denoising
+% M-file name: prob2_c.cpp
 % Command template : 
-% Command: prob1_a imagepath/dog.raw outputpath/dog_BD.raw 1 
+% Command: prob2_c imagepath/corn_noisy.raw  systempath/corn_gray.raw outputimagepath/corn_nlm1.raw 1 320 320 10 10 24 200 2 
 % Output image: linear_amp_lena.256
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
