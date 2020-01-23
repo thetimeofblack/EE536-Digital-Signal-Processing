@@ -44,6 +44,6 @@
 % Problem 2_c: Non-Local mean Denoising
 % M-file name: prob2_c.cpp
 % Command template : 
-% Command: prob2_c imagepath/corn_noisy.raw  systempath/corn_gray.raw outputimagepath/corn_nlm1.raw 1 320 320 10 10 24 200 2 
-% Output image: linear_amp_lena.256
+% Command: prob2_c ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_nlm1.raw 1 320 320 5 5 1 100  
+% Output image: corn_nlm1.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
