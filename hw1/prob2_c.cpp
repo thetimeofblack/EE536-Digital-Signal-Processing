@@ -111,6 +111,7 @@ int main(int argc , char *argv[]) {
 	NLM_filtering(extendedImageData, filteredImageData, width, height, BytesPerPixel, edgesize, widwidth, widheight, hparm);
 	psnr = eval2DImagePSNR(desiredImageData, filteredImageData,width, height,BytesPerPixel); 
 	write2DImageFile(argv[2], filteredImageData, width, height, BytesPerPixel); 
+	cout << "write successfully" << endl; 
 	cout << "**************"<< endl; 
 	cout << "PSNR: " << psnr << endl; 
 

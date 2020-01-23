@@ -90,9 +90,11 @@ int main(int argc, char* argv[]) {
 	int width; 
 	int height; 
 	int BytesPerPixel;
+	int edgesize = 6;
+	int widsize = 2;
 	if (argc < 3) {
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
-		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		cout << "program_name input_image.raw input_ori_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
 		return 0;
 	}
 
@@ -101,28 +103,35 @@ int main(int argc, char* argv[]) {
 		BytesPerPixel = 1; // default is grey image
 	}
 	else {
-		BytesPerPixel = atoi(argv[3]);
+		BytesPerPixel = atoi(argv[4]);
 		// Check if width and height is specified
 		if (argc >= 5) {
-			width = atoi(argv[4]);
-			height = atoi(argv[5]);
+			width = atoi(argv[5]);
+			height = atoi(argv[6]);
+			widsize = atoi(argv[7]); 
 		}
 	}
 
 
-	int edgesize = 6; 
-	int widsize = 2;  
+	edgesize = widsize * 2; 
 	unsigned char** imageData; 
 	unsigned char** filteredData; 
 	unsigned char** extendedImageData; 
+	unsigned char** originImageData; 
+
 	imageData = alloc2DImage(width,height , BytesPerPixel); 
 	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, BytesPerPixel); 
 	filteredData = alloc2DImage(width, height , BytesPerPixel); 
-	
+	originImageData = alloc2DImage(width, height, BytesPerPixel); 
 	// Read image (filename specified by first argument) into image data matrix
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel);
+	read2DImageFile(argv[2], originImageData, width, height, BytesPerPixel); 
 	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize); 
 	linear_filter(extendedImageData, filteredData, width, height, 1, widsize); 
-	write2DImageFile(argv[2], filteredData, width, height, BytesPerPixel);
+	write2DImageFile(argv[3], filteredData, width, height, BytesPerPixel);
+	double psnr = eval2DImagePSNR(originImageData,filteredData , width ,height ,BytesPerPixel );
+	double psnrnoisy = eval2DImagePSNR(originImageData, imageData, width, height, BytesPerPixel); 
+	cout << "PSNR for original image and filtered image: " << psnr << endl;
+	cout << "PSNR for original image and noisy image" << psnrnoisy << endl; 
 	return 0; 
 }

@@ -439,6 +439,7 @@ double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int 
         }
     }
     result = sum / (width * height); 
+    result = 10*log10(255*255/result); 
         return result; 
 }
 
@@ -454,6 +455,7 @@ double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, in
     }
     double totalpixels = width * height * BytesPerPixel; 
     result = sum / totalpixels; 
+    result = 10 * log10(255*255/result); 
     return result; 
 }
 

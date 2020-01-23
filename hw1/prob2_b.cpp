@@ -59,15 +59,15 @@ int main(int argc, char* argv[]) {
 		BytesPerPixel = 1; // default is grey image
 	}
 	else {
-		BytesPerPixel = atoi(argv[3]);
+		BytesPerPixel = atoi(argv[4]);
 		// Check if width and height is specified
 		if (argc >= 5) {
-			width = atoi(argv[4]);
-			height = atoi(argv[5]);
-			edgesize = atoi(argv[6]);
-			widsize = atoi(argv[7]);
-			cigmaC = atoi(argv[8]); 
-			cigmaS = atoi(argv[9]);
+			width = atoi(argv[5]);
+			height = atoi(argv[6]);
+			edgesize = atoi(argv[7]);
+			widsize = atoi(argv[8]);
+			cigmaC = atoi(argv[9]); 
+			cigmaS = atoi(argv[10]);
 		}
 	}
 
@@ -75,14 +75,21 @@ int main(int argc, char* argv[]) {
 
 	unsigned char** imageData; 
 	unsigned char** extendedData; 
-	unsigned char** filteredImageData; 
+	unsigned char** filteredImageData;
+	unsigned char** originalImageData; 
+	originalImageData = alloc2DImage(width, height, BytesPerPixel); 
 	imageData = alloc2DImage(width , height ,1);
 	extendedData = alloc2DImage(width+2*edgesize,height+2*edgesize, 1); 
 	filteredImageData = alloc2DImage(width, height, 1); 
 	read2DImageFile(argv[1], imageData, width, height, 1); 
+	read2DImageFile(argv[2], originalImageData, width, height, 1); 
 	extend2DImageEdge(imageData, extendedData, width, height, 1,edgesize); 
 	bilateral_filtering(extendedData, filteredImageData, width, height, 1,edgesize, widsize, cigmaC, cigmaS); 
-	write2DImageFile(argv[2], filteredImageData, width, height, 1); 
+	write2DImageFile(argv[3], filteredImageData, width, height, 1); 
+	double psnr = eval2DImagePSNR(originalImageData, filteredImageData, width, height, BytesPerPixel);
+	double psnrnoisy = eval2DImagePSNR(originalImageData, imageData, width, height, BytesPerPixel);
+	cout << "PSNR for original image and filtered image: " << psnr << endl;
+	cout << "PSNR for original image and noisy image" << psnrnoisy << endl;
 	return 0;
 	
 }
