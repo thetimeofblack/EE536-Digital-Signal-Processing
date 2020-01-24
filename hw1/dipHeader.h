@@ -505,6 +505,20 @@ void print3DImage(unsigned char*** imageData, int width, int height, int BytesPe
         cout << endl;
     }
 }
+
+int compareUnsignedChar(const void* a, const void* b)
+{
+    if (*(unsigned char *)a < *(unsigned char *)b) return -1;
+    if (*(unsigned char *)a == *(unsigned char *)b) return 0;
+    if (*(unsigned char *)a > * (unsigned char *)b) return 1;
+}
+
+int compareInt(const void* a, const void* b)
+{
+    if (*(int*)a < *(int*)b) return -1;
+    if (*(int*)a == *(int*)b) return 0;
+    if (*(int*)a > * (int*)b) return 1;
+}
 /*
 // if the input image only contains one pixel, this will return null ;  
 // the copied image obeys the reflection rule
