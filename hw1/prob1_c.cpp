@@ -28,35 +28,67 @@ void writeHistDataFile(char* filename, int histData[256]) {
 
 
 
-void randAllocHistogramEqualizationByChannel(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel, int channel) {
-	
-
-}
 
 
-void LinearTransferFunctionHistogramEqualization(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel) {
-	int* histogramR = new int[256];
-	int* histogramG = new int[256];
-	int* histogramB = new int[256];
-	int* transformArrayR = new int[256];
-	int* transformArrayG = new int[256];
-	int* transformArrayB = new int[256];
-	int fmin = 50;
-	int fmax = 245; 
-	int gmax = 255; 
-	int gmin = 0; 
-	for (int row = 0; row < height; row++) {
-		for (int col = 0; col < width; col++) {
-			equalizedData[row][col][0] = (gmax-gmin)/(fmax-fmin)*(imageData[row][col][0]-fmin)+gmin;
-			equalizedData[row][col][1] = (gmax - gmin) / (fmax - fmin) * (imageData[row][col][1] - fmin) + gmin;
-			equalizedData[row][col][2] = (gmax - gmin) / (fmax - fmin) * (imageData[row][col][2] - fmin) + gmin;
+
+void RandomPickBasedHistogramEqualizationByChannel(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel,int channel) {
+	unsigned int* RowIndex = new unsigned int[width * height]();
+	unsigned int* ColIndex = new unsigned int[width * height]();
+	unsigned char* PixelIntensityIndex = new unsigned char[width * height]();
+	int bucketsize = ceil(width * height / 256); 
+	unsigned int tempIndex = 0;
+	for (int pixelValue = 0; pixelValue < 256; pixelValue++) {
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				if (imageData[row][col][channel] == pixelValue) {
+					RowIndex[tempIndex] = row;
+					ColIndex[tempIndex] = col;
+					PixelIntensityIndex[tempIndex] = pixelValue;
+					tempIndex = tempIndex + 1;
+				}
+			}
 		}
 	}
 
+	// Change the pixel array acccording to bucket size
+	unsigned int tempCount = 0;
+	unsigned char tempPixel = 0;
+	unsigned int tempArrayIndex = 0;
+	for (int i = 0; i < (width * height); i++) {
+		if (tempCount != bucketsize) {
+			PixelIntensityIndex[tempArrayIndex] = tempPixel;
+			tempArrayIndex = tempArrayIndex + 1;
+			tempCount = tempCount + 1;
+		}
+		else {
+			tempPixel = tempPixel + 1;
+			tempCount = 0;
+		}
+	}
+
+	// Track back the changed pixel values to a 2D array
+	unsigned int tempRowIndex;
+	unsigned int tempColIndex;
+	for (int i = 0; i < (width * height); i++) {
+		tempRowIndex = RowIndex[i];
+		tempColIndex = ColIndex[i];
+		equalizedData[tempRowIndex][tempColIndex][channel] = PixelIntensityIndex[i];
+	}
+
+	delete[] RowIndex;
+	delete[] ColIndex;
+	delete[] PixelIntensityIndex;
+
+
 }
 
+void RandomPickHistogramEqualization(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel) {
+	for (int cor = 0; cor < 3; cor++) {
+		RandomPickBasedHistogramEqualizationByChannel(imageData, equalizedData, width, height, BytesPerPixel, cor); 
+	}
 
-void culumativeProbabilityTransferHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
+}
+void TransferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
 	const int MAX_INTENSITY = 255;
 	int totalpixels = width * height; 
 	int* histogramR = new int[256];
@@ -130,10 +162,10 @@ int main(int argc, char* argv[]) {
 	equalizedImageData = alloc3DImage(width, height, BytesPerPixel);
 	read3DImageFile(argv[1],imageData, width ,height, BytesPerPixel);
 	if (method == 1) {
-		culumativeProbabilityTransferHistogramEqualization(imageData, equalizedImageData, width, height, BytesPerPixel); 
+		TransferFunctionBasedHistogramEqualization(imageData, equalizedImageData, width, height, BytesPerPixel); 
 	}
 	else{
-		LinearTransferFunctionHistogramEqualization(imageData,equalizedImageData,width,height,BytesPerPixel);
+		RandomPickHistogramEqualization(imageData,equalizedImageData,width,height,BytesPerPixel);
 	}
 
 	write3DImageFile(argv[2], equalizedImageData,width,height, BytesPerPixel); 

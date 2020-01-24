@@ -21,25 +21,37 @@ int compGreenPixelDelta(unsigned char** imageData, int row, int col) {
 	return result; 
 }
 
-void MHC_Demosaicing(unsigned char **imageData,unsigned char ***imageRGBData, int width, int height , int edgesize) {
+unsigned char signPositive(int input) {
+	if (input <= 255 & input >= 0) {
+		return (unsigned char)input; 
+	}
+	else if(input<0) {
+		return (unsigned char)0; 
+	}
+	else {
+		return (unsigned char)255; 
+	}
+}
+
+void MHC_Demosaicing(unsigned char **imageData,unsigned char ***imageRGBData, int width, int height ,int BytesPerPixel, int edgesize) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
 			//Red
 			if (judgePixelColor(row, col) == 0) {
 				imageRGBData[row][col][0] = imageData[row+edgesize][col+edgesize];
-				imageRGBData[row][col][1] =round( compGreenforRedBL(imageData,row+edgesize,col+edgesize)+0.5*compRedPixelDelta(imageData,row + edgesize,col + edgesize));
-				imageRGBData[row][col][2] =round( compBlueforRedBL(imageData, row+edgesize, col+edgesize) + 0.5 * compRedPixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][1] =signPositive(compGreenforRedBL(imageData,row+edgesize,col+edgesize)+0.5*compRedPixelDelta(imageData,row + edgesize,col + edgesize));
+				imageRGBData[row][col][2] = signPositive(compBlueforRedBL(imageData, row+edgesize, col+edgesize) + 0.5 * compRedPixelDelta(imageData, row + edgesize, col + edgesize));
 			}
 			//Green
 			if (judgePixelColor(row , col) == 1) {
-				imageRGBData[row][col][0] =round( compRedforGreenBL(imageData, row+edgesize, col+edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][0] = signPositive(compRedforGreenBL(imageData, row+edgesize, col+edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
 				imageRGBData[row][col][1] = imageData[row+edgesize][col+edgesize]; 
-				imageRGBData[row][col][2] = round( compBlueforGreenBL(imageData, row + edgesize, col + edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][2] = signPositive(compBlueforGreenBL(imageData, row + edgesize, col + edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
 			}
 			//Blue
 			if (judgePixelColor(row , col ) == 2) {
-				imageRGBData[row][col][0] =round( compRedforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
-				imageRGBData[row][col][1] =round( compGreenforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][0] = signPositive(compRedforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][1] = signPositive(compGreenforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
 				imageRGBData[row][col][2] = imageData[row + edgesize][col + edgesize];
 			}
 		}
@@ -89,7 +101,7 @@ int main(int argc ,char *argv[]) {
 			height = atoi(argv[5]); 
 		}
 	}
-	int edgesize = 2; 
+	int edgesize = 4; 
 	// Allocate image data array
 	unsigned char** imageData = NULL; 
 	imageData = alloc2DImage(width, height, BytesPerPixel);
@@ -102,13 +114,13 @@ int main(int argc ,char *argv[]) {
 	
 	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
 	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
-	MHC_Demosaicing(extendedImageData, imageRGBData, width, height,edgesize);
-	cout << width << endl; 
-	cout << height << endl;
+	MHC_Demosaicing(extendedImageData, imageRGBData, width, height,BytesPerPixel, edgesize);
+//	cout << width << endl; 
+//	cout << height << endl;
 	// Write image data (filename specified by second argument) from image data matrix
-	cout << bitset<8>('0') << endl;
-	cout << bitset<8>(imageRGBData[500][0][0]) << endl;
-	cout << (int)imageRGBData[531][594][1] << endl;
+//	cout << bitset<8>('0') << endl;
+//	cout << bitset<8>(imageRGBData[500][0][0]) << endl;
+//	cout << (int)imageRGBData[531][594][1] << endl;
 	write3DImageFile(argv[2], imageRGBData, width, height, 3); 
 
 	return 0;

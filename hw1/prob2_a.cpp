@@ -27,11 +27,43 @@ int median2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel
 	return result; 
 }
 
+double compGaussianWeight(int row, int col, int l, int k,double stdev) {
+	double result; 
+	double pi = 3.14159265359; 
+	double sumdistance = pow(row - l, 2) + pow(col - k, 2);  
+	double coefficient = 1 / (2 * pi * pow(stdev, 2)); 
+	result = coefficient * exp((-1) * sumdistance / 2 / pow(stdev, 2)); 
+	return result; 
+}
 
-void linear_filter(unsigned char** imageData, unsigned char** targetImage, int width, int height, int BytesPerPixel , int widsize) {
+unsigned char compGaussianPixel(unsigned char** imageData, unsigned char** targetImage, int row, int col, int widsize,double stdev) {
+	unsigned char result; 
+	double weightPixelSum = 0;
+	double weightSum = 0;
+	double pi = 3.14159365; 
+	for (int i = row - widsize / 2; i <= row + widsize / 2; i++) { 
+		for (int j = col - widsize / 2; j <= col + widsize / 2; j++) {
+			double GaussWeight = compGaussianWeight(row, col, i, j,stdev); 
+			weightPixelSum += imageData[i][j]*GaussWeight; 
+			weightSum += GaussWeight; 
+		}
+	}
+	result = weightPixelSum / weightSum; 
+	return result;
+}
+
+void GaussianFilter(unsigned char** imageData, unsigned char** targetImage, int width, int height, int BytesPerPixel, int edgesize, int widsize ,double stdev) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			targetImage[row][col] = (unsigned char)aver2DImage(imageData, row+widsize , col+widsize ,1,  widsize);
+			targetImage[row][col] = compGaussianPixel(imageData, targetImage, row, col, widsize,stdev); 
+		}
+	}
+}
+
+void linear_filter(unsigned char** imageData, unsigned char** targetImage, int width, int height, int BytesPerPixel ,int edgesize, int widsize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			targetImage[row][col] = (unsigned char)aver2DImage(imageData, row+edgesize , col+edgesize ,BytesPerPixel,  widsize);
 		}
 	}
 	
@@ -55,10 +87,10 @@ int aver2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, 
 	return (int)average;
 }
 
-void impulse_filter(unsigned char** imageData, unsigned char** filteredImage, int width, int height, int BytesPerPixel, int widsize) {
+void impulse_filter(unsigned char** imageData, unsigned char** filteredImage, int width, int height, int BytesPerPixel, int edgesize , int widsize ) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			filteredImage[row][col] = (unsigned char)median2DImage(imageData, row + widsize, col + widsize, 1, widsize); 
+			filteredImage[row][col] = (unsigned char)median2DImage(imageData, row + edgesize, col + edgesize, BytesPerPixel, widsize); 
 		}
 	}
 
@@ -92,6 +124,8 @@ int main(int argc, char* argv[]) {
 	int BytesPerPixel;
 	int edgesize = 6;
 	int widsize = 2;
+	double stdev = 0; 
+	int method = 0; 
 	if (argc < 3) {
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
 		cout << "program_name input_image.raw input_ori_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
@@ -109,9 +143,12 @@ int main(int argc, char* argv[]) {
 			width = atoi(argv[5]);
 			height = atoi(argv[6]);
 			widsize = atoi(argv[7]); 
+			stdev = atoi(argv[8]); 
+			method = atoi(argv[9]); 
+
 		}
 	}
-
+	
 
 	edgesize = widsize * 2; 
 	unsigned char** imageData; 
@@ -127,7 +164,12 @@ int main(int argc, char* argv[]) {
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel);
 	read2DImageFile(argv[2], originImageData, width, height, BytesPerPixel); 
 	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize); 
-	linear_filter(extendedImageData, filteredData, width, height, 1, widsize); 
+	if (method == 0) {
+		linear_filter(extendedImageData, filteredData, width, height, BytesPerPixel, edgesize, widsize);
+	}
+	else {
+		GaussianFilter(extendedImageData, filteredData, width, height, BytesPerPixel, edgesize, widsize, stdev); 
+	}
 	write2DImageFile(argv[3], filteredData, width, height, BytesPerPixel);
 	double psnr = eval2DImagePSNR(originImageData,filteredData , width ,height ,BytesPerPixel );
 	double psnrnoisy = eval2DImagePSNR(originImageData, imageData, width, height, BytesPerPixel); 
