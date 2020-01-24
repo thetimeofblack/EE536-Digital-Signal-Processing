@@ -26,37 +26,66 @@ void writeHistDataFile(char* filename, int histData[256]) {
 	}
 }
 
-void transferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
-	const int MAX_INTENSITY = 255; 
-	int totalpixel = width * height; 
-	int* histogramR = new int[256]; 
-	int* sumHistogramR = new int[256]; 
-	int* histogramG = new int[256];
-	int* sumHistogramG = new int[256];
-	int* histogramB = new int[256];
-	int* sumHistogramB = new int[256];
-	memset(sumHistogramR, 0, 256 * sizeof(int));
-	memset(sumHistogramG, 0, 256 * sizeof(int));
-	memset(sumHistogramB, 0, 256 * sizeof(int));
-	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0); 
-	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 1);
-	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 2);
-	for (int i = 0; i < 256; i++) {
-		sumHistogramR[i] += histogramR[i]; 
-		sumHistogramG[i] += histogramG[i]; 
-		sumHistogramB[i] += histogramB[i]; 
-	}
-	for (int row = 0; row < height; row++) {
-		for (int col = 0; col < width; col++) {
-			equalizedData[row][col][0] = sumHistogramR[imageData[row][col][0]] * MAX_INTENSITY / totalpixel; 
-			equalizedData[row][col][1] = sumHistogramG[imageData[row][col][1]] * MAX_INTENSITY / totalpixel;
-			equalizedData[row][col][2] = sumHistogramB[imageData[row][col][2]] * MAX_INTENSITY / totalpixel;
+
+
+void randAllocHistogramEqualizationByChannel(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel, int channel) {
+	int bucketsize = ceil(width * height / 256); 
+	unsigned int* rowIndex = new unsigned int[width * height]; 
+	unsigned int* colIndex = new unsigned int[width * height];
+	unsigned char* pixelValueArray = new unsigned char[width * height];
+	
+	unsigned int tempIndex = 0;
+	for (int pixelValue = 0; pixelValue < 256; pixelValue++) {
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				if (imageData[row][col][channel] == pixelValue) {
+					rowIndex[tempIndex] = row;
+					colIndex[tempIndex] = col;
+					pixelValueArray[tempIndex] = pixelValue;
+					tempIndex = tempIndex + 1;
+				}
+			}
 		}
 	}
+
+	// Change the pixel array randomly
+	unsigned int tempCount = 0;
+	unsigned char tempPixel = 0;
+	unsigned int tempArrayIndex = 0;
+	for (int index = 0; index < (width * height); index++) {
+		if (tempCount != bucketsize) {
+			pixelValueArray[tempArrayIndex] = tempPixel;
+			tempArrayIndex = tempArrayIndex + 1;
+			tempCount = tempCount + 1;
+		}
+		else {
+			tempPixel = tempPixel + 1;
+			tempCount = 0;
+		}
+	}
+
+
+	// Track back the changed pixel values to a 2D array
+	unsigned int tempRowIndex;
+	unsigned int tempColIndex;
+	for (int index = 0; index < (width * height); index++) {
+		tempRowIndex = rowIndex[index];
+		tempColIndex = colIndex[index];
+		equalizedData[tempRowIndex][tempColIndex][channel] = pixelValueArray[index];
+	}
+
+	delete[] rowIndex;
+	delete[] colIndex;
+	delete[] pixelIndex;
+
 }
 
-
-void cumulativeProbabilityBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
+void cumulativeProbabilityBasedHistogramEqualization(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel) {
+	for (int cor = 0; cor < 3; cor++) {
+		randAllocHistogramEqualizationByChannel(imageData, equalizedData, width, height, BytesPerPixel, cor);
+	}
+}
+void transfunctionBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
 	const int MAX_INTENSITY = 255;
 	int totalpixels = width * height; 
 	int* histogramR = new int[256];
@@ -133,7 +162,7 @@ int main(int argc, char* argv[]) {
 		cumulativeProbabilityBasedHistogramEqualization(imageData, equalizedImageData, width, height, BytesPerPixel); 
 	}
 	else{
-		transferFunctionBasedHistogramEqualization(imageData,equalizedImageData,width,height,BytesPerPixel);
+		transfunctionBasedHistogramEqualization(imageData,equalizedImageData,width,height,BytesPerPixel);
 	}
 
 	write3DImageFile(argv[2], equalizedImageData,width,height, BytesPerPixel); 

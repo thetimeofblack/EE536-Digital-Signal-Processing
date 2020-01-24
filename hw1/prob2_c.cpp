@@ -109,7 +109,7 @@ int main(int argc , char *argv[]) {
 	edgesize = widsize + widwidth + 10; 
 	imageData = alloc2DImage(width, height, BytesPerPixel);
 	desiredImageData = alloc2DImage(width, height, BytesPerPixel);
-	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, 1);
+	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, BytesPerPixel);
 	filteredImageData = alloc2DImage(width, height, BytesPerPixel);
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel ); 
 	read2DImageFile(argv[2], desiredImageData, width, height, BytesPerPixel);

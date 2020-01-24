@@ -472,7 +472,7 @@ int delete2DImage(unsigned char ** imageData, int width, int height, int BytesPe
 }
 
 
-int delete3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixe) {
+int delete3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixel) {
     for (int row = 0; row < height; row++) {
         for (int col = 0; col < width; col++) {
             delete[] imageData[row][col];
