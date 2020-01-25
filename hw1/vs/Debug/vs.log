@@ -1,4 +1,4 @@
-﻿  prob1_b.cpp
+﻿  prob2_c.cpp
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(98,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(100,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(108,19): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
@@ -9,15 +9,8 @@ D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeade
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(138,22): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(382,9): warning C4101: “rows”: 未引用的局部变量
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(383,9): warning C4101: “cols”: 未引用的局部变量
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(6,36): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(12,36): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(20,36): warning C4244: “=”: 从“double”转换到“int”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(25,31): warning C4554: “&”: 检查运算符优先级是否存在的可能的错误；使用括号阐明优先级
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(42,99): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(43,102): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(53,106): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(54,108): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob1_b.cpp(78,8): warning C4101: “file”: 未引用的局部变量
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_c.cpp(66,44): warning C4244: “=”: 从“double”转换到“unsigned char”，可能丢失数据
+D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\prob2_c.cpp(72,8): warning C4101: “file”: 未引用的局部变量
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(514): warning C4715: “compareUnsignedChar”: 不是所有的控件路径都返回值
 D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\dipHeader.h(521): warning C4715: “compareInt”: 不是所有的控件路径都返回值
   vs.vcxproj -> D:\EE 569 Image processing\homework\EE536-Digital-Signal-Processing\hw1\vs\Debug\vs.exe

@@ -23,12 +23,12 @@ double GaussianKernel(int n1, int n2 , double stdev ) {
 	return result; 
 }
 
-double compEuclidianDistanceArea2Area(unsigned char** imageData, int row, int col, int i, int j, int widwidth, int widheight , double stdev) {
+double compEuclidianDistanceArea2Area(unsigned char** imageData, int row, int col, int i, int j, int patchsize , double stdev) {
 	const double pi = 3.1415926535897;
 	double distance = 0;
 	double sum = 0; 
-	for (int k = -widheight/2; k <= widheight/2; k++) {
-		for (int l = widwidth / 2; l <= widwidth / 2; l++) {
+	for (int k = -patchsize/2; k <= patchsize/2; k++) {
+		for (int l = patchsize / 2; l <= patchsize / 2; l++) {
 			sum += GaussianKernel(abs(k),abs(l),stdev)*pow(imageData[row + k][col + l] - imageData[i + k][j + l], 2);
 		}
 	}
@@ -36,36 +36,36 @@ double compEuclidianDistanceArea2Area(unsigned char** imageData, int row, int co
 }
 
 
-double compEuclidianDistanceWeight(unsigned char** imageData, int row, int col, int i, int j, int widwidth, int widheight, double hparm , double stdev) {
+double compEuclidianDistanceWeight(unsigned char** imageData, int row, int col, int i, int j, int patchsize, double hparm , double stdev) {
 	
 	double result = 0 ;
-	double distance = compEuclidianDistanceArea2Area(imageData, row, col, i, j, widwidth, widheight, stdev); 
+	double distance = compEuclidianDistanceArea2Area(imageData, row, col, i, j, patchsize, stdev); 
 	result = exp(- distance / pow(hparm, 2)); 
 	return result; 
 }
 
 
 
-double computeNLMPixel(unsigned char** imageData,  int row, int col, int BytesPerPixel,int widsize,   int widwidth, int widheight ,double hparm, double stdev) {
+double computeNLMPixel(unsigned char** imageData,  int row, int col, int BytesPerPixel,int widsize,   int patchsize ,double hparm, double stdev) {
 	double totalweightedPixel = 0 ;
 	double totalweight = 0 ; 
 	double result = 0;
 	for (int i = row-widsize/2; i <= row+widsize/2; i++) {
 		for (int j = col-widsize/2; j <= col+widsize/2; j++) {
-			totalweightedPixel += compEuclidianDistanceWeight( imageData,row,col,i,j,BytesPerPixel,widwidth,widheight, stdev)*imageData[i][j]; 
-			totalweight += compEuclidianDistanceWeight(imageData,row,col,i,j,BytesPerPixel,widwidth,widheight, stdev) ; 
+			totalweightedPixel += compEuclidianDistanceWeight( imageData,row,col,i,j,patchsize,hparm, stdev)*imageData[i][j]; 
+			totalweight += compEuclidianDistanceWeight(imageData,row,col,i,j,patchsize,hparm, stdev) ; 
 		}
 	}
 	result = totalweightedPixel / totalweight; 
 	return result;
 }
 
-void NLM_filtering(unsigned char** imageData, unsigned char** filteredData, int width, int height, int BytesPerPixel,int edgesize ,int widsize , int widwidth, int widheight , double hparm , double stdev) {
+void NLM_filtering(unsigned char** imageData, unsigned char** filteredData, int width, int height, int BytesPerPixel,int edgesize ,int widsize , int patchsize , double hparm , double stdev) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			filteredData[row][col] = computeNLMPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel,widsize, widwidth, widheight , hparm ,stdev );
+			filteredData[row][col] = computeNLMPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel,widsize, patchsize , hparm ,stdev );
 		}
-	}
+	}                                       
 }
 
 int main(int argc , char *argv[]) {
@@ -79,6 +79,7 @@ int main(int argc , char *argv[]) {
 	int widheight = 5;
 	double hparm = 10.0;
 	double stdev = 10.0; 
+	int patchsize = 0; 
 	if (argc < 3) {
 		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
 		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
@@ -96,7 +97,7 @@ int main(int argc , char *argv[]) {
 			width = atoi(argv[5]);
 			height = atoi(argv[6]);
 			widsize = atoi(argv[7]); 
-			widwidth = widheight = atoi(argv[8]);  
+			patchsize = atoi(argv[8]);  
 			hparm = atoi(argv[9]); 
 			stdev = atoi(argv[10]); 
 		}
@@ -106,7 +107,7 @@ int main(int argc , char *argv[]) {
 	unsigned char** filteredImageData; 
 	unsigned char** extendedImageData;
 	unsigned char** desiredImageData; 
-	edgesize = widsize + widwidth + 10; 
+	edgesize = widsize + patchsize + 10; 
 	imageData = alloc2DImage(width, height, BytesPerPixel);
 	desiredImageData = alloc2DImage(width, height, BytesPerPixel);
 	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, BytesPerPixel);
@@ -114,7 +115,7 @@ int main(int argc , char *argv[]) {
 	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel ); 
 	read2DImageFile(argv[2], desiredImageData, width, height, BytesPerPixel);
 	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
-	NLM_filtering(extendedImageData, filteredImageData, width, height, BytesPerPixel,edgesize,  widsize, widwidth, widheight, hparm , stdev);
+	NLM_filtering(extendedImageData, filteredImageData, width, height, BytesPerPixel,edgesize,  widsize, patchsize, hparm , stdev);
 	write2DImageFile(argv[3], filteredImageData, width, height, BytesPerPixel); 
 	double psnr = eval2DImagePSNR(desiredImageData, filteredImageData, width, height, BytesPerPixel);
 	double psnrnoisy = eval2DImagePSNR(desiredImageData, imageData, width, height, BytesPerPixel);

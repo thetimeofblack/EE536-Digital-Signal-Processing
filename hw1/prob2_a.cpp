@@ -55,7 +55,7 @@ unsigned char compGaussianPixel(unsigned char** imageData, unsigned char** targe
 void GaussianFilter(unsigned char** imageData, unsigned char** targetImage, int width, int height, int BytesPerPixel, int edgesize, int widsize ,double stdev) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			targetImage[row][col] = compGaussianPixel(imageData, targetImage, row, col, widsize,stdev); 
+			targetImage[row][col] = compGaussianPixel(imageData, targetImage, row+edgesize, col+edgesize, widsize,stdev); 
 		}
 	}
 }

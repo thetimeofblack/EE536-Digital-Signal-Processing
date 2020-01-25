@@ -64,14 +64,13 @@ int main(int argc, char* argv[]) {
 		if (argc >= 5) {
 			width = atoi(argv[5]);
 			height = atoi(argv[6]);
-			edgesize = atoi(argv[7]);
-			widsize = atoi(argv[8]);
-			cigmaC = atoi(argv[9]); 
-			cigmaS = atoi(argv[10]);
+			widsize = atoi(argv[7]);
+			cigmaC = atoi(argv[8]); 
+			cigmaS = atoi(argv[9]);
 		}
 	}
 
-
+	edgesize = 2 * widsize; 
 
 	unsigned char** imageData; 
 	unsigned char** extendedData; 
