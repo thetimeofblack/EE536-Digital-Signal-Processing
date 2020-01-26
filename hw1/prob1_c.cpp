@@ -86,6 +86,33 @@ void RandomPickHistogramEqualization(unsigned char*** imageData, unsigned char**
 	for (int cor = 0; cor < 3; cor++) {
 		RandomPickBasedHistogramEqualizationByChannel(imageData, equalizedData, width, height, BytesPerPixel, cor); 
 	}
+	int* histogramR = new int[256];
+	int* histogramG = new int[256];
+	int* histogramB = new int[256];
+	int* sumHistogramR = new int[256];
+	int* sumHistogramG = new int[256];
+	int* sumHistogramB = new int[256];
+	histogramCountByChannel(equalizedData, histogramR, width, height, BytesPerPixel, 0);
+	histogramCountByChannel(equalizedData, histogramG, width, height, BytesPerPixel, 1);
+	histogramCountByChannel(equalizedData, histogramB, width, height, BytesPerPixel, 2);
+	int currR = 0;
+	int currG = 0;
+	int currB = 0;
+	for (int i = 0; i < 256; i++) {
+		currR += histogramR[i];
+		currG += histogramG[i];
+		currB += histogramB[i];
+		sumHistogramR[i] = currR; 
+		sumHistogramG[i] = currG;
+		sumHistogramB[i] = currB;
+	}
+	char sumHistogramRfilename[100] = "sumHistogramR.txt";
+	char sumHistogramGfilename[100] = "sumHistogramG.txt";
+	char sumHistogramBfilename[100] = "sumHistogramB.txt";
+	cout << sumHistogramR[0]; 
+	writeHistogramArray(sumHistogramR, sumHistogramRfilename);
+	writeHistogramArray(sumHistogramG, sumHistogramGfilename);
+	writeHistogramArray(sumHistogramB, sumHistogramBfilename);
 
 }
 void TransferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
@@ -111,7 +138,13 @@ void TransferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsi
 		transformArrayG[i] = round((((float)currG) * 255) / totalpixels);
 		transformArrayB[i] = round((((float)currB) * 255) / totalpixels);
 	}
-	
+	char transformRfilename[100] = "transformArrayR.txt"; 
+	char transformGfilename[100] = "transformArrayG.txt";
+	char transformBfilename[100] = "transformArrayB.txt";
+	cout << transformArrayB[8]; 
+	writeHistogramArray(transformArrayR, transformRfilename); 
+	writeHistogramArray(transformArrayG, transformGfilename);
+	writeHistogramArray(transformArrayB, transformBfilename);
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
 			equalizedData[row][col][0] = transformArrayR[imageData[row][col][0]]; 

@@ -27,7 +27,7 @@
 % Problem 1_c:  Histogram Manipulation
 % C++-file name: prob1_c.cpp
 % Command template : prob1_c [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [method]
-% Command: prob1_c HW1_images/toy.raw toy_a.raw 1 400 560 0
+% Command: prob1_c HW1_images/toy.raw toy_a.raw 3 400 560 0
 % Output image: toy_a1.raw toy_b1.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2_a: Linear Denoising

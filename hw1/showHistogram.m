@@ -9,7 +9,7 @@ redChannel = reshape(Image(1:3:end), [y_size, x_size]);
 greenChannel = reshape(Image(2:3:end), [y_size, x_size]);
 blueChannel = reshape(Image(3:3:end), [y_size, x_size]);
 rgbImage = cat(3, redChannel, greenChannel, blueChannel);
-;
+
 % Requires R2019b or later
 % Top plot
 subplot(3,1,1)

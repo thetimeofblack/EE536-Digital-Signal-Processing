@@ -519,6 +519,17 @@ int compareInt(const void* a, const void* b)
     if (*(int*)a == *(int*)b) return 0;
     if (*(int*)a > * (int*)b) return 1;
 }
+
+void writeHistogramArray(int* array, char* filename) {
+    FILE *file; 
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename<< endl;
+        exit(1);
+    }
+    fwrite(array, sizeof(int), 256, file); 
+    fclose(file);
+
+}
 /*
 // if the input image only contains one pixel, this will return null ;  
 // the copied image obeys the reflection rule
