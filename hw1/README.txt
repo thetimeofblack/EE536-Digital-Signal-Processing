@@ -38,19 +38,19 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Problem 2_b: Bilateral Denoising
 % C++-file name: prob2_b.cpp
-% Command template :  prob2_b [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [edgesize] [window size] [standard deviation C] [standard deviation S]
+% Command template :  prob2_b [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [window size] [standard deviation C] [standard deviation S]
 % Command: prob2_b ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_bl1.raw 1 320 320 10 10 1 1
 % Output image: corn_bl1.raw corn_bl2.raw corn_bl3.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Problem 2_c: Non-Local mean Denoising
-% M-file name: prob2_c.cpp
-% Command template : 
+% C++file name: prob2_c.cpp
+% Command template : prob2_c [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [window size] [patch size] [h parameter] [standard deviation ]
 % Command: prob2_c ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_nlm1.raw 1 320 320 5 5 1 100  
 % Output image: corn_nlm1.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 % Problem 2_d: BM3D
 % M-file name: BM3D_Denoising.m
-% Command template : 
+% Command template : just run no template
 % Command: run matlab file  
 % Output image: Corn_bm3d_denoised.jpg Corn_bm3d_noisy.jpg
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   

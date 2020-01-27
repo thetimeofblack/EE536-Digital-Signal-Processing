@@ -1,0 +1,1564 @@
+% code 
+%dipHeader.h 
+// dipHeader.h
+// Created by Yining HE on 1/19/18.
+// Copyright © 2020 Yining HE. All rights reserved.
+
+#ifndef dipHeader_h
+#define dipHeader_h 
+#endif
+#define _CRT_SECURE_NO_WARNINGS
+
+// not implemented now  
+// #define R 0  
+// #define G 1
+// #define B 2 
+
+
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<cmath>
+#include<math.h>
+#define _USE_MATH_DEFINES
+using namespace std; 
+
+// Initialize system for argument input 
+void dip_init();
+
+// print image error information 
+void print_image_info();
+
+
+// Allocate memory for image
+unsigned char** alloc2DImage( int width , int height, int BytePerPixel);
+unsigned char*** alloc3DImage(int width, int height, int BytePerPixel); 
+unsigned char* alloc1DArray(int len); 
+unsigned char** alloc2DArray(int rows, int cols); 
+unsigned char*** alloc3DArray(int rows, int cols, int deps); 
+double* alloc1DArrayDouble(int len); 
+double** alloc2DArrayDouble(int rows, int cols); 
+double*** alloc3DArrayDouble(int rows, int cols, int deps); 
+
+// Delete memory for image 
+int delete2DImage(int width, int height, int BytesPerPixe); 
+int delete3DImage(int width, int height, int BytesPerPixe);
+
+
+// IO function for image input and output for file 
+void read2DImage(FILE *file, unsigned char**imageData, int width , int height , int BytePerPixel  ); 
+void read3DImage(FILE *file, unsigned char*** imageData, int width, int height , int channels); 
+void write2DImage(FILE *file , unsigned char **imageData, int width , int height); 
+void write3DImage(FILE* file, unsigned char*** imageData, int width, int height , int channels);
+
+// contained file open function and use IO function for image data read 
+void read2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel); 
+void read3DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel); 
+void write2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel);
+void write3DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel);
+
+// extend image edges 
+void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel,int widsize); 
+void extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel, int widsize); 
+
+// for linear filter
+int aver2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, int widsize);
+
+
+// return a number that indicates color of current pixels 
+// RGB  R 0 G 1 B 2  
+// input the position of current pixel
+// the row and col indicates the position of the pixel, the start pixel is at position (0,0)   
+int judgePixelColor(int row , int col);
+
+//print image Data 
+void print2DImage(unsigned char** imageData, int width, int height, int BytesPerPixel); 
+
+int judgePixelColor(int row , int col){
+    if(row%2==1 &&col%2==1||row%2==0&&col%2==0){
+        return 1 ; 
+    }else if(row%2==0&&col%2==1){
+        return 0 ; 
+    }else{
+        return 2 ; 
+    }
+}
+
+
+// test library inclusion 
+void testHeaderIncluded(){
+    cout<<"Hello World"<<endl;     
+}
+
+
+
+
+
+unsigned char compRedforGreenBL(unsigned char **imageData, int row, int col) {
+    unsigned char result; 
+    if (row % 2 == 0) {
+        result = 0.5 * (imageData[row][col+1] + imageData[row][col-1]);
+    }else {
+        result = 0.5 * (imageData[row + 1][col] + imageData[row - 1][col]); 
+    }
+    return result; 
+}
+
+
+unsigned char compRedforBlueBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] +imageData[row+1][col-1] +imageData[row-1][col+1]+imageData[row-1][col-1]);
+    return result; 
+}
+
+unsigned char compGreenforRedBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result; 
+}
+
+unsigned char compGreenforBlueBL(unsigned char** imageData, int row, int col) {
+    unsigned char result;
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result; 
+}   
+
+unsigned char compBlueforRedBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result;
+}
+
+unsigned char compBlueforGreenBL(unsigned char** imageData, int row, int col) {
+    unsigned char result;
+    if (row % 2 == 0) {
+        result = 0.5 * (imageData[row + 1][col] + imageData[row - 1][col]); 
+    }else {
+        result = 0.5 * (imageData[row][col + 1] + imageData[row][col - 1]); 
+    }
+    return result; 
+}
+
+
+
+void read2DImage(FILE *file, unsigned char** imageData, int width, int height ,int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+       fread(imageData[row], sizeof(unsigned char),  width * BytesPerPixel, file);
+    }
+}
+
+void read3DImage(FILE* file, unsigned char*** imageData, int width, int height, int channels) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            fread(imageData[row][col], sizeof(unsigned char), channels, file); 
+        }
+    }
+}
+
+void write2DImage(FILE* file, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        fwrite(imageData[row], sizeof(unsigned char), width * BytesPerPixel, file); 
+    }
+
+}
+
+void write3DImage(FILE* file, unsigned char*** imageData, int width, int height, int channels) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            fwrite(imageData[row][col], sizeof(unsigned char), channels, file); 
+        }
+    }
+}
+
+void read2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "rb"))) {
+        cout << "Cannot open file: " << filename<< endl;
+        exit(1);
+    }
+    read2DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void read3DImageFile(char* filename, unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "rb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    read3DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void write2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    write2DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void write3DImageFile(char* filename, unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    write3DImage(file, imageData, width, height, 3);
+    fclose(file);
+}
+
+
+void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel,int edgesize) {
+    for (int row = 0; row < height+2*edgesize; row++) {
+        for (int col = 0; col < width + 2 * edgesize; col++) {
+            //the
+            if (row < edgesize && col < edgesize) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][edgesize - 1 - col];
+            }
+
+            if (row<edgesize && col>= edgesize&& col<width+edgesize) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][col-edgesize]; 
+            }
+
+            if (row < edgesize && col >= edgesize + width) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][edgesize + 2 * width - 1-col]; 
+            }
+
+
+            if (row >= edgesize && row < edgesize + height && col < edgesize) {
+                extendedImage[row][col] = imageData[row-edgesize][edgesize-col-1]; 
+            }
+            if (row >= edgesize && row < edgesize + height && col >= edgesize && col < edgesize + width) {
+                extendedImage[row][col] = imageData[row-edgesize][col-edgesize]; 
+            }
+            if (row >= edgesize && row < edgesize + height && col >= edgesize+width&&col<edgesize*2+width) {
+                extendedImage[row][col] = imageData[row-edgesize][edgesize + 2 * width - 1 - col]; 
+            }
+
+
+
+            if (row >= edgesize + height && row < edgesize * 2 + height && col < edgesize) {
+                extendedImage[row][col] = imageData[2 * height + edgesize - 1 - row][edgesize - 1 - col]; 
+            }
+            if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize && col < edgesize + width) {
+                extendedImage[row][col] = imageData[2*height+edgesize-1-row][col-edgesize]; 
+            }
+            if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                extendedImage[row][col] = imageData[2 * height + edgesize - 1 - row][2 * width + edgesize - 1 - col]; 
+            }
+
+
+        }
+    
+    }
+
+}
+
+void extend3DImageEdge(unsigned char*** imageData, unsigned char*** extendedImage, int width, int height, int BytesPerPixel,int edgesize) {
+    for (int row = 0; row < height + 2 * edgesize; row++) {
+        for (int col = 0; col < width + 2 * edgesize; col++) {
+            for (int cor = 0; cor < BytesPerPixel; cor++) {
+                if (row < edgesize && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][edgesize - 1 - col][cor];
+                }
+
+                if (row < edgesize && col >= edgesize && col < width + edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][col-edgesize][cor];
+                }
+
+                if (row < edgesize && col >= edgesize + width && col<width + 2*edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][edgesize + 2 * width - 1 - col][cor];
+                }
+
+                if (row >= edgesize && row < edgesize + height && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[row-edgesize][edgesize - 1 - col][cor];
+                }
+                if (row >= edgesize && row < edgesize + height && col >= edgesize && col < edgesize + width) {
+                    extendedImage[row][col][cor] = imageData[row - edgesize][col - edgesize][cor];
+                }
+                if (row >= edgesize && row < edgesize + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[row - edgesize][edgesize + 2 * width - 1 - col][cor];
+                }
+                if (row >= edgesize + height && row < edgesize * 2 + height && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][edgesize - 1 - col][cor];
+                }
+                if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize && col < edgesize + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][col-edgesize][cor];
+                }
+                if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][2 * width + edgesize - 1 - col][cor];
+                }
+
+            }
+        }
+
+    }
+}
+
+unsigned char** alloc2DImage(int width, int height, int BytePerPixel) {
+    unsigned char** imageData; 
+    imageData = new unsigned char* [height]; 
+    for (int row = 0; row < height; row++) {
+        imageData[row] = new unsigned char[width]; 
+    }
+    return imageData;  
+}
+
+unsigned char *** alloc3DImage(int width, int height, int BytePerPixel) {
+    unsigned char*** imageData; 
+    imageData = new unsigned char**[height]; 
+	for(int row=0 ; row<height ; row++){
+		imageData[row] = new unsigned char *[width];
+		for(int col=0; col<width; col++){
+			imageData[row][col] = new unsigned char[3]; 
+		}
+	}
+    return imageData; 
+}
+
+unsigned char* alloc1DArray(int len) {
+    unsigned char* arr;
+    arr = new unsigned char [len]; 
+    return arr; 
+}
+
+unsigned char** alloc2DArray(int rows, int cols) {
+    unsigned char** arr; 
+    arr = new unsigned char* [rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new unsigned char[cols]; 
+    }
+    return arr; 
+
+}
+
+unsigned char*** alloc3DArray(int rows, int cols , int deps) {
+    unsigned char*** arr;
+    arr = new unsigned char** [rows];
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new unsigned char*[cols];
+        for (int col = 0; col < cols; col++) {
+            arr[row][col] = new unsigned char[deps]; 
+        }
+    }
+    return arr;
+
+}
+
+double* alloc1DArrayDouble(int len) {
+    double* arr; 
+    arr = new double[len]; 
+    return arr;
+}
+double** alloc2DArrayDouble(int rows, int cols) {
+    double** arr; 
+    arr = new double*[rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new double[cols]; 
+    }
+    return arr; 
+}
+
+double*** alloc3DArrayDouble(int rows, int cols, int deps) {
+    double*** arr; 
+    arr = new double** [rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new double* [cols]; 
+        for (int col = 0; col < cols; col++) {
+            arr[row][col] = new double[deps];
+        }
+    }
+    return arr; 
+}
+int dip_init(int argc , char *argv[],int *height, int *width ,int *BytePerPixel ) {
+    // Define file pointer and variables
+    FILE* file;
+//  const  int BytesPerPixel;
+    const  int Size = 256;
+    int rows;
+    int cols;
+
+
+    // Check for proper syntax
+    if (argc < 3) {
+        cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+        cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Size = 256]" << endl;
+        return 0;
+    }
+
+    // Check if image is grayscale or color
+    if (argc < 4) {
+       // BytesPerPixel = 1; // default is grey image
+    }
+    else {
+       // BytesPerPixel = atoi(argv[3]);
+        // Check if size is specified
+        if (argc >= 5) {
+       //     Size = atoi(argv[4]);
+            *width = atoi(argv[4]); 
+            *height = atoi(argv[5]); 
+        }
+    }
+
+    // Allocate image data array
+ //   unsigned char Imagedata[Size][Size][BytesPerPixel];
+
+    // Read image (filename specified by first argument) into image data matrix
+    if (!(file = fopen(argv[1], "rb"))) {
+        cout << "Cannot open file: " << argv[1] << endl;
+        exit(1);
+    }
+ //   fread(Imagedata, sizeof(unsigned char), Size * Size * BytesPerPixel, file);
+    fclose(file);
+
+    ///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
+
+    // Write image data (filename specified by second argument) from image data matrix
+
+    if (!(file = fopen(argv[2], "wb"))) {
+        cout << "Cannot open file: " << argv[2] << endl;
+        exit(1);
+    }
+//    fwrite(Imagedata, sizeof(unsigned char), Size * Size * BytesPerPixel, file);
+    fclose(file);
+
+    return 0;
+
+}
+
+double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int width ,int height, int BytesPerPixel) {
+    double result = 0.0;  
+    double sum = 0;  
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]); 
+        }
+    }
+    result = sum / (width * height); 
+    result = 10*log10(255*255/result); 
+        return result; 
+}
+
+double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, int width , int height , int BytesPerPixel) {
+    double result = 0.0; 
+    double sum = 0;
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            for (int cor = 0; cor < BytesPerPixel; cor++) {
+                sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]);
+            }
+        }
+    }
+    double totalpixels = width * height * BytesPerPixel; 
+    result = sum / totalpixels; 
+    result = 10 * log10(255*255/result); 
+    return result; 
+}
+
+
+
+
+
+int delete2DImage(unsigned char ** imageData, int width, int height, int BytesPerPixe) {
+    for (int row = 0; row < height; row++) {
+        delete[] imageData[row]; 
+    }
+    delete imageData; 
+    return 1; 
+}
+
+
+int delete3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            delete[] imageData[row][col];
+        }
+        delete[] imageData[row]; 
+    }
+    delete[] imageData; 
+    return 1; 
+}
+
+
+void print2DImage(unsigned char** imageData, int width, int height, int BytesPerPixel ) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            cout << imageData[row][col] << " "; 
+        }
+        cout << endl;
+    }
+}
+
+
+void print3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            for (int cor = 0; cor < 3; cor++) {
+                cout << imageData[row][col] << " ";
+
+            }
+        }
+        cout << endl;
+    }
+}
+
+int compareUnsignedChar(const void* a, const void* b)
+{
+    if (*(unsigned char *)a < *(unsigned char *)b) return -1;
+    if (*(unsigned char *)a == *(unsigned char *)b) return 0;
+    if (*(unsigned char *)a > * (unsigned char *)b) return 1;
+}
+
+int compareInt(const void* a, const void* b)
+{
+    if (*(int*)a < *(int*)b) return -1;
+    if (*(int*)a == *(int*)b) return 0;
+    if (*(int*)a > * (int*)b) return 1;
+}
+
+void writeHistogramArray(int* array, char* filename) {
+    FILE *file; 
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename<< endl;
+        exit(1);
+    }
+    fwrite(array, sizeof(int), 256, file); 
+    fclose(file);
+
+}
+/*
+// if the input image only contains one pixel, this will return null ;  
+// the copied image obeys the reflection rule
+void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel) {
+    int extendedWidth = width + 4;
+    int extendedHeight = height + 4;
+    for (int row = 0; row < extendedHeight; row++) {
+        for (int col = 0; col < extendedWidth; col++) {
+            //assign space for columns 
+
+            if (row == 0) {
+                extendedImage[0][0] = imageData[1][1];
+                extendedImage[0][1] = imageData[0][1];
+                extendedImage[0][width + 2] = imageData[0][width - 2];
+                extendedImage[0][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[0][col] = imageData[1][col - 2];
+                }
+            }
+
+            if (row == 1) {
+                extendedImage[1][0] = imageData[1][1];
+                extendedImage[1][1] = imageData[0][1];
+                extendedImage[1][width + 2] = imageData[0][width - 2];
+                extendedImage[1][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[1][col] = imageData[0][col - 2];
+                }
+            }
+
+            if (row == extendedHeight - 1) {
+                extendedImage[extendedHeight - 1][0] = imageData[height - 1][1];
+                extendedImage[extendedHeight - 1][1] = imageData[height - 1][0];
+            }
+
+            if (row == extendedHeight - 2) {
+
+            }
+            if (row >= 2 && col == 0 && row < extendedHeight - 2) {
+
+            }
+            if (col == 1 && row >= 2 && row < extendedHeight - 2) {
+
+            }
+
+
+
+       }
+//
+//   }
+//
+//
+//}
+
+*/
+
+
+% problem 1-a
+
+#include"dipHeader.h"
+#include<bitset>
+using namespace std; 
+
+// dog.raw format 
+// size:600*532 width 600 height 532
+// 8-bit 
+// gray 
+
+// the source code from the class is useless !!!!
+
+
+void test2Darray(unsigned char **input, int rows, int cols ){
+	cout<<*( (unsigned char*)(input+10)+9)<<endl;
+	unsigned char temp =  *( (unsigned char*)(input+34)+9); 
+	unsigned char **temparray ; 
+	temparray = new unsigned char *[3];
+	temparray[0] = new unsigned char[3];  
+	temparray[0][0]=  *( (unsigned char*)(input+34)+9); 
+	temparray[0][1]=  *( (unsigned char*)(input+34)+10); 
+	temparray[0][2]=  *( (unsigned char*)(input+35)+11); 
+	unsigned char sum = 0.5*(temparray[0][0]+temparray[0][2]); 
+	cout<<bitset<8>(temp)<<endl; 
+	cout<<bitset<8>(temparray[0][0])<<endl;
+	cout<<bitset<8>(temparray[0][1])<<endl;
+	cout<<bitset<8>(temparray[0][2])<<endl;
+	cout<<bitset<8>(sum)<<endl;
+}
+
+void testUnsignedCharOverflow() {
+	unsigned char a = 255; 
+	unsigned char b = 255; 
+	//unsigned char c = a + b; 
+	int d = a + b; 
+//	cout << c << endl; 
+	cout << d << endl; 
+//	unsigned char* arr;  
+//	arr = new unsigned char[10]; 
+//	arr[0] = a + b; 
+//	cout << arr[1] << endl;
+//	cout << arr[0] << endl; 
+
+
+
+}
+
+
+void gray2RGB(unsigned char **imageData ,unsigned char ***imageRGBData,  int width , int height,int pixelperByte ,int edgesize){
+//	cout<<"***********image info**************"<<endl; 
+//	cout<<"  height: " << height<<"    width: "<<width<<endl;
+	// we need to prevent overflow for the unsigned char 
+	for(int row = 0 ; row< height ; row++){
+		for(int col = 0 ;col<width ;col++){ 
+			//color is red
+			if(judgePixelColor(row,col) == 0){
+				//cout<<"test command 2"<<endl; 
+				imageRGBData[row][col][0] = imageData[row + edgesize][col + edgesize]; 
+				imageRGBData[row][col][1] = compGreenforRedBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][2] = compBlueforRedBL(imageData, row + edgesize, col + edgesize);
+
+				
+			}
+			//color is green 
+			if(judgePixelColor(row,col) == 1){
+				imageRGBData[row][col][0] = compRedforGreenBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][1] = imageData[row + edgesize][col + edgesize];
+				imageRGBData[row][col][2] = compBlueforGreenBL(imageData, row + edgesize, col + edgesize);
+			}
+			//color is blue 
+			if(judgePixelColor(row,col)==2){
+				imageRGBData[row][col][0] = compRedforBlueBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][1] = compGreenforBlueBL(imageData, row + edgesize, col + edgesize);
+				imageRGBData[row][col][2] = imageData[row + edgesize][col + edgesize];
+			}
+			//cout<<"test command 3"<<endl; 
+		}
+	}
+
+
+}
+
+
+
+int main(int argc, char *argv[])
+{
+	// Define file pointer and variables
+	FILE *file;
+	int BytesPerPixel;
+	int Size = 256;
+	int rows =256; 
+	int cols = 256; 
+    int width =256; 
+    int height =256; 
+	//testHeaderIncluded();
+	// Check for proper syntax
+
+	if (argc < 3){
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+	
+	// Check if image is grayscale or color
+	if (argc < 4){
+		BytesPerPixel = 1; // default is grey image
+	} 
+	else {
+		BytesPerPixel = atoi(argv[3]);
+		// Check if width and height is specified
+		if (argc >= 5){
+			width = atoi(argv[4]);
+            height = atoi(argv[5]); 
+        }
+	}
+	rows = height ;
+    cols = width ; 
+	int edgesize=4; 
+	// Allocate image data array   ?? when the width and height of image is not equal  ??
+	
+	unsigned char ** imageData;
+	imageData = alloc2DImage(width, height, BytesPerPixel); 
+	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel); 
+
+	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
+
+
+	unsigned char ***imageRGBData = NULL; 
+	imageRGBData= alloc3DImage( width, height, 3); 
+	unsigned char** extendedImageData; 
+	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize,BytesPerPixel);
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize); 
+	gray2RGB(extendedImageData,imageRGBData, width,height,BytesPerPixel,edgesize);
+//	 Write image data (filename specified by second argument) from image data matrix
+//	testUnsignedCharOverflow(); 
+
+	write3DImageFile(argv[2], imageRGBData, width, height, 3); 
+	
+
+//	for (int row = 0; row < height; row++) {
+//		delete[] imageData[row]; 
+//	}
+//	delete[] imageData;  
+
+
+//	for (int row = 0; row < height; row++) {
+//		for (int col = 0; col < width; col++) {
+//			delete[] imageRGBData[row][col];
+//		}
+//		delete[] imageRGBData[row];
+//	}
+//	delete[] imageRGBData;
+	return 0;
+}
+
+% problem 1-b 
+
+#include"dipHeader.h"
+#include<bitset>
+int compBluePixelDelta(unsigned char** imageData, int row, int col) {
+	int result = 0;
+	//cout << imageData[row + 2][col] << endl << imageData[row - 2][col] << endl;
+	result = (int)imageData[row][col] - 0.25 * ((int)imageData[row - 2][col] + (int)imageData[row + 2][col] +(int) imageData[row][col + 2] + (int)imageData[row][col - 2]);
+	return result; 
+}
+
+int  compRedPixelDelta(unsigned char** imageData, int row, int col) {
+	int result =0;
+	result = (int)imageData[row][col] - 0.25 * ((int)imageData[row - 2][col] + (int)imageData[row + 2][col] + (int)imageData[row][col + 2] + (int)imageData[row][col - 2]);
+	return result; 
+
+}
+
+
+int compGreenPixelDelta(unsigned char** imageData, int row, int col) {
+	int result =0; 
+	result = (int)imageData[row][col] - 0.25 * ((int)imageData[row + 1][col-1] + (int)imageData[row + 1][col+1] + (int)imageData[row-1][col-1] + (int)imageData[row-1][col+1]);
+	return result; 
+}
+
+unsigned char signPositive(int input) {
+	if (input <= 255 & input >= 0) {
+		return (unsigned char)input; 
+	}
+	else if(input<0) {
+		return (unsigned char)0; 
+	}
+	else {
+		return (unsigned char)255; 
+	}
+}
+
+void MHC_Demosaicing(unsigned char **imageData,unsigned char ***imageRGBData, int width, int height ,int BytesPerPixel, int edgesize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			//Red
+			if (judgePixelColor(row, col) == 0) {
+				imageRGBData[row][col][0] = imageData[row+edgesize][col+edgesize];
+				imageRGBData[row][col][1] =signPositive(compGreenforRedBL(imageData,row+edgesize,col+edgesize)+0.5*compRedPixelDelta(imageData,row + edgesize,col + edgesize));
+				imageRGBData[row][col][2] = signPositive(compBlueforRedBL(imageData, row+edgesize, col+edgesize) + 0.5 * compRedPixelDelta(imageData, row + edgesize, col + edgesize));
+			}
+			//Green
+			if (judgePixelColor(row , col) == 1) {
+				imageRGBData[row][col][0] = signPositive(compRedforGreenBL(imageData, row+edgesize, col+edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][1] = imageData[row+edgesize][col+edgesize]; 
+				imageRGBData[row][col][2] = signPositive(compBlueforGreenBL(imageData, row + edgesize, col + edgesize) + 5 / 8 * compGreenPixelDelta(imageData, row + edgesize, col + edgesize));
+			}
+			//Blue
+			if (judgePixelColor(row , col ) == 2) {
+				imageRGBData[row][col][0] = signPositive(compRedforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][1] = signPositive(compGreenforBlueBL(imageData, row + edgesize, col + edgesize) + 0.75 * compBluePixelDelta(imageData, row + edgesize, col + edgesize));
+				imageRGBData[row][col][2] = imageData[row + edgesize][col + edgesize];
+			}
+		}
+	
+	}
+}
+
+
+void testdelta() {
+
+	unsigned char a = 255; 
+	unsigned char b = 1; 
+	int c = b - a; 
+	cout << (int)c << endl; 
+	
+}
+
+
+
+
+int main(int argc ,char *argv[]) {
+
+	// Define file pointer and variables
+	FILE* file;
+	int BytesPerPixel;
+	int Size = 256;
+	int width; 
+	int height; 
+
+
+	// Check for proper syntax
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Size = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[3]);
+		// Check if size is specified
+		if (argc >= 5) {
+			width = atoi(argv[4]);
+			height = atoi(argv[5]); 
+		}
+	}
+	int edgesize = 4; 
+	// Allocate image data array
+	unsigned char** imageData = NULL; 
+	imageData = alloc2DImage(width, height, BytesPerPixel);
+	unsigned char*** imageRGBData = NULL; 
+	imageRGBData = alloc3DImage(width, height, 3); 
+	unsigned char** extendedImageData; 
+	extendedImageData = alloc2DImage(width+2*edgesize, height+2*edgesize, BytesPerPixel); 
+	// Read image (filename specified by first argument) into image data matrix
+	read2DImageFile(argv[1],imageData, width, height, BytesPerPixel);
+	
+	///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
+	MHC_Demosaicing(extendedImageData, imageRGBData, width, height,BytesPerPixel, edgesize);
+//	cout << width << endl; 
+//	cout << height << endl;
+	// Write image data (filename specified by second argument) from image data matrix
+//	cout << bitset<8>('0') << endl;
+//	cout << bitset<8>(imageRGBData[500][0][0]) << endl;
+//	cout << (int)imageRGBData[531][594][1] << endl;
+	write3DImageFile(argv[2], imageRGBData, width, height, 3); 
+
+	return 0;
+}
+
+%problem 1-c
+
+#include "dipHeader.h"
+#include <bitset>
+
+void histogramCountByChannel(unsigned char*** imageData, int* histcount ,  int width, int height, int BytesPerPixel , int channel) {
+	memset(histcount, 0, 256 * sizeof(int)); 
+	for (int row = 0; row < height; row++){
+		for (int col = 0; col < width; col++) {
+			histcount[imageData[row][col][channel]] += 1; 
+		}
+	}
+}
+
+
+void writeHistDataFile(char* filename, int histData[256]) {
+	FILE* file;
+	file = fopen(filename, "w");
+	if (file != NULL){
+		for (int i = 0; i < 256; i++){
+			fprintf(file, "%d\t%u\n", i, histData[i]);
+		}
+		fclose(file);
+		//cout << "File " << fileName << " written successfully !!!" << endl;
+	}
+	else{
+		cout << "Cannot open file " << filename << endl;
+	}
+}
+
+
+
+
+
+
+void RandomPickBasedHistogramEqualizationByChannel(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel,int channel) {
+	unsigned int* RowIndex = new unsigned int[width * height]();
+	unsigned int* ColIndex = new unsigned int[width * height]();
+	unsigned char* PixelIntensityIndex = new unsigned char[width * height]();
+	int bucketsize = ceil(width * height / 256); 
+	unsigned int tempIndex = 0;
+	for (int pixelValue = 0; pixelValue < 256; pixelValue++) {
+		for (int row = 0; row < height; row++) {
+			for (int col = 0; col < width; col++) {
+				if (imageData[row][col][channel] == pixelValue) {
+					RowIndex[tempIndex] = row;
+					ColIndex[tempIndex] = col;
+					PixelIntensityIndex[tempIndex] = pixelValue;
+					tempIndex = tempIndex + 1;
+				}
+			}
+		}
+	}
+
+	// Change the pixel array acccording to bucket size
+	unsigned int tempCount = 0;
+	unsigned char tempPixel = 0;
+	unsigned int tempArrayIndex = 0;
+	for (int i = 0; i < (width * height); i++) {
+		if (tempCount != bucketsize) {
+			PixelIntensityIndex[tempArrayIndex] = tempPixel;
+			tempArrayIndex = tempArrayIndex + 1;
+			tempCount = tempCount + 1;
+		}
+		else {
+			tempPixel = tempPixel + 1;
+			tempCount = 0;
+		}
+	}
+
+	// Track back the changed pixel values to a 2D array
+	unsigned int tempRowIndex;
+	unsigned int tempColIndex;
+	for (int i = 0; i < (width * height); i++) {
+		tempRowIndex = RowIndex[i];
+		tempColIndex = ColIndex[i];
+		equalizedData[tempRowIndex][tempColIndex][channel] = PixelIntensityIndex[i];
+	}
+
+	delete[] RowIndex;
+	delete[] ColIndex;
+	delete[] PixelIntensityIndex;
+
+
+}
+
+void RandomPickHistogramEqualization(unsigned char*** imageData, unsigned char*** equalizedData, int width, int height, int BytesPerPixel) {
+	for (int cor = 0; cor < 3; cor++) {
+		RandomPickBasedHistogramEqualizationByChannel(imageData, equalizedData, width, height, BytesPerPixel, cor); 
+	}
+	int* histogramR = new int[256];
+	int* histogramG = new int[256];
+	int* histogramB = new int[256];
+	int* sumHistogramR = new int[256];
+	int* sumHistogramG = new int[256];
+	int* sumHistogramB = new int[256];
+	histogramCountByChannel(equalizedData, histogramR, width, height, BytesPerPixel, 0);
+	histogramCountByChannel(equalizedData, histogramG, width, height, BytesPerPixel, 1);
+	histogramCountByChannel(equalizedData, histogramB, width, height, BytesPerPixel, 2);
+	int currR = 0;
+	int currG = 0;
+	int currB = 0;
+	for (int i = 0; i < 256; i++) {
+		currR += histogramR[i];
+		currG += histogramG[i];
+		currB += histogramB[i];
+		sumHistogramR[i] = currR; 
+		sumHistogramG[i] = currG;
+		sumHistogramB[i] = currB;
+	}
+	char sumHistogramRfilename[100] = "sumHistogramR.txt";
+	char sumHistogramGfilename[100] = "sumHistogramG.txt";
+	char sumHistogramBfilename[100] = "sumHistogramB.txt";
+	cout << sumHistogramR[0]; 
+	writeHistogramArray(sumHistogramR, sumHistogramRfilename);
+	writeHistogramArray(sumHistogramG, sumHistogramGfilename);
+	writeHistogramArray(sumHistogramB, sumHistogramBfilename);
+
+}
+void TransferFunctionBasedHistogramEqualization(unsigned char*** imageData, unsigned char ***equalizedData, int width, int height, int BytesPerPixel) {
+	const int MAX_INTENSITY = 255;
+	int totalpixels = width * height; 
+	int* histogramR = new int[256];
+	int* histogramG = new int[256];
+	int* histogramB = new int[256];
+	int* transformArrayR = new int[256];
+	int* transformArrayG = new int[256];
+	int* transformArrayB = new int[256];
+	histogramCountByChannel(imageData, histogramR, width, height, BytesPerPixel, 0); 
+	histogramCountByChannel(imageData, histogramG, width, height, BytesPerPixel, 1);
+	histogramCountByChannel(imageData, histogramB, width, height, BytesPerPixel, 2);
+	int currR = 0;
+	int currG = 0;
+	int currB = 0;
+	for (int i = 0; i < 256; i++) {
+		currR += histogramR[i];
+		currG += histogramG[i];
+		currB += histogramB[i];
+		transformArrayR[i] = round((((float)currR) * 255) / totalpixels);
+		transformArrayG[i] = round((((float)currG) * 255) / totalpixels);
+		transformArrayB[i] = round((((float)currB) * 255) / totalpixels);
+	}
+	char transformRfilename[100] = "transformArrayR.txt"; 
+	char transformGfilename[100] = "transformArrayG.txt";
+	char transformBfilename[100] = "transformArrayB.txt";
+	cout << transformArrayB[8]; 
+	writeHistogramArray(transformArrayR, transformRfilename); 
+	writeHistogramArray(transformArrayG, transformGfilename);
+	writeHistogramArray(transformArrayB, transformBfilename);
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			equalizedData[row][col][0] = transformArrayR[imageData[row][col][0]]; 
+			equalizedData[row][col][1] = transformArrayG[imageData[row][col][1]];
+			equalizedData[row][col][2] = transformArrayB[imageData[row][col][2]];
+		}
+	}
+	
+
+
+}
+
+
+int main(int argc, char* argv[]) {
+	// Define file pointer and variables
+	FILE* file;
+	int BytesPerPixel;
+	int Size = 256;
+	int rows = 256;
+	int cols = 256;
+	int width = 256;
+	int height = 256;
+	// method A transfer function based  is 0  
+	// method B cumulative probability distribution function based is 1 
+	int method = 0;  
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[3]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[4]);
+			height = atoi(argv[5]);
+			method = atoi(argv[6]); 
+		}
+	}
+	unsigned char*** imageData; 
+	unsigned char*** equalizedImageData; 
+	imageData = alloc3DImage(width, height, BytesPerPixel); 
+	equalizedImageData = alloc3DImage(width, height, BytesPerPixel);
+	read3DImageFile(argv[1],imageData, width ,height, BytesPerPixel);
+	if (method == 1) {
+		TransferFunctionBasedHistogramEqualization(imageData, equalizedImageData, width, height, BytesPerPixel); 
+	}
+	else{
+		RandomPickHistogramEqualization(imageData,equalizedImageData,width,height,BytesPerPixel);
+	}
+
+	write3DImageFile(argv[2], equalizedImageData,width,height, BytesPerPixel); 
+	return 0;
+}
+
+%problem 2-a
+
+#include"dipHeader.h"
+int compareMyInt(const void* a, const void* b)
+{
+	if (*(int*)a < *(int*)b) return -1;
+	if (*(int*)a == *(int*)b) return 0;
+	if (*(int*)a > * (int*)b) return 1;
+}
+
+
+int median2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, int widsize) {
+	int result = 0; 
+	int startx = col - widsize / 2; 
+	int endx = col + widsize / 2; 
+	int starty = row - widsize / 2; 
+	int endy = row + widsize / 2;
+	int* tempArray;
+	int tempCount = 0; 
+	tempArray = new int[pow(starty-startx,2)]; 
+	for (int i = starty; i <= endy; i++) {
+		for (int j = startx; j <= endx; j++) {
+			tempArray[tempCount++] = imageData[i][j]; 
+		}
+	}
+	qsort(tempArray, tempCount, sizeof(int),compareMyInt); 
+	result = (tempArray[tempCount/2]+tempArray[tempCount/2-1])/2; 
+	delete[] tempArray; 
+	return result; 
+}
+
+double compGaussianWeight(int row, int col, int l, int k,double stdev) {
+	double result; 
+	double pi = 3.14159265359; 
+	double sumdistance = pow(row - l, 2) + pow(col - k, 2);  
+	double coefficient = 1 / (2 * pi * pow(stdev, 2)); 
+	result = coefficient * exp((-1) * sumdistance / 2 / pow(stdev, 2)); 
+	return result; 
+}
+
+unsigned char compGaussianPixel(unsigned char** imageData, unsigned char** targetImage, int row, int col, int widsize,double stdev) {
+	unsigned char result; 
+	double weightPixelSum = 0;
+	double weightSum = 0;
+	double pi = 3.14159365; 
+	for (int i = row - widsize / 2; i <= row + widsize / 2; i++) { 
+		for (int j = col - widsize / 2; j <= col + widsize / 2; j++) {
+			double GaussWeight = compGaussianWeight(row, col, i, j,stdev); 
+			weightPixelSum += imageData[i][j]*GaussWeight; 
+			weightSum += GaussWeight; 
+		}
+	}
+	result = weightPixelSum / weightSum; 
+	return result;
+}
+
+void GaussianFilter(unsigned char** imageData, unsigned char** targetImage, int width, int height, int BytesPerPixel, int edgesize, int widsize ,double stdev) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			targetImage[row][col] = compGaussianPixel(imageData, targetImage, row+edgesize, col+edgesize, widsize,stdev); 
+		}
+	}
+}
+
+void linear_filter(unsigned char** imageData, unsigned char** targetImage, int width, int height, int BytesPerPixel ,int edgesize, int widsize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			targetImage[row][col] = (unsigned char)aver2DImage(imageData, row+edgesize , col+edgesize ,BytesPerPixel,  widsize);
+		}
+	}
+	
+}
+
+int aver2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, int widsize) {
+	double average;
+	double sum = 0.0;
+	int result;
+	int startx = row - widsize / 2;
+	int endx = row + widsize / 2;
+	int starty = col - widsize / 2;
+	int endy = col + widsize / 2;
+	for (int i = startx; i <= endx; i++) {
+		for (int j = starty; j <= endy; j++) {
+			sum += imageData[i][j];
+		}
+	}
+	int total = (endx - startx + 1) * (endx - startx + 1);
+	average = sum / total;
+	return (int)average;
+}
+
+void impulse_filter(unsigned char** imageData, unsigned char** filteredImage, int width, int height, int BytesPerPixel, int edgesize , int widsize ) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			filteredImage[row][col] = (unsigned char)median2DImage(imageData, row + edgesize, col + edgesize, BytesPerPixel, widsize); 
+		}
+	}
+
+}
+
+int checkProperSyntax(int argc, char* argv[] , int &width , int &height , int &BytesPerPixel ) {
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[3]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[4]);
+			height = atoi(argv[5]);
+		}
+	}
+	
+}
+int main(int argc, char* argv[]) {
+	FILE* file; 
+	int width; 
+	int height; 
+	int BytesPerPixel;
+	int edgesize = 6;
+	int widsize = 2;
+	double stdev = 0; 
+	int method = 0; 
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw input_ori_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[4]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[5]);
+			height = atoi(argv[6]);
+			widsize = atoi(argv[7]); 
+			stdev = atoi(argv[8]); 
+			method = atoi(argv[9]); 
+
+		}
+	}
+	
+
+	edgesize = widsize * 2; 
+	unsigned char** imageData; 
+	unsigned char** filteredData; 
+	unsigned char** extendedImageData; 
+	unsigned char** originImageData; 
+
+	imageData = alloc2DImage(width,height , BytesPerPixel); 
+	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, BytesPerPixel); 
+	filteredData = alloc2DImage(width, height , BytesPerPixel); 
+	originImageData = alloc2DImage(width, height, BytesPerPixel); 
+	// Read image (filename specified by first argument) into image data matrix
+	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel);
+	read2DImageFile(argv[2], originImageData, width, height, BytesPerPixel); 
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize); 
+	if (method == 0) {
+		linear_filter(extendedImageData, filteredData, width, height, BytesPerPixel, edgesize, widsize);
+	}
+	else {
+		GaussianFilter(extendedImageData, filteredData, width, height, BytesPerPixel, edgesize, widsize, stdev); 
+	}
+	write2DImageFile(argv[3], filteredData, width, height, BytesPerPixel);
+	double psnr = eval2DImagePSNR(originImageData,filteredData , width ,height ,BytesPerPixel );
+	double psnrnoisy = eval2DImagePSNR(originImageData, imageData, width, height, BytesPerPixel); 
+	cout << "PSNR for original image and filtered image: " << psnr << endl;
+	cout << "PSNR for original image and noisy image" << psnrnoisy << endl; 
+	return 0; 
+}
+
+%problem 2-b 
+#include"dipHeader.h"
+
+void testExtendEdgeFunction(unsigned char** imageData , unsigned char** extendedData, int width , int height,int widsize) {
+	extend2DImageEdge(imageData, extendedData, width ,height, 1 ,widsize);
+}
+
+double computeGaussWeight(unsigned char **imageData, int row,int col,int i,int j, double cigmaC, double cigmaS) {
+	double result ; 
+	double indexl2 = pow((row - i), 2) + pow((col - j) , 2); 
+	double pixell2 = pow((imageData[row][col] - imageData[i][j]),2); 
+	result = exp(0 - indexl2 / 2 / (cigmaC * cigmaC) - pixell2/2/(cigmaS*cigmaS)); 
+	return result;
+}
+
+int computeBilateralFilteredPixel(unsigned char** imageData, int row, int col,int BytesPerPixel, int widsize , double cigmaC , double cigmaS ) {
+	double weightednumerator =0 ; 
+	double denominator= 0 ; 
+	int result = 0; 
+	for (int i = row - widsize / 2; i <= row + widsize / 2; i++) {
+		for (int j = col - widsize / 2; j <= col + widsize / 2; j++) {
+			double gaussWeight = computeGaussWeight(imageData, row, col, i, j, cigmaC, cigmaS);
+			weightednumerator += gaussWeight*imageData[i][j]; 
+			denominator += gaussWeight; 
+		}
+	}
+	result =(int) weightednumerator / denominator; 
+	return result; 
+}
+
+void bilateral_filtering(unsigned char** imageData, unsigned char** filteredImageData, int width, int height,int BytesPerPixel, int edgesize ,int widsize , double cigmaC , double cigmaS) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			filteredImageData[row][col] = computeBilateralFilteredPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel, widsize, cigmaC, cigmaS); 
+		}
+	}
+}
+
+int main(int argc, char* argv[]) {
+	FILE* file;
+	int width;
+	int height;
+	int BytesPerPixel;
+
+	// configuration parameters
+	double cigmaC = 0.1;
+	double cigmaS = 30.0;
+	int edgesize = 10;
+	int widsize = 5;
+
+
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[4]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[5]);
+			height = atoi(argv[6]);
+			widsize = atoi(argv[7]);
+			cigmaC = atoi(argv[8]); 
+			cigmaS = atoi(argv[9]);
+		}
+	}
+
+	edgesize = 2 * widsize; 
+
+	unsigned char** imageData; 
+	unsigned char** extendedData; 
+	unsigned char** filteredImageData;
+	unsigned char** originalImageData; 
+	originalImageData = alloc2DImage(width, height, BytesPerPixel); 
+	imageData = alloc2DImage(width , height ,1);
+	extendedData = alloc2DImage(width+2*edgesize,height+2*edgesize, 1); 
+	filteredImageData = alloc2DImage(width, height, 1); 
+	read2DImageFile(argv[1], imageData, width, height, 1); 
+	read2DImageFile(argv[2], originalImageData, width, height, 1); 
+	extend2DImageEdge(imageData, extendedData, width, height, 1,edgesize); 
+	bilateral_filtering(extendedData, filteredImageData, width, height, 1,edgesize, widsize, cigmaC, cigmaS); 
+	write2DImageFile(argv[3], filteredImageData, width, height, 1); 
+	double psnr = eval2DImagePSNR(originalImageData, filteredImageData, width, height, BytesPerPixel);
+	double psnrnoisy = eval2DImagePSNR(originalImageData, imageData, width, height, BytesPerPixel);
+	cout << "PSNR for original image and filtered image: " << psnr << endl;
+	cout << "PSNR for original image and noisy image" << psnrnoisy << endl;
+	return 0;
+	
+}
+
+% problem 2-c
+#include"dipHeader.h"
+
+
+void testGaussOutput() {
+	double result1;
+	const double pi = 3.1415926535897;
+	result1 = (1 / (2 * sqrt(2 * pi))) * exp(-0.01);
+	double exp2 = exp(0); 
+	cout << result1 << endl;
+	cout << exp2 << endl;
+}
+
+
+
+
+
+
+double GaussianKernel(int n1, int n2 , double stdev ) {
+	double result;
+	const double pi = 3.1415926535897;
+	double sumsquare = pow(n1,2) + pow(n2,2); 
+	result = (1 / ((sqrt(2 * pi)) * stdev)) * exp((-1) * (sumsquare/2/pow(stdev,2) )); 
+	return result; 
+}
+
+double compEuclidianDistanceArea2Area(unsigned char** imageData, int row, int col, int i, int j, int patchsize , double stdev) {
+	const double pi = 3.1415926535897;
+	double distance = 0;
+	double sum = 0; 
+	for (int k = -patchsize/2; k <= patchsize/2; k++) {
+		for (int l = patchsize / 2; l <= patchsize / 2; l++) {
+			sum += GaussianKernel(abs(k),abs(l),stdev)*pow(imageData[row + k][col + l] - imageData[i + k][j + l], 2);
+		}
+	}
+	return sum;
+}
+
+
+double compEuclidianDistanceWeight(unsigned char** imageData, int row, int col, int i, int j, int patchsize, double hparm , double stdev) {
+	
+	double result = 0 ;
+	double distance = compEuclidianDistanceArea2Area(imageData, row, col, i, j, patchsize, stdev); 
+	result = exp(- distance / pow(hparm, 2)); 
+	return result; 
+}
+
+
+
+double computeNLMPixel(unsigned char** imageData,  int row, int col, int BytesPerPixel,int widsize,   int patchsize ,double hparm, double stdev) {
+	double totalweightedPixel = 0 ;
+	double totalweight = 0 ; 
+	double result = 0;
+	for (int i = row-widsize/2; i <= row+widsize/2; i++) {
+		for (int j = col-widsize/2; j <= col+widsize/2; j++) {
+			totalweightedPixel += compEuclidianDistanceWeight( imageData,row,col,i,j,patchsize,hparm, stdev)*imageData[i][j]; 
+			totalweight += compEuclidianDistanceWeight(imageData,row,col,i,j,patchsize,hparm, stdev) ; 
+		}
+	}
+	result = totalweightedPixel / totalweight; 
+	return result;
+}
+
+void NLM_filtering(unsigned char** imageData, unsigned char** filteredData, int width, int height, int BytesPerPixel,int edgesize ,int widsize , int patchsize , double hparm , double stdev) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			filteredData[row][col] = computeNLMPixel(imageData, row + edgesize, col + edgesize, BytesPerPixel,widsize, patchsize , hparm ,stdev );
+		}
+	}                                       
+}
+
+int main(int argc , char *argv[]) {
+	FILE* file;
+	int width;
+	int height;
+	int BytesPerPixel;
+	int edgesize = 10;
+	int widsize = 3;
+	int widwidth = 5;
+	int widheight = 5;
+	double hparm = 10.0;
+	double stdev = 10.0; 
+	int patchsize = 0; 
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[4]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[5]);
+			height = atoi(argv[6]);
+			widsize = atoi(argv[7]); 
+			patchsize = atoi(argv[8]);  
+			hparm = atoi(argv[9]); 
+			stdev = atoi(argv[10]); 
+		}
+	}
+
+	unsigned char** imageData; 
+	unsigned char** filteredImageData; 
+	unsigned char** extendedImageData;
+	unsigned char** desiredImageData; 
+	edgesize = widsize + patchsize + 10; 
+	imageData = alloc2DImage(width, height, BytesPerPixel);
+	desiredImageData = alloc2DImage(width, height, BytesPerPixel);
+	extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, BytesPerPixel);
+	filteredImageData = alloc2DImage(width, height, BytesPerPixel);
+	read2DImageFile(argv[1], imageData, width, height, BytesPerPixel ); 
+	read2DImageFile(argv[2], desiredImageData, width, height, BytesPerPixel);
+	extend2DImageEdge(imageData, extendedImageData, width, height, BytesPerPixel, edgesize);
+	NLM_filtering(extendedImageData, filteredImageData, width, height, BytesPerPixel,edgesize,  widsize, patchsize, hparm , stdev);
+	write2DImageFile(argv[3], filteredImageData, width, height, BytesPerPixel); 
+	double psnr = eval2DImagePSNR(desiredImageData, filteredImageData, width, height, BytesPerPixel);
+	double psnrnoisy = eval2DImagePSNR(desiredImageData, imageData, width, height, BytesPerPixel);
+	cout << "PSNR for original image and filtered image: " << psnr << endl;
+	cout << "PSNR for original image and noisy image" << psnrnoisy << endl;
+	return 0; 
+}
+
+% BM3D matlab code
+
+G = readraw('../HW1_images/Corn_noisy.raw'); 
+Y = readraw('../HW1_images/Corn_gray.raw');
+x = im2double(G); 
+y = im2double(Y); 
+[psnr, y_est] = BM3D(y, x, 40,1); 
+final_result = y_est*255; 
+writeraw(final_result,'Corn_bm3d.raw');
+
+
+
+
+% im_histogram.m 
+function [histogram] = im_histogram(input_img,channel)
+
+% for each pixel in the input image 
+% compute the count array for the pixelvalue 0- 255 
+height = size(input_img, 1) ;
+width = size(input_img,2); 
+% initialize the array for histogram
+histogram = zeros(256,1); 
+for row = 1:height 
+    for col=1:width 
+        histogram(inpute_img(row,col,channel)+1)= ...
+            histogram(input_img(row,col,channel)+1) +1 ;
+    end
+end
+
+
+end 
+
+%plotSumHistogram.m
+file = fopen('vs/sumHistogramR.txt','r');
+sumhistR = fread(file, 256, 'int');
+file = fopen('vs/sumHistogramG.txt','r');
+sumhistG = fread(file, 256, 'int');
+file = fopen('vs/sumHistogramB.txt','r');
+sumhistB = fread(file, 256, 'int');
+x = 0:1:255; 
+x = int32(x);
+subplot(3,1,1)
+plot(x,sumhistR,'-'); 
+title('Red');
+subplot(3,1,2)
+plot(x,sumhistG,'-'); 
+title('Green');
+subplot(3,1,3)
+plot(x,sumhistB,'-'); 
+title('Blue');
+
+%plotTransformArray.m
+file = fopen('vs/transformArrayR.txt','r');
+arrR = fread(file, 256, 'int');
+file = fopen('vs/transformArrayG.txt','r');
+arrG = fread(file, 256, 'int');
+file = fopen('vs/transformArrayB.txt','r');
+arrB = fread(file, 256, 'int');
+x = 0:1:255; 
+x = int32(x);
+subplot(3,1,1)
+plot(x,arrR,'-'); 
+title('Red');
+subplot(3,1,2)
+plot(x,arrG,'-'); 
+title('Green');
+subplot(3,1,3)
+plot(x,arrB,'-'); 
+title('Blue');
+
+
+ 
+ 
