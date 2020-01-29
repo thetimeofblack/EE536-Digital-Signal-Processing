@@ -15,7 +15,7 @@
 % C++-file name: prob1_a.cpp
 % Execuable file: prob1_a.exe 
 % Command template : prob1_a [input filepath] [output filepath] [byte per pixel] [width] [height] 
-% Command: prob1_a imagepath/dog.raw   outputpath/dog_bl1.raw 1 600 532
+% Command: prob1_a ../HW1_images/dog.raw dog_bl.raw 1 600 532
 % Output image: dog_bl1.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 1_b: Malvar-He-Cutler (MHC) Demosaicing
@@ -27,26 +27,26 @@
 % Problem 1_c:  Histogram Manipulation
 % C++-file name: prob1_c.cpp
 % Command template : prob1_c [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [method]
-% Command: prob1_c HW1_images/toy.raw toy_a.raw 3 400 560 0
+% Command: prob1_c ../HW1_images/toy.raw toy_a.raw 3 400 560 0
 % Output image: toy_a1.raw toy_b1.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 2_a: Linear Denoising
 % C++-file name: prob2_a.cpp
 % Command template :  prob2_a [input filepath] [output filepath] [Bytes Per Pixel] [width] [height] [window size] [standard variance] [method you can select]
-% Command: prob2_b ..\HW1_images\Corn_noisy.raw .\HW1_images\Corn_gray.raw corn_bf1.raw 1 320 320 10 9 2 2 
-% Output image: corn_bf1.raw corn_gf1.raw 
+% Command: prob2_a ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_lf.raw 1 320 320 10 9 0
+% Output image: corn_lf1.raw corn_gf1.raw 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Problem 2_b: Bilateral Denoising
 % C++-file name: prob2_b.cpp
 % Command template :  prob2_b [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [window size] [standard deviation C] [standard deviation S]
-% Command: prob2_b ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_bl1.raw 1 320 320 10 10 1 1
-% Output image: corn_bl1.raw corn_bl2.raw corn_bl3.raw
+% Command: prob2_b ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_bf.raw 1 320 320 10 10 1 25
+% Output image: corn_bf1.raw corn_bf2.raw corn_bf3.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 % Problem 2_c: Non-Local mean Denoising
 % C++file name: prob2_c.cpp
 % Command template : prob2_c [input filepath] [output filepath] [byte per pixel of input file] [width] [height] [window size] [patch size] [h parameter] [standard deviation ]
-% Command: prob2_c ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_nlm1.raw 1 320 320 5 5 1 100  
-% Output image: corn_nlm1.raw
+% Command: prob2_c ..\HW1_images\Corn_noisy.raw ..\HW1_images\Corn_gray.raw corn_nlm.raw 1 320 320 5 5 5 50  
+% Output image: corn_nlm.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 % Problem 2_d: BM3D
 % M-file name: BM3D_Denoising.m
