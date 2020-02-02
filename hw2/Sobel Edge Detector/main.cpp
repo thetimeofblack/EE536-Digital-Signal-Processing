@@ -1,20 +1,50 @@
 ﻿#include "..\dipHeader.h"
 
+// Problem a 
 
 
-unsigned char compXgradientPixel(unsigned char** ImageData) {
+/*
+ Test code : 
+	cout<<"Double Result: " << DoubleResult<< endl;
+	cout<<"Final Result: "<<result << endl;
+*/
+unsigned char compXGradientPixel(unsigned char** ImageData , int row ,int col ,int BytesPerPixel) {
+	double DoubleResult = 0; 
+	DoubleResult = (1)*ImageData[row + 1][col + 1] + (1)* ImageData[row - 1][col + 1] +2* ImageData[row][col + 1] + (-1)*ImageData[row - 1][col - 1] + (-1)*ImageData[row + 1][col - 1] + (-2)*ImageData[row][col - 1]; 
+	unsigned char result = 0; 
+	result = round(0.125 * DoubleResult) + 127; 
+	return result; 
+}
+
+unsigned char compYGradientPixel(unsigned char** ImageData, int row, int col, int BytesPerPixel) {
+	double DoubleResult = 0;
+	DoubleResult = (-1) * ImageData[row - 1][col - 1] + (-2) * ImageData[row - 1][col] + (-1) * ImageData[row - 1][col + 1] + ImageData[row + 1][col - 1] + 2 * ImageData[row + 1][col] + ImageData[row + 1][col + 1]; 
+	unsigned char result = 0;
+	result = round(0.125 * DoubleResult) + 127;
+	return result;
+}
+void compXGradient(unsigned char** ImageData,unsigned char** XGrad2DArray,  int width, int height ,int BytesPerPixel ,int edgesize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			XGrad2DArray[row][col] = compXGradientPixel(ImageData, row + edgesize, col + edgesize, BytesPerPixel); 
+		}
+	}
 
 }
 
+void compYGradient(unsigned char** ImageData,unsigned char** YGrad2DArray , int width, int height, int BytesPerPixel , int edgesize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			YGrad2DArray[row][col] = compYGradientPixel(ImageData, row + edgesize, col + edgesize, BytesPerPixel);
+		}
+	}
+}
 
-void compXGradient(unsigned char** ImageData, int width, int height ,int BytesPerPixel) {
-	int widsize = 3; 
+void compMagnitudeGradient(unsigned char** XGrad2DArray, unsigned char** YGrad2DArray, unsigned char** MagntGrad2DArray, int width, int height, int BytesPerPixel) { 
+	
 
 }
 
-void compYGradient(unsigned char** ImageData, int width, int height, int BytesPerPixel) {
-
-}
 
 
 /*
