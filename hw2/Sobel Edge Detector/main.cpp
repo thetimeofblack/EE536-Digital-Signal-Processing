@@ -54,7 +54,6 @@ void convertRGB2GrayImage(unsigned char*** ImageRGBData, unsigned char** ImageDa
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
 			double grayValue = 0.2989*ImageRGBData[row][col][0] + 0.5870*ImageRGBData[row][col][1] + 0.1140*ImageRGBData[row][col][2];
-			
 			ImageData[row][col] = round(grayValue); 
 		}
 	
@@ -63,8 +62,6 @@ void convertRGB2GrayImage(unsigned char*** ImageRGBData, unsigned char** ImageDa
 
 int main(int *argc, char* argv[]) {
 	cout << "Hello world" << endl ; 
-
-
 	double result = 0.2989 * 255 + 0.5870 * 255 + 0.1140 * 255; 
 	cout << result << endl;
 }

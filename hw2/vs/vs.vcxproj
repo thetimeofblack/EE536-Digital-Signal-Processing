@@ -143,6 +143,9 @@
     <ClInclude Include="..\dipHeader.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\Problem1\Gallery.raw" />
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\Sobel Edge Detector\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

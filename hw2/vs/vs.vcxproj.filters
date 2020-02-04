@@ -18,12 +18,17 @@
     <ClInclude Include="..\denoising.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="..\dipHeader.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
     <ClInclude Include="..\DataType.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\dipHeader.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\Problem1\Gallery.raw">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\Sobel Edge Detector\main.cpp">
