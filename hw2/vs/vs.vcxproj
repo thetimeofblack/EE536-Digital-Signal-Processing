@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -146,6 +146,10 @@
     <None Include="..\Problem1\Gallery.raw" />
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Dithering\main.cpp" />
     <ClCompile Include="..\Sobel Edge Detector\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

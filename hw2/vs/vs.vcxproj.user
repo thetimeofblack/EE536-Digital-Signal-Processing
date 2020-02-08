@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="Current" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LocalDebuggerCommandArguments>..\Problem1\Gallery.raw Gallery1.raw 3</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>..\Problem2\LightHouse.raw LightHouse_Dithered_2.raw 1 750 500 </LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

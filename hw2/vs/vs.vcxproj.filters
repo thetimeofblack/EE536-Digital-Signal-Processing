@@ -31,6 +31,12 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Text Include="..\README.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Dithering\main.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
     <ClCompile Include="..\Sobel Edge Detector\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>

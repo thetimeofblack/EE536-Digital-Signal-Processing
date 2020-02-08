@@ -158,7 +158,7 @@ void read3DImage(FILE* file, unsigned char*** imageData, int width, int height, 
 
 void write2DImage(FILE* file, unsigned char** imageData, int width, int height, int BytesPerPixel) {
     for (int row = 0; row < height; row++) {
-        fwrite(imageData[row], sizeof(unsigned char), width * BytesPerPixel, file); 
+        fwrite(imageData[row], sizeof(unsigned char), width , file); 
     }
 
 }
