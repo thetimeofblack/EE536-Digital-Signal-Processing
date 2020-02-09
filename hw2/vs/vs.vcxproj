@@ -149,7 +149,7 @@
     <Text Include="..\README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Dithering\main.cpp" />
+    <ClCompile Include="..\Error Diffusion\main.cpp" />
     <ClCompile Include="..\Sobel Edge Detector\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

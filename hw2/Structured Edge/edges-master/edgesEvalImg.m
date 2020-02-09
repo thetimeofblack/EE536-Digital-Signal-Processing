@@ -1,4 +1,5 @@
-function [thrs,cntR,sumR,cntP,sumP,V] = edgesEvalImg( E, G, varargin )
+
+function [thrs,cntR,sumR,cntP,sumP,V,matchG] = edgesEvalImg( E, G, varargin )
 % Calculate edge precision/recall results for single edge image.
 %
 % Enhanced replacement for evaluation_bdry_image() from BSDS500 code:
@@ -70,6 +71,7 @@ for k = 1:K
     matchG = matchG + double(matchG1>0);
     allG = allG + G{g};
   end
+  
   % compute recall (summed over each gt image)
   cntR(k) = sum(matchG(:)); sumR(k) = sum(allG(:));
   % compute precision (edges can match any gt image)

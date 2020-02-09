@@ -34,10 +34,10 @@
     <Text Include="..\README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Dithering\main.cpp">
+    <ClCompile Include="..\Sobel Edge Detector\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="..\Sobel Edge Detector\main.cpp">
+    <ClCompile Include="..\Error Diffusion\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
