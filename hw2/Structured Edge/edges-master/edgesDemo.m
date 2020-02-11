@@ -24,13 +24,13 @@ model.opts.nms=0;                 % set to true to enable nms
 %% evaluate edge detector on BSDS500 (see edgesEval.m)
 addpath('../')
 if(0), edgesEval( model, 'show',1, '','' ); end
-DogGroundTrue = load('../../Problem1/Dogs_GT.mat')
-if(1), edgesEvalDir(DogGroundTrue.groundTruth{1,1}); end
+
+
 %% detect edge and visualize results
 I = imread('../../Problem1/Dogs.jpg');
 tic, E=edgesDetect(I,model); toc
 
 EdgeImageData = round((1-E)*255)
 writeraw(EdgeImageData,'DogEdge.raw')
-edgesEval(model,DogTrue1,E) 
-figure(1); im(I); figure(2); im(1-E);
+
+figure(1); im(I); figure(2); im(E);

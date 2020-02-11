@@ -30,25 +30,31 @@ model.opts.nms=0;                 % set to true to enable nms
 
 
 %% evaluate edge detector on BSDS500 (see edgesEval.m)
-addpath('../')
 if(0), edgesEval( model, 'show',1, '','' ); end
-Dog_GT = load('../../Problem1/Dogs_GT.mat');
+
 
 
 %% detect edge and visualize results
 I = imread('../../Problem1/Dogs.jpg');
-tic, E = edgesDetect(I,model); toc
- 
+tic, E = edgesDetect(I,model); toc; 
+
+
+
 EdgeImageData = round((1-E)*255)
-writeraw(EdgeImageData,'DogEdge.raw')
-figure(1); im(I); figure(2); im(1-E);
+writeraw(round(E*255),'DogEdge.raw');
+figure(1); im(I);  
+figure(2); im(E); 
 
 
 %% evaluate edge and ground truth
+Dog_GT = load('../../Problem1/Dogs_GT.mat');
+Dog_GT_Filename = '../../Problem1/Dogs_GT.mat'; 
+Dog_GT_1.groundTruth{1,1}.boundaries = Dog_GT.groundTruth{1,1}.boundaries; 
+
 prms1={ 'out','', 'thrs',40, 'maxDist',.0075, 'thin',1 } ; 
 [thrs,cntR,sumR,cntP,sumP,V] = edgesEvalImg( E, '../../Problem1/Dogs_GT.mat', prms1 )
 recall = cntR./sumR
 precision = cntP./sumP 
-Fscore = 2*recall.*precision./(precision+recall)
-plot(thrs,Fscore,'-')
+Fscore = 2*recall.*precision./(precision+recall);
+plot(thrs,Fscore,'-'); 
 

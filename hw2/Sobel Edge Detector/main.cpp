@@ -27,17 +27,13 @@ unsigned char compYGradientPixel(unsigned char** ImageData, int row, int col, in
 
 double compXGradientPixelDouble(unsigned char** ImageData, int row, int col, int BytesPerPixel) {
 	double DoubleResult = 0;
-	DoubleResult = (-1) * ImageData[row - 1][col - 1] + (-2) * ImageData[row - 1][col] + (-1) * ImageData[row - 1][col + 1] + ImageData[row + 1][col - 1] + 2 * ImageData[row + 1][col] + ImageData[row + 1][col + 1];
-	unsigned char result = 0;
-	result = round(0.125 * DoubleResult) + 127;
+	DoubleResult = (-1) * ImageData[row-1][col - 1] + (-2) * ImageData[row ][col-1] + (-1) * ImageData[row + 1][col - 1] + ImageData[row -1][col + 1] + 2 * ImageData[row ][col+1] + ImageData[row + 1][col + 1];
 	return DoubleResult;
 }
 
 double compYGradientPixelDouble(unsigned char** ImageData, int row, int col, int BytesPerPixel) {
 	double DoubleResult = 0;
 	DoubleResult = (-1) * ImageData[row - 1][col - 1] + (-2) * ImageData[row - 1][col] + (-1) * ImageData[row - 1][col + 1] + ImageData[row + 1][col - 1] + 2 * ImageData[row + 1][col] + ImageData[row + 1][col + 1];
-	unsigned char result = 0;
-	result = round(0.125 * DoubleResult) + 127;
 	return DoubleResult;
 }
 

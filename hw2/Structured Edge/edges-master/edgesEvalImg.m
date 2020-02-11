@@ -70,6 +70,7 @@ for k = 1:K
     matchE = matchE | matchE1>0;
     matchG = matchG + double(matchG1>0);
     allG = allG + G{g};
+    
   end
   
   % compute recall (summed over each gt image)

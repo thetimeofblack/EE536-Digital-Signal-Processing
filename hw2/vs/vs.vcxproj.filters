@@ -34,10 +34,7 @@
     <Text Include="..\README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Sobel Edge Detector\main.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="..\Error Diffusion\main.cpp">
+    <ClCompile Include="..\Color Halftoing with Error Diffusion\main.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

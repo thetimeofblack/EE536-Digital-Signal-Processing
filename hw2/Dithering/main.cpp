@@ -120,11 +120,11 @@ int main(int argc, char* argv[]) {
 	read2DImageFile(argv[1], OriginImageData, width, height, BytesPerPixel); 
 
 	unsigned char** DitheringHalftonedImageData = alloc2DImage(width, height, BytesPerPixel);
-	DitheringMatrixHalftoning(OriginImageData, DitheringHalftonedImageData, width, height, BytesPerPixel, 32); 
+	DitheringMatrixHalftoning(OriginImageData, DitheringHalftonedImageData, width, height, BytesPerPixel, 128); 
 	write2DImageFile(argv[2], DitheringHalftonedImageData, width, height, BytesPerPixel);
 
 	unsigned char** FixedThresholdHalftonedImageData = alloc2DImage(width, height, BytesPerPixel);
-	FixedThresholdingHalftoning(OriginImageData, FixedThresholdHalftonedImageData, width, height, BytesPerPixel,128);
+	FixedThresholdingHalftoning(OriginImageData, FixedThresholdHalftonedImageData, width, height, BytesPerPixel,150);
 	char FixedThresholdHalftoningfilename[30] = "HalfToned_FixedThreshold.raw";
 	write2DImageFile(FixedThresholdHalftoningfilename, FixedThresholdHalftonedImageData, width, height, BytesPerPixel);
 	

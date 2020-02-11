@@ -18,6 +18,7 @@
 #include<stdlib.h>
 #include<cmath>
 #include<math.h>
+#include<string>
 #define _USE_MATH_DEFINES
 using namespace std; 
 
@@ -530,6 +531,9 @@ void writeHistogramArray(int* array, char* filename) {
     fclose(file);
 
 }
+
+
+
 /*
 // if the input image only contains one pixel, this will return null ;  
 // the copied image obeys the reflection rule

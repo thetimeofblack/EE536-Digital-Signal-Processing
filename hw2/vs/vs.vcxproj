@@ -149,8 +149,7 @@
     <Text Include="..\README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\Error Diffusion\main.cpp" />
-    <ClCompile Include="..\Sobel Edge Detector\main.cpp" />
+    <ClCompile Include="..\Color Halftoing with Error Diffusion\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
