@@ -1,4 +1,4 @@
-function count = writeraw(G, filename)
+function count = writeraw(G, filename,width,height,BytesPerPixel)
 %writeraw - write RAW format grey scale image file 
 % Usage :	writeraw(G, filename)
 % G:		input image matrix
@@ -17,12 +17,16 @@ function count = writeraw(G, filename)
 	end
 
 	% Transpose matrix to write file properly
-	G = G'; 
-
+	
+    imshow(G);
 	% Write and close file
-	count = fwrite(fid,G, 'uchar');
+    for row = 1:height
+        for col = 1:width
+            fwrite(fid,G(row,col),'uchar');
+        end
+    end
 	fclose(fid);
 
 	% Transpose again to restore matrix
-	G = G';
+	
 end %function

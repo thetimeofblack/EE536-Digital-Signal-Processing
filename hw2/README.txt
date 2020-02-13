@@ -20,10 +20,10 @@
 % Output image: Dog_Sabel.raw
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 1_b: Canny Edge Detect
-% C++-file name: prob1_b.cpp
-% Command template : prob1_b [input filepath] [output filepath] [byte per pixel of input file] [width] [height]
-% Command: prob1_b ../HW1_images/dog.raw dog_mhc.raw 1 600 532
-% Output image: dog_mhc.raw 
+% C++-file name: matlab file 
+% Command template : 
+% Command: prob1_b 
+% Output image: Dogs_Canny.raw Gallery_Canny.raw 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Problem 1_c: Malvar-He-Cutler (MHC) Demosaicing
 % C++-file name: prob1_b.cpp

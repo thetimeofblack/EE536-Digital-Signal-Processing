@@ -9,19 +9,11 @@ C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\dipHeader.h(137,2
 C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\dipHeader.h(139,22): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
 C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\dipHeader.h(383,9): warning C4101: 'rows': unreferenced local variable
 C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\dipHeader.h(384,9): warning C4101: 'cols': unreferenced local variable
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(237,124): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(268,116): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(286,122): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(312,108): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(330,122): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(359,116): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(379,122): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(416,106): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(447,114): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(486,113): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(517,119): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(555,113): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Color Halftoing with Error Diffusion\main.cpp(586,119): warning C4244: '+=': conversion from 'double' to 'unsigned char', possible loss of data
-C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\dipHeader.h(522): warning C4715: 'compareInt': not all control paths return a value
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Sobel Edge Detector\main.cpp(15,39): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Sobel Edge Detector\main.cpp(24,39): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Sobel Edge Detector\main.cpp(63,22): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Sobel Edge Detector\main.cpp(80,23): warning C4244: 'initializing': conversion from 'double' to 'int', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Sobel Edge Detector\main.cpp(110,31): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
 C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\dipHeader.h(515): warning C4715: 'compareUnsignedChar': not all control paths return a value
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\dipHeader.h(522): warning C4715: 'compareInt': not all control paths return a value
   vs.vcxproj -> C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\vs\Debug\vs.exe

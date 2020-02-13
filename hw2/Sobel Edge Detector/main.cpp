@@ -77,16 +77,16 @@ void cmpMagnitudeGradientByDouble(unsigned char** OriginImageData, unsigned char
 			xgrad = compXGradientPixelDouble(OriginImageData, row + edgesize, col + edgesize, BytesPerPixel); 
 			ygrad = compYGradientPixelDouble(OriginImageData, row + edgesize, col + edgesize, BytesPerPixel); 
 			tmp = sqrt(pow(xgrad, 2) + pow(ygrad, 2));
-			int normalizedtmp  = round(tmp / sqrt(pow(255, 2) + pow(255, 2)) * 255);
+			int normalizedtmp  = round(tmp * 0.25/sqrt(2));
 			ObtainedImageData[row][col] = normalizedtmp; 
 		} 
 	}
 }
 
-void tuneMagnitudeGrad(unsigned char** OriginImageData, unsigned char** ObtainedImageData, int width, int height, int BytesPerPixel , int percentage) {
+void tuneMagnitudeGrad(unsigned char** OriginImageData, unsigned char** ObtainedImageData, int width, int height, int BytesPerPixel , int threshold) {
 	for (int row = 0; row < height; row++) {
 		for (int col = 0; col < width; col++) {
-			if (OriginImageData[row][col] <= percentage) {
+			if (OriginImageData[row][col] <= threshold) {
 				ObtainedImageData[row][col] = 0; 
 			}
 			else {
@@ -97,7 +97,9 @@ void tuneMagnitudeGrad(unsigned char** OriginImageData, unsigned char** Obtained
 
 }
 
+void normalize2DImageData(unsigned char** OriginImageData, int width, int height, int BytesPerPixel) {
 
+}
 /*
     Y=0.2989∗R+0.5870∗G+0.1140∗B
 */
@@ -132,14 +134,20 @@ int main(int argc, char* argv[]) {
 			height = atoi(argv[5]);
 		}
 	}
-
+	width = 481; 
+	height = 321; 
+	BytesPerPixel = 3; 
+	char DogsImagefilename[30] = "../Problem1/Dogs.raw"; 
+	char detectedDogsImagefilename[30] = "../Problem1/Dogs_Sobel.raw"; 
+	char GalleryImagefilename[30] = "../Problem1/Gallery.raw";
+	char detectedGalleryImagefilename[30] = "../Problem1/Gallery_Sobel.raw";
 	// get gray-scaled image
 	int edgesize = 3; 
 	unsigned char*** ImageOriginData = alloc3DImage(width, height, BytesPerPixel); 
-	read3DImageFile(argv[1], ImageOriginData, width, height, BytesPerPixel); 
+	read3DImageFile(GalleryImagefilename, ImageOriginData, width, height, BytesPerPixel); 
 	unsigned char** GrayImageData = alloc2DImage(width, height, BytesPerPixel); 
 	convertRGB2GrayImage(ImageOriginData, GrayImageData, width, height, BytesPerPixel); 
-	write2DImageFile(argv[2], GrayImageData, width, height, BytesPerPixel); 
+	write2DImageFile(detectedGalleryImagefilename, GrayImageData, width, height, BytesPerPixel); 
 
 
 	// extend image
@@ -165,9 +173,9 @@ int main(int argc, char* argv[]) {
 	write2DImageFile(Magnitudefilename, MagnitudeGradImageData, width, height, BytesPerPixel);
 	
 	// thresholding the edge map
-	int percentage = 90; 
+	int threshold = 20; 
 	unsigned char** TunedMagnitudeGradImageData = alloc2DImage(width, height, BytesPerPixel); 
-	tuneMagnitudeGrad(MagnitudeGradImageData, TunedMagnitudeGradImageData, width, height, BytesPerPixel, percentage); 
+	tuneMagnitudeGrad(MagnitudeGradImageData, TunedMagnitudeGradImageData, width, height, BytesPerPixel, threshold); 
 	char TunedMagnitudefilename[20] = "TunedManitude.raw"; 
 	write2DImageFile(TunedMagnitudefilename, TunedMagnitudeGradImageData, width, height, BytesPerPixel); 
 	

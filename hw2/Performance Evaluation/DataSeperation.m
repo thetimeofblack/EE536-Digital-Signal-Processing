@@ -24,7 +24,7 @@ save('Dogs_GT3.mat', '-struct', 'Dog_GT2');
 Dog_GT4 = struct() ; 
 Dog_GT4.groundTruth{1,1}.Boundaries= Dog_GT.groundTruth{1,4}.Boundaries ; 
 save('Dogs_GT4.mat', '-struct', 'Dog_GT2'); 
-
+%imshow(Dog_GT4.groundTruth{1,1}.Boundaries)
 Dog_GT5 = struct() ; 
 Dog_GT5.groundTruth{1,1}.Boundaries= Dog_GT.groundTruth{1,5}.Boundaries ; 
 save('Dogs_GT5.mat', '-struct', 'Dog_GT2'); 

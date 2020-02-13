@@ -234,7 +234,7 @@ void makeErrorDiffusion(unsigned char*** OriginImageData, unsigned char*** Halft
 	int error = OriginImageData[row+EdgeSize][col+EdgeSize][cor] - HalftonedImageData[row][col][cor]; 
 	for (int i = -WidSize / 2; i <= WidSize / 2; i++) {
 		for (int j = -WidSize / 2; j <= WidSize / 2; j++) {
-			OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error * ErrorCoefficientMatrix[i + WidSize / 2][j + WidSize / 2]; 
+			OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * ErrorCoefficientMatrix[i + WidSize / 2][j + WidSize / 2]; 
 		}
 
 	}
@@ -309,7 +309,7 @@ void ColorErrorDiffusionFloydSteinberg(unsigned char*** OriginImageData, unsigne
 					int error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
 					for (int i = -1; i <= 1; i++) {
 						for (int j = -1; j <= 1; j++) {
-							OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error * CoefficientMatrix[i + 1][j + 1] / 16;
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * CoefficientMatrix[i + 1][j + 1] / 16;
 						}
 					}
 				}
@@ -399,11 +399,11 @@ void ColorErrorDiffusionFloydSteinbergMBVQ(unsigned char*** OriginImageData, uns
 
 				determineMBVQ(MBVQ, red, green, blue); 
 
-				double normalizedRed = OriginImageData[row+EdgeSize][col+EdgeSize][0] / 255;
-				double normalizedGreen = OriginImageData[row+EdgeSize][col+EdgeSize][1] / 255;
-				double normalizedBlue = OriginImageData[row+EdgeSize][col+EdgeSize][2] / 255; 
+				double normalizedRed = OriginImageData[row+EdgeSize][col+EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row+EdgeSize][col+EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row+EdgeSize][col+EdgeSize][2] / 255.0; 
 
-				char* vertex = new char[30]; 
+				char* vertex = new char[10]; 
 				
 				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue); 
 				setVertexValue(HalftonedImageData, vertex, row, col); 
@@ -413,7 +413,7 @@ void ColorErrorDiffusionFloydSteinbergMBVQ(unsigned char*** OriginImageData, uns
 					double error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor]; 
 					for (int i = -1; i <= 1; i++) {
 						for (int j = -1; j <= 1; j++) {
-							OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error * CoefficientMatrix[i + 1][j + 1]/16; 
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * CoefficientMatrix[i + 1][j + 1]/16; 
 						}
 					}
 				}
@@ -430,9 +430,9 @@ void ColorErrorDiffusionFloydSteinbergMBVQ(unsigned char*** OriginImageData, uns
 
 				determineMBVQ(MBVQ, red, green, blue);
 
-				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255;
-				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255;
-				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255;
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
 
 				char* vertex = new char[30];
 
@@ -444,7 +444,7 @@ void ColorErrorDiffusionFloydSteinbergMBVQ(unsigned char*** OriginImageData, uns
 					double error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
 					for (int i = -1; i <= 1; i++) {
 						for (int j = -1; j <= 1; j++) {
-							OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error * MirrorCoefficientMatrix[i + 1][j + 1] / 16;
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * MirrorCoefficientMatrix[i + 1][j + 1] / 16;
 						}
 					}
 				}
@@ -469,9 +469,9 @@ void ColorErrorDiffusionJJNMBVQ(unsigned char*** OriginImageData, unsigned char*
 
 				determineMBVQ(MBVQ, red, green, blue);
 
-				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255;
-				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255;
-				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255;
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
 
 				char* vertex = new char[30];
 
@@ -483,7 +483,7 @@ void ColorErrorDiffusionJJNMBVQ(unsigned char*** OriginImageData, unsigned char*
 					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
 					for (int i = -2; i <= 2; i++) {
 						for (int j = -2; j <= 2; j++) {
-							OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error[cor] * CoefficientMatrix[i + 2][j + 2] / 48;
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * CoefficientMatrix[i + 2][j + 2] / 48;
 						}
 					}
 				}
@@ -500,9 +500,9 @@ void ColorErrorDiffusionJJNMBVQ(unsigned char*** OriginImageData, unsigned char*
 
 				determineMBVQ(MBVQ, red, green, blue);
 
-				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255;
-				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255;
-				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255;
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
 
 				char* vertex = new char[30];
 
@@ -514,7 +514,7 @@ void ColorErrorDiffusionJJNMBVQ(unsigned char*** OriginImageData, unsigned char*
 					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
 					for (int i = -2; i <= 2; i++) {
 						for (int j = -2; j <= 2; j++) {
-							OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error[cor] * MirrorCoefficientMatrix[i + 2][j + 2] / 48;
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * MirrorCoefficientMatrix[i + 2][j + 2] / 48;
 						}
 					}
 				}
@@ -538,9 +538,9 @@ void ColorErrorDiffusionStuckiMBVQ(unsigned char*** OriginImageData, unsigned ch
 
 				determineMBVQ(MBVQ, red, green, blue);
 
-				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255;
-				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255;
-				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255;
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
 
 				char* vertex = new char[30];
 
@@ -552,7 +552,7 @@ void ColorErrorDiffusionStuckiMBVQ(unsigned char*** OriginImageData, unsigned ch
 					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
 					for (int i = -2; i <= 2; i++) {
 						for (int j = -2; j <= 2; j++) {
-							OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error[cor] * CoefficientMatrix[i + 2][j + 2] / 42;
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * CoefficientMatrix[i + 2][j + 2] / 42;
 						}
 					}
 				}
@@ -568,22 +568,24 @@ void ColorErrorDiffusionStuckiMBVQ(unsigned char*** OriginImageData, unsigned ch
 				char* MBVQ = new char[30];
 
 				determineMBVQ(MBVQ, red, green, blue);
-
-				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255;
-				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255;
-				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255;
+				//cout << MBVQ << endl;
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
 
 				char* vertex = new char[30];
 
 				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue);
+				//cout << vertex << endl;
+				
 				setVertexValue(HalftonedImageData, vertex, row, col);
-
+			
 				double* error = alloc1DArrayDouble(BytesPerPixel);
 				for (int cor = 0; cor < BytesPerPixel; cor++) {
 					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
 					for (int i = -2; i <= 2; i++) {
 						for (int j = -2; j <= 2; j++) {
-							OriginImageData[row + EdgeSize][col + EdgeSize][cor] += error[cor] * MirrorCoefficientMatrix[i + 2][j + 2] / 42;
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * MirrorCoefficientMatrix[i + 2][j + 2] / 42;
 						}
 					}
 				}
@@ -649,19 +651,19 @@ int main(int argc, char* argv[]) {
 
 	unsigned char*** MBVQFSHalftonedImageData = alloc3DImage(width, height, BytesPerPixel);
 	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
-	ColorErrorDiffusionFloydSteinbergMBVQ(extendedImageData, MBVQFSHalftonedImageData, width, height, BytesPerPixel, EdgeSize, threshold);
+	ColorErrorDiffusionFloydSteinbergMBVQ(extendedImageData, MBVQFSHalftonedImageData, width, height, BytesPerPixel, EdgeSize, 150);
 	char MBVQEFFloydSteinbergFilename[40] = "MBVQErrorDiffusionFloydSteinberg.raw";
 	write3DImageFile(MBVQEFFloydSteinbergFilename, MBVQFSHalftonedImageData, width, height, BytesPerPixel);
 
 	unsigned char*** MBVQJJNHalftonedImageData = alloc3DImage(width, height, BytesPerPixel);
 	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
-	ColorErrorDiffusionJJNMBVQ(extendedImageData, MBVQJJNHalftonedImageData, width, height, BytesPerPixel, EdgeSize, 90);
+	ColorErrorDiffusionJJNMBVQ(extendedImageData, MBVQJJNHalftonedImageData, width, height, BytesPerPixel, EdgeSize, 130);
 	char MBVQEFJJNFilename[40] = "MBVQErrorDiffusionJJN.raw";
 	write3DImageFile(MBVQEFJJNFilename, MBVQJJNHalftonedImageData, width, height, BytesPerPixel);
 
 	unsigned char*** MBVQStuckiHalftonedImageData = alloc3DImage(width, height, BytesPerPixel);
 	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
-	ColorErrorDiffusionStuckiMBVQ(extendedImageData, MBVQStuckiHalftonedImageData, width, height, BytesPerPixel, EdgeSize,175 );
+	ColorErrorDiffusionStuckiMBVQ(extendedImageData, MBVQStuckiHalftonedImageData, width, height, BytesPerPixel, EdgeSize,80 );
 	char MBVQEFStuckiFilename[40] = "MBVQErrorDiffusionStucki.raw";
 	write3DImageFile(MBVQEFStuckiFilename, MBVQStuckiHalftonedImageData, width, height, BytesPerPixel);
 
