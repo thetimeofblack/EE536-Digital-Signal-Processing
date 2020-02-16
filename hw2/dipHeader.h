@@ -19,6 +19,7 @@
 #include<cmath>
 #include<math.h>
 #include<string>
+#include<time.h>
 #define _USE_MATH_DEFINES
 using namespace std; 
 

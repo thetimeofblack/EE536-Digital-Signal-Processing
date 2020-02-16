@@ -1,0 +1,2044 @@
+ImageDataGalleries = imread('../Problem1/Gallery.jpg');
+ImageDataDogs = imread('../Problem1/Dogs.jpg');
+ImageDataGalleriesGray = rgb2gray(ImageDataGalleries);
+ImageDataDogsGray=rgb2gray(ImageDataDogs);
+%subplot(2,2,1);
+%imshow(ImageDataGalleriesGray);
+GalleryEdge1 = edge(ImageDataGalleriesGray,'canny',[0.01 0.1]); 
+%subplot(2,2,2);
+%imshow(GalleryEdge1);
+GalleryEdge2 = edge(ImageDataGalleriesGray,'canny',[0.09 0.1]); 
+%subplot(2,2,3);
+%imshow(GalleryEdge2);
+GalleryEdge3 = edge(ImageDataGalleriesGray,'canny',[0.09 0.2]); 
+%subplot(2,2,4);
+%imshow(GalleryEdge3);
+
+GalleryEdge4 =  edge(ImageDataGalleriesGray,'canny',[0.25 0.3]); 
+imwrite(1-GalleryEdge4,'Gallery_0.25_0.3.jpg'); 
+imshow(1-GalleryEdge4);
+DogsEdge1 = edge(ImageDataDogsGray,'canny',[0.1 0.3]);
+imwrite(1-DogsEdge1,'Dogs_0.1_0.3.jpg'); 
+
+%prms1={ 'out','', 'thrs',1, 'maxDist',.0075, 'thin',1 } ; 
+%[thrs,cntR,sumR,cntP,sumP,V] = edgesEvalImg( GalleryEdge, 'Dogs_GT1.mat', prms1 )
+%recall = cntR./sumR
+%precision = cntP./sumP 
+%Fscore = 2*recall.*precision./(precision+recall);
+
+
+
+%% main input filename Dogs_20_tuned.raw Gallery_20_tuned.raw
+filename = 'Gallery_0.09_0.2.jpg';
+width = 481; 
+height = 321; 
+BytesPerPixel = 1; 
+graph = imread('../Problem1/Gallery.jpg');
+CannyGrayGraph = rgb2gray(graph); 
+CannyEdgeDetector = edge(CannyGrayGraph,'canny',[0.09 0.2], 3); 
+
+
+%% evaluate edge and ground truth mean  
+imshow(1-CannyEdgeDetector)
+imwrite(1-CannyEdgeDetector,'Gallery_Canny_tuned.jpg'); 
+prms1={ 'out','', 'thrs',1, 'maxDist',.0075, 'thin',1 } ; 
+[thrs,cntR,sumR,cntP,sumP,V] = edgesEvalImg( CannyEdgeDetector, 'Gallery_GT5.mat', prms1 ); 
+recall = cntR./sumR; 
+precision = cntP./sumP;  
+Fscore = 2*recall.*precision./(precision+recall); 
+Fscore
+recall 
+precision
+
+% try structure edge
+function []= addEdgePath()
+addpath(genpath('C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Structured Edge\priorBoxe\toolbox'));
+addpath(genpath('C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Structured Edge\edges-master'));
+addpath('C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw2\Performance Evaluation')
+end
+
+
+#include "../dipHeader.h"
+
+
+void determineMBVQ(char* result, int R, int G, int B) {
+	if ((R + G) > 255) {
+		if ((G + B) > 255) {
+			if ((R + G + B) > 510) {
+				strcpy(result, "CMYW");
+			}
+			else {
+				strcpy(result, "MYGC");
+			}
+		}
+		else {
+			strcpy(result, "RGMY");
+		}
+	}
+	else {
+		if (!((G + B) > 255)) {
+			if (!((R + G + B) > 255)) {
+				strcpy(result, "KRGB");
+			}
+			else {
+				strcpy(result, "RGBM");
+			}
+		}
+		else {
+			strcpy(result, "CMGB");
+		}
+	}
+
+
+
+}
+
+
+void determineVertex(char* vertex,char* MBVQ, double R, double G, double B) {
+	if (strcmp(MBVQ, "CMYW") == 0) {
+		strcpy(vertex, "white");
+		if (B < 0.5 && B <= R && B <= G) {
+			strcpy(vertex, "yellow");
+		}
+		else if (G < 0.5 && G <= B && G <= R) {
+			strcpy(vertex, "magenta");
+		}
+		else if (R < 0.5 && R <= B && R <= G) {
+			strcpy(vertex, "cyan");
+		}
+	}
+
+	else if (strcmp(MBVQ, "MYGC") == 0) {
+		strcpy(vertex, "magenta");
+		if (R >= B && G >= B) {
+			if (R >= 0.5) {
+				strcpy(vertex, "yellow");
+			}
+			else {
+				strcpy(vertex, "green");
+			}
+		}
+		if (G >= R && B >= R) {
+			if (B >= 0.5) {
+				strcpy(vertex, "cyan");
+			}
+			else {
+				strcpy(vertex, "green");
+			}
+		}
+	}
+
+	else if (strcmp(MBVQ, "RGMY") == 0) {
+		if (B > 0.5) {
+			if (R > 0.5) {
+				if (B >= G) {
+					strcpy(vertex, "magenta");
+				}
+				else {
+					strcpy(vertex, "yellow");
+				}
+			}
+			else {
+				if (G > (B + R)) {
+					strcpy(vertex, "green");
+				}
+				else {
+					strcpy(vertex, "magenta");
+				}
+			}
+		}
+		else {
+			if (R >= 0.5) {
+				if (G >= 0.5) {
+					strcpy(vertex, "yellow");
+				}
+				else {
+					strcpy(vertex, "red");
+				}
+			}
+			else {
+				if (R >= G) {
+					strcpy(vertex, "red");
+				}
+				else {
+					strcpy(vertex, "green");
+				}
+			}
+		}
+
+	}
+
+	else if (strcmp(MBVQ, "KRGB") == 0) {
+		strcpy(vertex, "black");
+		if (B > 0.5 && B >= R && B >= G) {
+			strcpy(vertex, "blue");
+		}
+		else if (G > 0.5 && G >= B && G >= R) {
+			strcpy(vertex, "green");
+		}
+		else if (R > 0.5 && R >= B && R >= G) {
+			strcpy(vertex, "red");
+		}
+	}
+	else if (strcmp(MBVQ, "RGBM") == 0) {
+		strcpy(vertex, "green");
+		if (R > G&& R >= B) {
+			if (B < 0.5) {
+				strcpy(vertex, "red");
+			}
+			else {
+				strcpy(vertex, "magenta");
+			}
+		}
+		if (B > G&& B >= R) {
+			if (R < 0.5) {
+				strcpy(vertex, "blue");
+			}
+			else {
+				strcpy(vertex, "magenta");
+			}
+		}
+
+	}
+	else if (strcmp(MBVQ, "CMGB") == 0) {
+		if (B > 0.5) {
+			if (R > 0.5) {
+				if (G >= R) {
+					strcpy(vertex, "cyan");
+				}
+				else {
+					strcpy(vertex, "magenta");
+				}
+			}
+			else {
+				if (G > 0.5) {
+					strcpy(vertex, "cyan");
+				}
+				else {
+					strcpy(vertex, "blue");
+				}
+			}
+		}
+		else {
+			if (R > 0.5) {
+				if ((R - G + B) >= 0.5) {
+					strcpy(vertex, "magenta");
+				}
+				else {
+					strcpy(vertex, "green");
+				}
+			}
+			else {
+				if (G >= B) {
+					strcpy(vertex, "green");
+				}
+				else {
+					strcpy(vertex, "blue");
+				}
+			}
+		}
+
+	}
+
+}
+
+void setVertexValue(unsigned char*** ImageData, char* vertex, int row, int col) {
+	if (strcmp(vertex, "white") == 0) {
+		ImageData[row][col][0] = 255;
+		ImageData[row][col][1] = 255;
+		ImageData[row][col][2] = 255;
+	}
+	else if (strcmp(vertex, "black") == 0) {
+		ImageData[row][col][0] = 0;
+		ImageData[row][col][1] = 0;
+		ImageData[row][col][2] = 0;
+	}
+	else if (strcmp(vertex, "red") == 0) {
+		ImageData[row][col][0] = 255;
+		ImageData[row][col][1] = 0;
+		ImageData[row][col][2] = 0;
+	}
+	else if (strcmp(vertex, "green") == 0) {
+		ImageData[row][col][0] = 0;
+		ImageData[row][col][1] = 255;
+		ImageData[row][col][2] = 0;
+	}
+	else if (strcmp(vertex, "blue") == 0) {
+		ImageData[row][col][0] = 0;
+		ImageData[row][col][1] = 0;
+		ImageData[row][col][2] = 255;
+	}
+	else if (strcmp(vertex, "magenta") == 0) {
+		ImageData[row][col][0] = 255;
+		ImageData[row][col][1] = 0;
+		ImageData[row][col][2] = 255;
+	}
+	else if (strcmp(vertex, "cyan") == 0) {
+		ImageData[row][col][0] = 0;
+		ImageData[row][col][1] = 255;
+		ImageData[row][col][2] = 255;
+	}
+	else if (strcmp(vertex, "yellow") == 0) {
+		ImageData[row][col][0] = 255;
+		ImageData[row][col][1] = 255;
+		ImageData[row][col][2] = 0;
+	}
+	else {
+	
+	}
+
+}
+
+
+void convertRGBtoCMY(unsigned char*** OriginImageData,  int width, int height, int BytesPerPixel) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			for (int cor = 0; cor < BytesPerPixel; cor++) {
+				double tmp = 0.0; 
+				tmp = (1 - OriginImageData[row][col][cor] / 255.0) * 255; 
+				OriginImageData[row][col][cor] = tmp; 
+			}
+		}
+	}
+
+
+}
+// useless function 
+void makeErrorDiffusion(unsigned char*** OriginImageData, unsigned char*** HalftonedImageData, double** ErrorCoefficientMatrix, int row, int col, int cor,int EdgeSize, int WidSize) {
+	int error = OriginImageData[row+EdgeSize][col+EdgeSize][cor] - HalftonedImageData[row][col][cor]; 
+	for (int i = -WidSize / 2; i <= WidSize / 2; i++) {
+		for (int j = -WidSize / 2; j <= WidSize / 2; j++) {
+			OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * ErrorCoefficientMatrix[i + WidSize / 2][j + WidSize / 2]; 
+		}
+
+	}
+
+}
+
+void ColorErrorDiffusionJJN(unsigned char*** OriginImageData, unsigned char*** HalftonedImageData, int width, int height, int BytesPerPixel, int EdgeSize, int threshold) {
+	double CoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,7.0,5.0},{3.0,5.0,7.0,5.0,3.0},{1.0,3.0,5.0,3.0,1.0} };
+	double MirrorCoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{5.0,7.0,0.0,0.0,0.0},{3.0,5.0,7.0,5.0,3.0},{1.0,3.0,5.0,3.0,1.0} };
+	//double** CoefficientMatrixPointer; 
+	//CoefficientMatrixPointer = new double*[5]; 
+	//for (int i = 0; i < 5; i++) {
+	//	CoefficientMatrixPointer[i] = new double[5]; 
+	//}
+	//CoefficientMatrixPointer = CoefficientMatrix; 
+	//int WidSize = 5;
+	for (int row = 0; row < height; row++){
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					if (OriginImageData[row+EdgeSize][col+EdgeSize][cor] > threshold) {
+						HalftonedImageData[row][col][cor] = 255; 
+					}
+					else {
+						HalftonedImageData[row][col][cor] = 0; 
+					}
+					//makeErrorDiffusion(OriginImageData, HalftonedImageData, CoefficientMatrixPointer, row, col, cor, EdgeSize, WidSize); 
+					int error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize + i][col + EdgeSize + j][cor] += error * CoefficientMatrix[i + 2][j + 2] / 48;
+						}
+					}
+				}
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					if (OriginImageData[row + EdgeSize][col + EdgeSize][cor] > threshold) {
+						HalftonedImageData[row][col][cor] = 255;
+					}
+					else {
+						HalftonedImageData[row][col][cor] = 0;
+					}
+					int error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize + i][col + EdgeSize + j][cor] += error * MirrorCoefficientMatrix[i + 2][j + 2] / 48;
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
+
+void ColorErrorDiffusionFloydSteinberg(unsigned char*** OriginImageData, unsigned char*** HalftonedImageData, int width, int height, int BytesPerPixel,int EdgeSize, int threshold) {
+	double CoefficientMatrix[3][3] = { {0,0,0},{0,0,7.0},{3.0,5.0,1.0} };
+	double MirrorCoefficientMatrix[3][3] = { {0,0,0},{7.0,0,0.0},{1.0,5.0,3.0} };
+	for (int row = 0; row < height; row++) {
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					if (OriginImageData[row + EdgeSize][col + EdgeSize][cor] > threshold) {
+						HalftonedImageData[row][col][cor] = 255;
+					}
+					else {
+						HalftonedImageData[row][col][cor] = 0;
+					}
+					int error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -1; i <= 1; i++) {
+						for (int j = -1; j <= 1; j++) {
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * CoefficientMatrix[i + 1][j + 1] / 16;
+						}
+					}
+				}
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					if (OriginImageData[row + EdgeSize][col + EdgeSize][cor] > threshold) {
+						HalftonedImageData[row][col][cor] = 255;
+					}
+					else {
+						HalftonedImageData[row][col][cor] = 0;
+					}
+					int error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -1; i <= 1; i++) {
+						for (int j = -1; j <= 1; j++) {
+							OriginImageData[row + EdgeSize + i][col + EdgeSize + j][cor] += error * MirrorCoefficientMatrix[i + 1][j + 1] / 16;
+						}
+					}
+
+				}
+
+			}
+		}
+	}
+}
+
+
+void ColorErrorDiffusionStucki(unsigned char*** OriginImageData, unsigned char*** HalftonedImageData, int width, int height, int BytesPerPixel, int EdgeSize, int threshold) {
+	double CoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,8.0,4.0},{2.0,4.0,8.0,4.0,2.0},{1.0,2.0,4.0,2.0,1.0} };
+	double MirrorCoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{4.0,8.0,0.0,0.0,0.0},{2.0,4.0,8.0,4.0,2.0},{1.0,2.0,4.0,2.0,1.0} };
+
+	for (int row = 0; row < height; row++) {
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					if (OriginImageData[row + EdgeSize][col + EdgeSize][cor] > threshold) {
+						HalftonedImageData[row][col][cor] = 255;
+					}
+					else {
+						HalftonedImageData[row][col][cor] = 0;
+					}
+					int error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize + i][col + EdgeSize + j][cor] += error * CoefficientMatrix[i + 2][j + 2] / 42;
+						}
+					}
+
+				}
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					if (OriginImageData[row + EdgeSize][col + EdgeSize][cor] > threshold) {
+						HalftonedImageData[row][col][cor] = 255;
+					}
+					else {
+						HalftonedImageData[row][col][cor] = 0;
+					}
+					int error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize + i][col + EdgeSize + j][cor] += error * MirrorCoefficientMatrix[i + 2][j + 2] / 42;
+						}
+					}
+				}
+			}
+		}
+	}
+
+}
+
+void ColorErrorDiffusionFloydSteinbergMBVQ(unsigned char*** OriginImageData, unsigned char*** HalftonedImageData, int width, int height, int BytesPerPixel, int EdgeSize, int threshold) {
+	double CoefficientMatrix[3][3] = { {0,0,0},{0,0,7.0},{3.0,5.0,1.0} };
+	double MirrorCoefficientMatrix[3][3] = { {0,0,0},{7.0,0,0.0},{1.0,5.0,3.0} };
+	for (int row = 0; row < height; row++) {
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				int red = OriginImageData[row+EdgeSize][col+EdgeSize][0]; 
+				int green = OriginImageData[row+EdgeSize][col+EdgeSize][1]; 
+				int blue = OriginImageData[row+EdgeSize][col+EdgeSize][2];
+				char* MBVQ = new char[30]; 
+
+				determineMBVQ(MBVQ, red, green, blue); 
+
+				double normalizedRed = OriginImageData[row+EdgeSize][col+EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row+EdgeSize][col+EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row+EdgeSize][col+EdgeSize][2] / 255.0; 
+
+				char* vertex = new char[10]; 
+				
+				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue); 
+				setVertexValue(HalftonedImageData, vertex, row, col); 
+				
+				//double* error = alloc1DArrayDouble(BytesPerPixel); 
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					double error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor]; 
+					for (int i = -1; i <= 1; i++) {
+						for (int j = -1; j <= 1; j++) {
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * CoefficientMatrix[i + 1][j + 1]/16; 
+						}
+					}
+				}
+				
+
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				int red = OriginImageData[row + EdgeSize][col + EdgeSize][0];
+				int green = OriginImageData[row + EdgeSize][col + EdgeSize][1];
+				int blue = OriginImageData[row + EdgeSize][col + EdgeSize][2];
+				char* MBVQ = new char[30];
+
+				determineMBVQ(MBVQ, red, green, blue);
+
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
+
+				char* vertex = new char[30];
+
+				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue);
+				setVertexValue(HalftonedImageData, vertex, row, col);
+
+				//double* error = alloc1DArrayDouble(BytesPerPixel);
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					double error = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -1; i <= 1; i++) {
+						for (int j = -1; j <= 1; j++) {
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error * MirrorCoefficientMatrix[i + 1][j + 1] / 16;
+						}
+					}
+				}
+
+			}
+		}
+	}
+	
+
+}
+
+void ColorErrorDiffusionJJNMBVQ(unsigned char*** OriginImageData, unsigned char*** HalftonedImageData, int width, int height, int BytesPerPixel, int EdgeSize, int threshold) {
+	double CoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,7.0,5.0},{3.0,5.0,7.0,5.0,3.0},{1.0,3.0,5.0,3.0,1.0} };
+	double MirrorCoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{5.0,7.0,0.0,0.0,0.0},{3.0,5.0,7.0,5.0,3.0},{1.0,3.0,5.0,3.0,1.0} };
+	for (int row = 0; row < height; row++) {
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				int red = OriginImageData[row + EdgeSize][col + EdgeSize][0];
+				int green = OriginImageData[row + EdgeSize][col + EdgeSize][1];
+				int blue = OriginImageData[row + EdgeSize][col + EdgeSize][2];
+				char* MBVQ = new char[30];
+
+				determineMBVQ(MBVQ, red, green, blue);
+
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
+
+				char* vertex = new char[30];
+
+				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue);
+				setVertexValue(HalftonedImageData, vertex, row, col);
+
+				double* error = alloc1DArrayDouble(BytesPerPixel);
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * CoefficientMatrix[i + 2][j + 2] / 48;
+						}
+					}
+				}
+
+
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				int red = OriginImageData[row + EdgeSize][col + EdgeSize][0];
+				int green = OriginImageData[row + EdgeSize][col + EdgeSize][1];
+				int blue = OriginImageData[row + EdgeSize][col + EdgeSize][2];
+				char* MBVQ = new char[30];
+
+				determineMBVQ(MBVQ, red, green, blue);
+
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
+
+				char* vertex = new char[30];
+
+				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue);
+				setVertexValue(HalftonedImageData, vertex, row, col);
+
+				double* error = alloc1DArrayDouble(BytesPerPixel);
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * MirrorCoefficientMatrix[i + 2][j + 2] / 48;
+						}
+					}
+				}
+
+			}
+		}
+	}
+}
+
+void ColorErrorDiffusionStuckiMBVQ(unsigned char*** OriginImageData, unsigned char*** HalftonedImageData, int width, int height, int BytesPerPixel, int EdgeSize, int threshold) {
+	double CoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,8.0,4.0},{2.0,4.0,8.0,4.0,2.0},{1.0,2.0,4.0,2.0,1.0} };
+	double MirrorCoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{4.0,8.0,0.0,0.0,0.0},{2.0,4.0,8.0,4.0,2.0},{1.0,2.0,4.0,2.0,1.0} };
+
+	for (int row = 0; row < height; row++) {
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				int red = OriginImageData[row + EdgeSize][col + EdgeSize][0];
+				int green = OriginImageData[row + EdgeSize][col + EdgeSize][1];
+				int blue = OriginImageData[row + EdgeSize][col + EdgeSize][2];
+				char* MBVQ = new char[30];
+
+				determineMBVQ(MBVQ, red, green, blue);
+
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
+
+				char* vertex = new char[30];
+
+				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue);
+				setVertexValue(HalftonedImageData, vertex, row, col);
+
+				double* error = alloc1DArrayDouble(BytesPerPixel);
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * CoefficientMatrix[i + 2][j + 2] / 42;
+						}
+					}
+				}
+
+
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				int red = OriginImageData[row + EdgeSize][col + EdgeSize][0];
+				int green = OriginImageData[row + EdgeSize][col + EdgeSize][1];
+				int blue = OriginImageData[row + EdgeSize][col + EdgeSize][2];
+				char* MBVQ = new char[30];
+
+				determineMBVQ(MBVQ, red, green, blue);
+				//cout << MBVQ << endl;
+				double normalizedRed = OriginImageData[row + EdgeSize][col + EdgeSize][0] / 255.0;
+				double normalizedGreen = OriginImageData[row + EdgeSize][col + EdgeSize][1] / 255.0;
+				double normalizedBlue = OriginImageData[row + EdgeSize][col + EdgeSize][2] / 255.0;
+
+				char* vertex = new char[30];
+
+				determineVertex(vertex, MBVQ, normalizedRed, normalizedGreen, normalizedBlue);
+				//cout << vertex << endl;
+				
+				setVertexValue(HalftonedImageData, vertex, row, col);
+			
+				double* error = alloc1DArrayDouble(BytesPerPixel);
+				for (int cor = 0; cor < BytesPerPixel; cor++) {
+					error[cor] = OriginImageData[row + EdgeSize][col + EdgeSize][cor] - HalftonedImageData[row][col][cor];
+					for (int i = -2; i <= 2; i++) {
+						for (int j = -2; j <= 2; j++) {
+							OriginImageData[row + EdgeSize+i][col + EdgeSize+j][cor] += error[cor] * MirrorCoefficientMatrix[i + 2][j + 2] / 42;
+						}
+					}
+				}
+
+			}
+		}
+	}
+}
+
+
+
+int main(int argc, char* argv[]) {
+	int width;
+	int height;
+	int BytesPerPixel;
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[3]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[4]);
+			height = atoi(argv[5]);
+		}
+	}
+	width = 640; 
+	height = 480; 
+	BytesPerPixel = 3; 
+	int EdgeSize = 5; 
+	int threshold = 128; 
+	char originFilename[30] = "../Problem2/Rose.raw"; 
+	unsigned char*** OriginImageData = alloc3DImage(width, height, BytesPerPixel); 
+	read3DImageFile(originFilename, OriginImageData,width, height, BytesPerPixel); 
+	unsigned char*** extendedImageData = alloc3DImage(width + 2 * EdgeSize, height + 2 * EdgeSize, BytesPerPixel); 
+
+
+	unsigned char*** EFFSHalftonedImageData = alloc3DImage(width, height, BytesPerPixel); 
+	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel,EdgeSize); 
+	//convertRGBtoCMY(extendedImageData, width + 2 * EdgeSize, height + 2 * EdgeSize, BytesPerPixel); 
+	ColorErrorDiffusionFloydSteinberg(extendedImageData, EFFSHalftonedImageData, width, height, BytesPerPixel, EdgeSize, 140);
+	char ColorEFFloydSteinbergFilename[40] = "ColorErrorDiffusionFloydSteinberg.raw"; 
+	write3DImageFile(ColorEFFloydSteinbergFilename, EFFSHalftonedImageData, width, height, BytesPerPixel); 
+
+	unsigned char*** EFJJNHalftonedImageData = alloc3DImage(width, height, BytesPerPixel); 
+	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
+	//convertRGBtoCMY(extendedImageData, width + 2 * EdgeSize, height + 2 * EdgeSize, BytesPerPixel);
+	ColorErrorDiffusionJJN(extendedImageData, EFJJNHalftonedImageData, width, height, BytesPerPixel, EdgeSize, 150); 
+	char ColorEFJJNFilename[40] = "ColorErrorDiffusionJJN.raw"; 
+	write3DImageFile(ColorEFJJNFilename, EFJJNHalftonedImageData, width, height, BytesPerPixel); 
+
+	unsigned char*** EFStuckiHalftonedImageData = alloc3DImage(width, height, BytesPerPixel); 
+	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
+	//convertRGBtoCMY(extendedImageData, width + 2 * EdgeSize, height + 2 * EdgeSize, BytesPerPixel);
+	ColorErrorDiffusionStucki(extendedImageData, EFStuckiHalftonedImageData, width, height, BytesPerPixel, EdgeSize,175); 
+	char ColorEFStuckiFilename[40] = "ColorErrorDiffusionStucki.raw"; 
+	write3DImageFile(ColorEFStuckiFilename, EFStuckiHalftonedImageData, width, height, BytesPerPixel); 
+
+
+	unsigned char*** MBVQFSHalftonedImageData = alloc3DImage(width, height, BytesPerPixel);
+	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
+	ColorErrorDiffusionFloydSteinbergMBVQ(extendedImageData, MBVQFSHalftonedImageData, width, height, BytesPerPixel, EdgeSize, 150);
+	char MBVQEFFloydSteinbergFilename[40] = "MBVQErrorDiffusionFloydSteinberg.raw";
+	write3DImageFile(MBVQEFFloydSteinbergFilename, MBVQFSHalftonedImageData, width, height, BytesPerPixel);
+
+	unsigned char*** MBVQJJNHalftonedImageData = alloc3DImage(width, height, BytesPerPixel);
+	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
+	ColorErrorDiffusionJJNMBVQ(extendedImageData, MBVQJJNHalftonedImageData, width, height, BytesPerPixel, EdgeSize, 130);
+	char MBVQEFJJNFilename[40] = "MBVQErrorDiffusionJJN.raw";
+	write3DImageFile(MBVQEFJJNFilename, MBVQJJNHalftonedImageData, width, height, BytesPerPixel);
+
+	unsigned char*** MBVQStuckiHalftonedImageData = alloc3DImage(width, height, BytesPerPixel);
+	extend3DImageEdge(OriginImageData, extendedImageData, width, height, BytesPerPixel, EdgeSize);
+	ColorErrorDiffusionStuckiMBVQ(extendedImageData, MBVQStuckiHalftonedImageData, width, height, BytesPerPixel, EdgeSize,80 );
+	char MBVQEFStuckiFilename[40] = "MBVQErrorDiffusionStucki.raw";
+	write3DImageFile(MBVQEFStuckiFilename, MBVQStuckiHalftonedImageData, width, height, BytesPerPixel);
+
+}
+
+
+#include "..\dipHeader.h"
+
+
+void FixedThresholdingHalftoning(unsigned char** OriginImageData, unsigned char** ObtainedImageData, int width, int height, int BytesPerPixel,int threshold) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			int tmp = 0; 
+			if (OriginImageData[row][col] < threshold) {
+				ObtainedImageData[row][col] = 0; 
+			}
+			else {
+				ObtainedImageData[row][col] = 255; 
+			}
+		}
+	}
+}
+
+
+
+// 
+void RandomThresholdingHalftoning(unsigned char** OriginImageData, unsigned char** ObtainedImageData, int width, int height, int BytesPerPixel) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			int tmpThreshold =rand()%255;
+			//cout << tmpThreshold << endl;
+			if (OriginImageData[row][col] < tmpThreshold) {
+				ObtainedImageData[row][col] = 0;
+			}
+			else {
+				ObtainedImageData[row][col] = 255;
+			}
+		}
+	}
+}
+
+
+
+
+void DitheringMatrixHalftoning(unsigned char** OriginImageData, unsigned char** ObtainedImageData, int width, int height, int BytesPerPixel, int MatrixSize) {
+	int DitherMatrix2[2][2] = { 1, 2,3,0 };
+	int DitherMatrix8[8][8] = { {21,37,25,41,22,38,26,42},{53,5,57,9,54,6,58,10},{29,45,17,33,30,46,18,34},{61,13,49,1,62,14,50,2},{23,39,27,43,20,36,24,40},{55,7,59,11,52,4,56,8},{31,47,19,35,28,44,16,32},{63,15,51,3,60,12,48,0} };
+	int DitherMatrix32[32][32] = { {341,597,405,661,357,613,421,677,345,601,409,665,361,617,425,681,342,598,406,662,358,614,422,678,346,602,410,666,362,618,426,682},{853,85,917,149,869,101,933,165,857,89,921,153,873,105,937,169,854,86,918,150,870,102,934,166,858,90,922,154,874,106,938,170},{469,725,277,533,485,741,293,549,473,729,281,537,489,745,297,553,470,726,278,534,486,742,294,550,474,730,282,538,490,746,298,554},{981,213,789,21,997,229,805,37,985,217,793,25,1001,233,809,41,982,214,790,22,998,230,806,38,986,218,794,26,1002,234,810,42},{373,629,437,693,325,581,389,645,377,633,441,697,329,585,393,649,374,630,438,694,326,582,390,646,378,634,442,698,330,586,394,650},{885,117,949,181,837,69,901,133,889,121,953,185,841,73,905,137,886,118,950,182,838,70,902,134,890,122,954,186,842,74,906,138},{501,757,309,565,453,709,261,517,505,761,313,569,457,713,265,521,502,758,310,566,454,710,262,518,506,762,314,570,458,714,266,522},{1013,245,821,53,965,197,773,5,1017,249,825,57,969,201,777,9,1014,246,822,54,966,198,774,6,1018,250,826,58,970,202,778,10},{349,605,413,669,365,621,429,685,337,593,401,657,353,609,417,673,350,606,414,670,366,622,430,686,338,594,402,658,354,610,418,674},{861,93,925,157,877,109,941,173,849,81,913,145,865,97,929,161,862,94,926,158,878,110,942,174,850,82,914,146,866,98,930,162},{477,733,285,541,493,749,301,557,465,721,273,529,481,737,289,545,478,734,286,542,494,750,302,558,466,722,274,530,482,738,290,546},{989,221,797,29,1005,237,813,45,977,209,785,17,993,225,801,33,990,222,798,30,1006,238,814,46,978,210,786,18,994,226,802,34},{381,637,445,701,333,589,397,653,369,625,433,689,321,577,385,641,382,638,446,702,334,590,398,654,370,626,434,690,322,578,386,642},{893,125,957,189,845,77,909,141,881,113,945,177,833,65,897,129,894,126,958,190,846,78,910,142,882,114,946,178,834,66,898,130},{509,765,317,573,461,717,269,525,497,753,305,561,449,705,257,513,510,766,318,574,462,718,270,526,498,754,306,562,450,706,258,514},{1021,253,829,61,973,205,781,13,1009,241,817,49,961,193,769,1,1022,254,830,62,974,206,782,14,1010,242,818,50,962,194,770,2},{343,599,407,663,359,615,423,679,347,603,411,667,363,619,427,683,340,596,404,660,356,612,420,676,344,600,408,664,360,616,424,680},{855,87,919,151,871,103,935,167,859,91,923,155,875,107,939,171,852,84,916,148,868,100,932,164,856,88,920,152,872,104,936,168},{471,727,279,535,487,743,295,551,475,731,283,539,491,747,299,555,468,724,276,532,484,740,292,548,472,728,280,536,488,744,296,552},{983,215,791,23,999,231,807,39,987,219,795,27,1003,235,811,43,980,212,788,20,996,228,804,36,984,216,792,24,1000,232,808,40},{375,631,439,695,327,583,391,647,379,635,443,699,331,587,395,651,372,628,436,692,324,580,388,644,376,632,440,696,328,584,392,648},{887,119,951,183,839,71,903,135,891,123,955,187,843,75,907,139,884,116,948,180,836,68,900,132,888,120,952,184,840,72,904,136},{503,759,311,567,455,711,263,519,507,763,315,571,459,715,267,523,500,756,308,564,452,708,260,516,504,760,312,568,456,712,264,520},{1015,247,823,55,967,199,775,7,1019,251,827,59,971,203,779,11,1012,244,820,52,964,196,772,4,1016,248,824,56,968,200,776,8},{351,607,415,671,367,623,431,687,339,595,403,659,355,611,419,675,348,604,412,668,364,620,428,684,336,592,400,656,352,608,416,672},{863,95,927,159,879,111,943,175,851,83,915,147,867,99,931,163,860,92,924,156,876,108,940,172,848,80,912,144,864,96,928,160},{479,735,287,543,495,751,303,559,467,723,275,531,483,739,291,547,476,732,284,540,492,748,300,556,464,720,272,528,480,736,288,544},{991,223,799,31,1007,239,815,47,979,211,787,19,995,227,803,35,988,220,796,28,1004,236,812,44,976,208,784,16,992,224,800,32},{383,639,447,703,335,591,399,655,371,627,435,691,323,579,387,643,380,636,444,700,332,588,396,652,368,624,432,688,320,576,384,640},{895,127,959,191,847,79,911,143,883,115,947,179,835,67,899,131,892,124,956,188,844,76,908,140,880,112,944,176,832,64,896,128},{511,767,319,575,463,719,271,527,499,755,307,563,451,707,259,515,508,764,316,572,460,716,268,524,496,752,304,560,448,704,256,512},{1023,255,831,63,975,207,783,15,1011,243,819,51,963,195,771,3,1020,252,828,60,972,204,780,12,1008,240,816,48,960,192,768,0} };
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			int indexi = row % MatrixSize; 
+			int indexj = col % MatrixSize; 
+			double threshold = 0.0; 
+			if (MatrixSize == 2) {
+					threshold = (DitherMatrix2[indexi][indexj] + 0.5) / pow(MatrixSize,2) * 255;
+			}
+			else if (MatrixSize == 8) {
+					threshold = (DitherMatrix8[indexi][indexj] + 0.5) / pow(MatrixSize, 2) * 255;
+			}
+			else if (MatrixSize == 32) {
+					threshold = (DitherMatrix32[indexi][indexj] + 0.5) / pow(MatrixSize, 2) * 255;
+			}
+			else {
+				
+			}
+
+			if (OriginImageData[row][col] < threshold) {
+				ObtainedImageData[row][col] = 0; 
+			}
+			else {
+				ObtainedImageData[row][col] = 255; 
+			}
+		}
+	}
+	
+
+}
+
+
+
+// if time is available, maybe I can try to solve the problem 
+// dynamic allocate 2d array and iteratively use the algorithm to construct matrix 
+int compThresholdForDithering( int row, int col, int MatrixSize) {
+	int n = MatrixSize / 2; 
+	int DitherMatrix2[2][2] = {1,2,3,0 };
+	if (n == 1) {
+		int result; 
+		result = (DitherMatrix2[row % MatrixSize][col % MatrixSize] + 0.5) * 255 / pow(MatrixSize, 2); 
+		return result; 
+	}
+	
+	int** DitherIndexMatrix = new int* [MatrixSize];
+	for (int i = 0; i < MatrixSize; i++) {
+		DitherIndexMatrix[i] = new int[MatrixSize]; 
+	}
+
+	for (int k = 1; k <= MatrixSize/2; k++) {
+		
+	}
+}
+
+
+int main(int argc, char* argv[]) {
+	int width;
+	int height;
+	int BytesPerPixel;
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else { 
+		BytesPerPixel = atoi(argv[3]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[4]);
+			height = atoi(argv[5]);
+		}
+
+	}
+	width = 750; 
+	height = 500; 
+	BytesPerPixel = 1; 
+	char OriginImageDataFilename[40] = "../Problem2/LightHouse.raw"; 
+	unsigned char** OriginImageData = alloc2DImage(width, height, BytesPerPixel); 
+	read2DImageFile(OriginImageDataFilename, OriginImageData, width, height, BytesPerPixel); 
+
+	unsigned char** DitheringHalftonedImageData = alloc2DImage(width, height, BytesPerPixel);
+	DitheringMatrixHalftoning(OriginImageData, DitheringHalftonedImageData, width, height, BytesPerPixel, 128); 
+	write2DImageFile(argv[2], DitheringHalftonedImageData, width, height, BytesPerPixel);
+
+	unsigned char** FixedThresholdHalftonedImageData = alloc2DImage(width, height, BytesPerPixel);
+	FixedThresholdingHalftoning(OriginImageData, FixedThresholdHalftonedImageData, width, height, BytesPerPixel,150);
+	char FixedThresholdHalftoningfilename[30] = "HalfToned_FixedThreshold.raw";
+	write2DImageFile(FixedThresholdHalftoningfilename, FixedThresholdHalftonedImageData, width, height, BytesPerPixel);
+	
+	unsigned char** RandomThresholdHalftonedImageData = alloc2DImage(width, height, BytesPerPixel);
+	RandomThresholdingHalftoning(OriginImageData, RandomThresholdHalftonedImageData, width, height, BytesPerPixel);
+	char RandomThresholdHalftoningfilename[30] = "HalfToned_RandomThreshold.raw";
+	write2DImageFile(RandomThresholdHalftoningfilename, RandomThresholdHalftonedImageData, width, height, BytesPerPixel);
+
+
+}
+
+
+#include "../dipHeader.h"
+
+/*
+				OriginImageData[row + EdgeSize][col + EdgeSize + 1] += 8 / 42 * error;
+				OriginImageData[row + EdgeSize][col + EdgeSize + 2] += 4 / 42 * error;
+
+				OriginImageData[row + EdgeSize + 1][col + EdgeSize - 2] += 2 / 42 * error;
+				OriginImageData[row + EdgeSize + 1][col + EdgeSize - 1] += 4 / 42 * error;
+				OriginImageData[row + EdgeSize + 1][col + EdgeSize] += 8 / 42 * error;
+				OriginImageData[row + EdgeSize + 1][col + EdgeSize + 1] += 4 / 42 * error;
+				OriginImageData[row + EdgeSize + 1][col + EdgeSize + 2] += 2 / 42 * error;
+
+
+				OriginImageData[row + EdgeSize + 2][col + EdgeSize - 2] += 1 / 42 * error;
+				OriginImageData[row + EdgeSize + 2][col + EdgeSize - 1] += 2 / 42 * error;
+				OriginImageData[row + EdgeSize + 2][col + EdgeSize] += 4 / 42 * error;
+				OriginImageData[row + EdgeSize + 2][col + EdgeSize + 1] += 2 / 42 * error;
+				OriginImageData[row + EdgeSize + 2][col + EdgeSize + 2] += 1 / 42 * error;
+
+
+*/
+
+
+void ErrorDiffusionFloydSteinberg(unsigned char** OriginImageData,unsigned char** HalftonedImageData , int width, int height, int BytesPerPixel,int EdgeSize,int threshold) {
+	double CoefficientMatrix[3][3] = { {0,0,0},{0,0,7.0},{3.0,5.0,1.0} };
+	double MirrorCoefficientMatrix[3][3] = { {0,0,0},{7.0,0,0.0},{1.0,5.0,3.0} };
+	for (int row = 0; row < height; row++) {
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				if (OriginImageData[row + EdgeSize][col + EdgeSize] > threshold) {
+					HalftonedImageData[row][col] = 255;
+				}
+				else {
+					HalftonedImageData[row][col] = 0;
+				}
+				double error = OriginImageData[row + EdgeSize][col + EdgeSize] - HalftonedImageData[row][col];
+				for (int i = -1; i <= 1; i++) {
+					for (int j = -1; j <= 1; j++) {
+						OriginImageData[row + EdgeSize + i][col + EdgeSize + j] += error * CoefficientMatrix[i + 1][j + 1]/16.0;
+					}
+				}
+
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				if (OriginImageData[row + EdgeSize][col + EdgeSize] > threshold) {
+					HalftonedImageData[row][col] = 255;
+				}
+				else {
+					HalftonedImageData[row][col] = 0;
+				}
+				double error = OriginImageData[row + EdgeSize][col + EdgeSize] - HalftonedImageData[row][col];
+
+				for (int i = -1; i <= 1; i++) {
+					for (int j = -1; j <= 1; j++) {
+						OriginImageData[row + EdgeSize + i][col + EdgeSize + j] += error * MirrorCoefficientMatrix[i + 1][j + 1]/16.0;
+					}
+				}
+			}
+		}
+	}
+
+
+}
+
+void ErrorDiffusionJJN(unsigned char** OriginImageData, unsigned char** HalftonedImageData, int width, int height, int BytesPerPixel, int EdgeSize, int threshold) {
+	
+	double CoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,7.0,5.0},{3.0,5.0,7.0,5.0,3.0},{1.0,3.0,5.0,3.0,1.0} };
+	double MirrorCoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{5.0,7.0,0.0,0.0,0.0},{3.0,5.0,7.0,5.0,3.0},{1.0,3.0,5.0,3.0,1.0} };
+
+	for (int row = 0; row < height; row++) {
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				if (OriginImageData[row + EdgeSize][col + EdgeSize] > threshold) {
+					HalftonedImageData[row][col] = 255;
+				}
+				else {
+					HalftonedImageData[row][col] = 0;
+				}
+				double error = OriginImageData[row + EdgeSize][col + EdgeSize] - HalftonedImageData[row][col];
+				for (int i = -2; i <= 2; i++) {
+					for (int j = -2; j <= 2; j++) {
+						OriginImageData[row + EdgeSize + i][col + EdgeSize + j] += error * CoefficientMatrix[i + 2][j + 2]/48.0;
+					}
+				}
+
+
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				if (OriginImageData[row + EdgeSize][col + EdgeSize] > threshold) {
+					HalftonedImageData[row][col] = 255;
+				}
+				else {
+					HalftonedImageData[row][col] = 0;
+				}
+				double error = OriginImageData[row + EdgeSize][col + EdgeSize] - HalftonedImageData[row][col];
+
+				for (int i = -2; i <= 2; i++) {
+					for (int j = -2; j <= 2; j++) {
+						OriginImageData[row + EdgeSize + i][col + EdgeSize + j] += error * MirrorCoefficientMatrix[i + 2][j + 2]/48.0;
+					}
+				}
+			}
+		}
+	}
+
+}
+
+void ErrorDiffusionStucki(unsigned char** OriginImageData, unsigned char** HalftonedImageData, int width, int height, int BytesPerPixel, int EdgeSize, int threshold) {
+	double CoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,8.0,4.0},{2.0,4.0,8.0,4.0,2.0},{1.0,2.0,4.0,2.0,1.0} };
+	double MirrorCoefficientMatrix[5][5] = { {0.0,0.0,0.0,0.0,0.0},{0.0,0.0,0.0,0.0,0.0},{4.0,8.0,0.0,0.0,0.0},{2.0,4.0,8.0,4.0,2.0},{1.0,2.0,4.0,2.0,1.0} };
+	
+	for (int row = 0; row < height; row++) {
+		//double error = 0.0;
+		if (row % 2 == 0) {
+			for (int col = 0; col < width; col++) {
+				if (OriginImageData[row + EdgeSize][col + EdgeSize] >= threshold) {
+					HalftonedImageData[row][col] = 255;
+				}
+				else {
+					HalftonedImageData[row][col] = 0;
+				}
+			
+				double error = OriginImageData[row + EdgeSize][col + EdgeSize] - HalftonedImageData[row][col];
+				//cout << error << " "; 
+				for (int i = -2; i <= 2; i++) {
+					for (int j = -2; j <= 2; j++) {
+						OriginImageData[row + EdgeSize + i][col + EdgeSize + j] += error * CoefficientMatrix[i + 2][j + 2]/42.0;
+
+					}
+				}
+
+			}
+		}
+		else {
+			for (int col = width - 1; col >= 0; col--) {
+				if (OriginImageData[row + EdgeSize][col + EdgeSize] >= threshold) {
+					HalftonedImageData[row][col] = 255;
+				}
+				else {
+					HalftonedImageData[row][col] = 0;
+				}
+				double error = OriginImageData[row + EdgeSize][col + EdgeSize] - HalftonedImageData[row][col];
+
+				for (int i = -2; i <= 2; i++) {
+					for (int j = -2; j <= 2; j++) {
+						OriginImageData[row + EdgeSize + i][col + EdgeSize + j] += error * MirrorCoefficientMatrix[i + 2][j + 2]/42.0;
+					}
+				}
+			}
+		}
+	}
+
+}
+
+int main(int argc, char* argv[]) {
+	int width;
+	int height;
+	int BytesPerPixel;
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[3]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[4]);
+			height = atoi(argv[5]);
+		}
+	}
+	cout << "Hello world" << endl;
+	char lighthousefilename[30] = "../Problem2/LightHouse.raw"; 
+	int EdgeSize = 6; 
+	int ltwidth = 750; 
+	int ltheight = 500; 
+	int ltBytesPerPixel = 1; 
+	unsigned char** LightHouseImageData = alloc2DImage(ltwidth, ltheight, ltBytesPerPixel); 
+	read2DImageFile(lighthousefilename, LightHouseImageData, ltwidth, ltheight, ltBytesPerPixel); 
+	
+	
+	
+	unsigned char** extendedltImageData = alloc2DImage(ltwidth + 2 * EdgeSize, ltheight + 2 * EdgeSize, ltBytesPerPixel); 
+	//be careful about the pure image 
+	
+	extend2DImageEdge(LightHouseImageData,extendedltImageData,ltwidth,ltheight,ltBytesPerPixel,EdgeSize );
+	unsigned char** FSDiffusedImageData = alloc2DImage(ltwidth, ltheight, ltBytesPerPixel); 
+	ErrorDiffusionFloydSteinberg(extendedltImageData, FSDiffusedImageData, ltwidth, ltheight, ltBytesPerPixel, EdgeSize, 125); 
+	
+	extend2DImageEdge(LightHouseImageData, extendedltImageData, ltwidth, ltheight, ltBytesPerPixel, EdgeSize);
+	unsigned char** JJNDiffusedImageData = alloc2DImage(ltwidth, ltheight, ltBytesPerPixel);
+	ErrorDiffusionJJN(extendedltImageData, JJNDiffusedImageData, ltwidth, ltheight, ltBytesPerPixel, EdgeSize, 80);
+	
+	extend2DImageEdge(LightHouseImageData, extendedltImageData, ltwidth, ltheight, ltBytesPerPixel, EdgeSize);
+	unsigned char** StuckiDiffusedImageData = alloc2DImage(ltwidth, ltheight, ltBytesPerPixel);
+	ErrorDiffusionStucki(extendedltImageData, StuckiDiffusedImageData, ltwidth, ltheight, ltBytesPerPixel, EdgeSize, 200);
+	
+	char FloydSteinbergFilename[30] = "LightHouseFS.raw"; 
+	char JJNFilename[30] = "LightHouseJJN.raw"; ; 
+	char StuckiFilename[30] = "LightHouseStucki.raw"; 
+
+	write2DImageFile(FloydSteinbergFilename, FSDiffusedImageData, ltwidth, ltheight, ltBytesPerPixel); 
+	write2DImageFile(JJNFilename, JJNDiffusedImageData, ltwidth, ltheight, ltBytesPerPixel);
+	write2DImageFile(StuckiFilename, StuckiDiffusedImageData, ltwidth, ltheight, ltBytesPerPixel);
+
+}
+
+
+% groundTruth data seperation 
+Dog_GT_Filename = '../Problem1/Dogs_GT.mat'; 
+Dog_GT = load(Dog_GT_Filename);
+
+Gallery_GT_Filename = '../Problem1/Gallery_GT.mat'; 
+Gallery_GT = load(Gallery_GT_Filename) ; 
+
+%% seperate Dog groundTruth data 
+
+        
+
+Dog_GT1 = struct() ; 
+Dog_GT1.groundTruth{1,1}.Boundaries= Dog_GT.groundTruth{1,1}.Boundaries ; 
+save('Dogs_GT1.mat', '-struct', 'Dog_GT1'); 
+
+Dog_GT2 = struct() ; 
+Dog_GT2.groundTruth{1,1}.Boundaries= Dog_GT.groundTruth{1,2}.Boundaries ; 
+save('Dogs_GT2.mat', '-struct', 'Dog_GT2'); 
+
+Dog_GT3 = struct() ; 
+Dog_GT3.groundTruth{1,1}.Boundaries= Dog_GT.groundTruth{1,3}.Boundaries ; 
+save('Dogs_GT3.mat', '-struct', 'Dog_GT2'); 
+
+Dog_GT4 = struct() ; 
+Dog_GT4.groundTruth{1,1}.Boundaries= Dog_GT.groundTruth{1,4}.Boundaries ; 
+save('Dogs_GT4.mat', '-struct', 'Dog_GT2'); 
+%imshow(Dog_GT4.groundTruth{1,1}.Boundaries)
+Dog_GT5 = struct() ; 
+Dog_GT5.groundTruth{1,1}.Boundaries= Dog_GT.groundTruth{1,5}.Boundaries ; 
+save('Dogs_GT5.mat', '-struct', 'Dog_GT2'); 
+
+
+Gallery_GT1 = struct() ; 
+Gallery_GT1.groundTruth{1,1}.Boundaries= Gallery_GT.groundTruth{1,1}.Boundaries ; 
+save('Gallery_GT1.mat', '-struct', 'Gallery_GT1'); 
+
+Gallery_GT2 = struct() ; 
+Gallery_GT2.groundTruth{1,1}.Boundaries= Gallery_GT.groundTruth{1,2}.Boundaries ; 
+save('Gallery_GT2.mat', '-struct', 'Gallery_GT2'); 
+
+Gallery_GT3 = struct() ; 
+Gallery_GT3.groundTruth{1,1}.Boundaries= Gallery_GT.groundTruth{1,3}.Boundaries ; 
+save('Gallery_GT3.mat', '-struct', 'Gallery_GT3'); 
+
+
+Gallery_GT4 = struct() ; 
+Gallery_GT4.groundTruth{1,1}.Boundaries= Gallery_GT.groundTruth{1,4}.Boundaries ; 
+save('Gallery_GT4.mat', '-struct', 'Gallery_GT4'); 
+
+
+Gallery_GT5 = struct() ; 
+Gallery_GT5.groundTruth{1,1}.Boundaries= Gallery_GT.groundTruth{1,5}.Boundaries ; 
+save('Gallery_GT5.mat', '-struct', 'Gallery_GT5'); 
+
+% Demo for Structured Edge Detector (please see readme.txt first).
+
+
+
+%% set opts for training (see edgesTrain.m)
+opts=edgesTrain();                % default options (good settings)
+opts.modelDir='models/';          % model will be in models/forest
+opts.modelFnm='modelBsds';        % model name
+opts.nPos=5e5; opts.nNeg=5e5;     % decrease to speedup training
+opts.useParfor=0;                 % parallelize if sufficient memory
+
+
+%% train edge detector (~20m/8Gb per tree, proportional to nPos/nNeg)
+tic, model=edgesTrain(opts); toc; % will load model if already trained
+
+
+%% set detection parameters (can set after training)
+model.opts.multiscale=1;          % for top accuracy set multiscale=1
+model.opts.sharpen=0;             % for top speed set sharpen=0
+model.opts.nTreesEval=6;          % for top speed set nTreesEval=1
+model.opts.nThreads=6;            % max number threads for evaluation
+model.opts.nms=0;                 % set to true to enable nms
+
+
+%% evaluate edge detector on BSDS500 (see edgesEval.m)
+if(0), edgesEval( model, 'show',1, '','' ); end
+
+
+
+%% detect edge and visualize results
+IGallery = imread('../../Problem1/Gallery.jpg');
+IDogs = imread('../../Problem1/Dogs.jpg');
+tic, EDogs = edgesDetect(IDogs,model); 
+toc;
+%set threshold 
+
+
+
+% EdgeImageData = round((1-E)*255);
+% writeraw(round(E*255),'DogEdge.raw');
+height = 321 ;
+width = 481; 
+threshold = 0.1 ;
+
+for row=1:height
+    for col = 1: width 
+        if(EDogs(row,col)<threshold)
+            EDogs(row,col) = 0; 
+        else
+            EDogs(row,col) = 1 ; 
+        end
+    end
+end
+imwrite(1-EDogs,'Dogs_StructuredEdge_Fscore.jpg')            
+
+imshow(EDogs)
+
+%% evaluate edge and ground truth
+
+prms1={ 'out','', 'thrs',1, 'maxDist',.0075, 'thin',1 } ; 
+[thrs,cntR,sumR,cntP,sumP,V] = edgesEvalImg( EDogs, 'Dogs_GT.mat', prms1 ); 
+recall = cntR./sumR; 
+precision = cntP./sumP;  
+Fscore = 2*recall.*precision./(precision+recall); 
+
+recall 
+precision 
+Fscore
+
+#include "..\dipHeader.h"
+
+// Problem a 
+
+
+/*
+ Test code : 
+	cout<<"Double Result: " << DoubleResult<< endl;
+	cout<<"Final Result: "<<result << endl;
+*/
+unsigned char compXGradientPixel(unsigned char** ImageData , int row ,int col ,int BytesPerPixel) {
+	double DoubleResult = 0; 
+	DoubleResult = (1)*ImageData[row + 1][col + 1] + (1)* ImageData[row - 1][col + 1] +2* ImageData[row][col + 1] + (-1)*ImageData[row - 1][col - 1] + (-1)*ImageData[row + 1][col - 1] + (-2)*ImageData[row][col - 1]; 
+	unsigned char result = 0; 
+	result = round(0.125 * DoubleResult) + 127; 
+	return result; 
+}
+
+
+unsigned char compYGradientPixel(unsigned char** ImageData, int row, int col, int BytesPerPixel) {
+	double DoubleResult = 0;
+	DoubleResult = (-1) * ImageData[row - 1][col - 1] + (-2) * ImageData[row - 1][col] + (-1) * ImageData[row - 1][col + 1] + ImageData[row + 1][col - 1] + 2 * ImageData[row + 1][col] + ImageData[row + 1][col + 1]; 
+	unsigned char result = 0;
+	result = round(0.125 * DoubleResult) + 127;
+	return result;
+}
+
+double compXGradientPixelDouble(unsigned char** ImageData, int row, int col, int BytesPerPixel) {
+	double DoubleResult = 0;
+	DoubleResult = (-1) * ImageData[row-1][col - 1] + (-2) * ImageData[row ][col-1] + (-1) * ImageData[row + 1][col - 1] + ImageData[row -1][col + 1] + 2 * ImageData[row ][col+1] + ImageData[row + 1][col + 1];
+	return DoubleResult;
+}
+
+double compYGradientPixelDouble(unsigned char** ImageData, int row, int col, int BytesPerPixel) {
+	double DoubleResult = 0;
+	DoubleResult = (-1) * ImageData[row - 1][col - 1] + (-2) * ImageData[row - 1][col] + (-1) * ImageData[row - 1][col + 1] + ImageData[row + 1][col - 1] + 2 * ImageData[row + 1][col] + ImageData[row + 1][col + 1];
+	return DoubleResult;
+}
+
+void compXGradient(unsigned char** ImageData,unsigned char** XGrad2DArray,  int width, int height ,int BytesPerPixel ,int edgesize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			XGrad2DArray[row][col] = compXGradientPixel(ImageData, row + edgesize, col + edgesize, BytesPerPixel); 
+		}
+	}
+
+}
+
+
+void compYGradient(unsigned char** ImageData,unsigned char** YGrad2DArray , int width, int height, int BytesPerPixel , int edgesize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			YGrad2DArray[row][col] = compYGradientPixel(ImageData, row + edgesize, col + edgesize, BytesPerPixel);
+		}
+	}
+}
+
+void compMagnitudeGradient(unsigned char** XGrad2DArray, unsigned char** YGrad2DArray, unsigned char** MagntGrad2DArray, int width, int height, int BytesPerPixel) { 
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width;  col++) {
+			double tmp = 0; 
+			tmp = sqrt(pow(XGrad2DArray[row][col], 2) + pow(YGrad2DArray[row][col], 2));
+			int normalizedtmp = round(tmp / sqrt(pow(255, 2) + pow(255, 2)) * 255); 
+			MagntGrad2DArray[row][col] = normalizedtmp  ; 
+
+		}
+	}
+
+}
+
+void cmpMagnitudeGradientByDouble(unsigned char** OriginImageData, unsigned char** ObtainedImageData, int width, int height, int BytesPerPixel ,int edgesize) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			double xgrad; 
+			double ygrad; 
+			double tmp; 
+			xgrad = compXGradientPixelDouble(OriginImageData, row + edgesize, col + edgesize, BytesPerPixel); 
+			ygrad = compYGradientPixelDouble(OriginImageData, row + edgesize, col + edgesize, BytesPerPixel); 
+			tmp = sqrt(pow(xgrad, 2) + pow(ygrad, 2));
+			int normalizedtmp  = round(tmp * 0.25/sqrt(2));
+			ObtainedImageData[row][col] = normalizedtmp; 
+		} 
+	}
+}
+
+void tuneMagnitudeGrad(unsigned char** OriginImageData, unsigned char** ObtainedImageData, int width, int height, int BytesPerPixel , int threshold) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			if (OriginImageData[row][col] <= threshold) {
+				ObtainedImageData[row][col] = 0; 
+			}
+			else {
+				ObtainedImageData[row][col] = 255;
+			}
+		}
+	}
+
+}
+
+void normalize2DImageData(unsigned char** OriginImageData, int width, int height, int BytesPerPixel) {
+
+}
+/*
+    Y=0.2989*R+0.5870*G+0.1140*B
+*/
+void convertRGB2GrayImage(unsigned char*** ImageRGBData, unsigned char** ImageData, int width, int height, int BytesPerPixel) {
+	for (int row = 0; row < height; row++) {
+		for (int col = 0; col < width; col++) {
+			double grayValue = 0.2989*ImageRGBData[row][col][0] + 0.5870*ImageRGBData[row][col][1] + 0.1140*ImageRGBData[row][col][2];
+			ImageData[row][col] = round(grayValue); 
+		}
+	}
+}
+
+int main(int argc, char* argv[]) {
+	int width; 
+	int height; 
+	int BytesPerPixel; 
+	if (argc < 3) {
+		cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+		cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Width = 256] [Height = 256]" << endl;
+		return 0;
+	}
+
+	// Check if image is grayscale or color
+	if (argc < 4) {
+		BytesPerPixel = 1; // default is grey image
+	}
+	else {
+		BytesPerPixel = atoi(argv[3]);
+		// Check if width and height is specified
+		if (argc >= 5) {
+			width = atoi(argv[4]);
+			height = atoi(argv[5]);
+		}
+	}
+	width = 481; 
+	height = 321; 
+	BytesPerPixel = 3; 
+	char DogsImagefilename[30] = "../Problem1/Dogs.raw"; 
+	char detectedDogsImagefilename[30] = "../Problem1/Dogs_Sobel.raw"; 
+	char GalleryImagefilename[30] = "../Problem1/Gallery.raw";
+	char detectedGalleryImagefilename[30] = "../Problem1/Gallery_Sobel.raw";
+	// get gray-scaled image
+	int edgesize = 3; 
+	unsigned char*** ImageOriginData = alloc3DImage(width, height, BytesPerPixel); 
+	read3DImageFile(DogsImagefilename, ImageOriginData, width, height, BytesPerPixel); 
+	unsigned char** GrayImageData = alloc2DImage(width, height, BytesPerPixel); 
+	convertRGB2GrayImage(ImageOriginData, GrayImageData, width, height, BytesPerPixel); 
+	write2DImageFile(detectedGalleryImagefilename, GrayImageData, width, height, BytesPerPixel); 
+
+
+	// extend image
+	unsigned char** extendedImageData = alloc2DImage(width + 2 * edgesize, height + 2 * edgesize, BytesPerPixel);
+	extend2DImageEdge(GrayImageData, extendedImageData, width, height, BytesPerPixel, edgesize); 
+
+	// compute X Gradient
+	unsigned char** XGradientImageData = alloc2DImage(width, height, BytesPerPixel);
+	compXGradient(extendedImageData,XGradientImageData,width,height,BytesPerPixel,edgesize);
+	char XGradfilename[20] = "XGrad.raw"; 
+	write2DImageFile(XGradfilename,XGradientImageData,width,height,BytesPerPixel);
+	
+	// compute Y Gradient 
+	unsigned char** YGradientImageData = alloc2DImage(width, height, BytesPerPixel); 
+	compYGradient(extendedImageData, YGradientImageData, width, height, BytesPerPixel,edgesize); 
+	char YGradfilename[20] = "YGrad.raw"; 
+	write2DImageFile(YGradfilename, YGradientImageData, width, height, BytesPerPixel); 
+
+	// magnitude of the x gradient and y gradient 
+	unsigned char** MagnitudeGradImageData = alloc2DImage(width, height, BytesPerPixel); 
+	cmpMagnitudeGradientByDouble(extendedImageData, MagnitudeGradImageData, width, height, BytesPerPixel,edgesize);
+	char Magnitudefilename[20] = "Magnitude.raw" ; 
+	write2DImageFile(Magnitudefilename, MagnitudeGradImageData, width, height, BytesPerPixel);
+	
+	// thresholding the edge map
+	int threshold = 20; 
+	unsigned char** TunedMagnitudeGradImageData = alloc2DImage(width, height, BytesPerPixel); 
+	tuneMagnitudeGrad(MagnitudeGradImageData, TunedMagnitudeGradImageData, width, height, BytesPerPixel, threshold); 
+	char TunedMagnitudefilename[20] = "TunedManitude.raw"; 
+	write2DImageFile(TunedMagnitudefilename, TunedMagnitudeGradImageData, width, height, BytesPerPixel); 
+	
+
+}
+
+
+% Structure Edge Detector 
+% Dog.jpg filepath = ''
+
+%% add program path
+addEdgePath()
+
+%% set opts for training (see edgesTrain.m)
+opts=edgesTrain();                % default options (good settings)
+opts.modelDir='edges-master/models/';          % model will be in models/forest
+opts.modelFnm='modelBsds';        % model name
+opts.nPos=5e5; opts.nNeg=5e5;     % decrease to speedup training
+opts.useParfor=0;                 % parallelize if sufficient memory
+
+%% train edge detector (~20m/8Gb per tree, proportional to nPos/nNeg)
+tic, model=edgesTrain(opts); toc; % will load model if already trained
+
+%% set detection parameters (can set after training)
+model.opts.multiscale=0;          % for top accuracy set multiscale=1
+model.opts.sharpen=2;             % for top speed set sharpen=0
+model.opts.nTreesEval=4;          % for top speed set nTreesEval=1
+model.opts.nThreads=4;            % max number threads for evaluation
+model.opts.nms=0;                 % set to true to enable nms
+
+%% evaluate edge detector on NYUD (see edgesEval.m)
+if(0), edgesEval( model, 'show',1, 'name','', 'maxDist',.011 ); end
+
+%% detect edge and visualize results
+I = imread('../Problem1/Dogs.jpg');
+tic, E=edgesDetect(I,model); toc
+addpath('../')
+EdgeImageData = round((1-E)*255)
+writeraw(EdgeImageData,'GalleryEdge.raw')
+figure(1); im(I); figure(2); im(1-E);
+
+// dipHeader.h
+// Created by Yining HE on 1/19/18.
+// Copyright © 2020 Yining HE. All rights reserved.
+
+#ifndef dipHeader_h
+#define dipHeader_h 
+#endif
+#define _CRT_SECURE_NO_WARNINGS
+
+// not implemented now  
+// #define R 0  
+// #define G 1
+// #define B 2 
+
+
+#include<iostream>
+#include<stdio.h>
+#include<stdlib.h>
+#include<cmath>
+#include<math.h>
+#include<string>
+#include<time.h>
+#define _USE_MATH_DEFINES
+using namespace std; 
+
+// Initialize system for argument input 
+void dip_init();
+
+// print image error information 
+void print_image_info();
+
+
+// Allocate memory for image
+unsigned char** alloc2DImage( int width , int height, int BytePerPixel);
+unsigned char*** alloc3DImage(int width, int height, int BytePerPixel); 
+unsigned char* alloc1DArray(int len); 
+unsigned char** alloc2DArray(int rows, int cols); 
+unsigned char*** alloc3DArray(int rows, int cols, int deps); 
+double* alloc1DArrayDouble(int len); 
+double** alloc2DArrayDouble(int rows, int cols); 
+double*** alloc3DArrayDouble(int rows, int cols, int deps); 
+
+// Delete memory for image 
+int delete2DImage(int width, int height, int BytesPerPixe); 
+int delete3DImage(int width, int height, int BytesPerPixe);
+
+
+// IO function for image input and output for file 
+void read2DImage(FILE *file, unsigned char**imageData, int width , int height , int BytePerPixel  ); 
+void read3DImage(FILE *file, unsigned char*** imageData, int width, int height , int channels); 
+void write2DImage(FILE *file , unsigned char **imageData, int width , int height); 
+void write3DImage(FILE* file, unsigned char*** imageData, int width, int height , int channels);
+
+// contained file open function and use IO function for image data read 
+void read2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel); 
+void read3DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel); 
+void write2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel);
+void write3DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel);
+
+// extend image edges 
+void extend2DImageEdge(unsigned char **imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel,int widsize); 
+void extend3DImageEdge(unsigned char ***imageData, unsigned char **extendedImage , int width , int height, int BytePerPixel, int widsize); 
+
+// for linear filter
+int aver2DImage(unsigned char** imageData, int row, int col, int BytesPerPixel, int widsize);
+
+
+// return a number that indicates color of current pixels 
+// RGB  R 0 G 1 B 2  
+// input the position of current pixel
+// the row and col indicates the position of the pixel, the start pixel is at position (0,0)   
+int judgePixelColor(int row , int col);
+
+//print image Data 
+void print2DImage(unsigned char** imageData, int width, int height, int BytesPerPixel); 
+
+int judgePixelColor(int row , int col){
+    if(row%2==1 &&col%2==1||row%2==0&&col%2==0){
+        return 1 ; 
+    }else if(row%2==0&&col%2==1){
+        return 0 ; 
+    }else{
+        return 2 ; 
+    }
+}
+
+
+// test library inclusion 
+void testHeaderIncluded(){
+    cout<<"Hello World"<<endl;     
+}
+
+
+
+
+
+unsigned char compRedforGreenBL(unsigned char **imageData, int row, int col) {
+    unsigned char result; 
+    if (row % 2 == 0) {
+        result = 0.5 * (imageData[row][col+1] + imageData[row][col-1]);
+    }else {
+        result = 0.5 * (imageData[row + 1][col] + imageData[row - 1][col]); 
+    }
+    return result; 
+}
+
+
+unsigned char compRedforBlueBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] +imageData[row+1][col-1] +imageData[row-1][col+1]+imageData[row-1][col-1]);
+    return result; 
+}
+
+unsigned char compGreenforRedBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result; 
+}
+
+unsigned char compGreenforBlueBL(unsigned char** imageData, int row, int col) {
+    unsigned char result;
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result; 
+}   
+
+unsigned char compBlueforRedBL(unsigned char** imageData, int row, int col) {
+    unsigned char result; 
+    result = 0.25 * (imageData[row + 1][col + 1] + imageData[row + 1][col - 1] + imageData[row - 1][col + 1] + imageData[row - 1][col - 1]);
+
+    return result;
+}
+
+unsigned char compBlueforGreenBL(unsigned char** imageData, int row, int col) {
+    unsigned char result;
+    if (row % 2 == 0) {
+        result = 0.5 * (imageData[row + 1][col] + imageData[row - 1][col]); 
+    }else {
+        result = 0.5 * (imageData[row][col + 1] + imageData[row][col - 1]); 
+    }
+    return result; 
+}
+
+
+
+void read2DImage(FILE *file, unsigned char** imageData, int width, int height ,int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+       fread(imageData[row], sizeof(unsigned char),  width * BytesPerPixel, file);
+    }
+}
+
+void read3DImage(FILE* file, unsigned char*** imageData, int width, int height, int channels) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            fread(imageData[row][col], sizeof(unsigned char), channels, file); 
+        }
+    }
+}
+
+void write2DImage(FILE* file, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        fwrite(imageData[row], sizeof(unsigned char), width , file); 
+    }
+
+}
+
+void write3DImage(FILE* file, unsigned char*** imageData, int width, int height, int channels) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            fwrite(imageData[row][col], sizeof(unsigned char), channels, file); 
+        }
+    }
+}
+
+void read2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "rb"))) {
+        cout << "Cannot open file: " << filename<< endl;
+        exit(1);
+    }
+    read2DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void read3DImageFile(char* filename, unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "rb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    read3DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void write2DImageFile(char* filename, unsigned char** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    write2DImage(file, imageData, width, height, BytesPerPixel);
+    fclose(file);
+}
+
+void write3DImageFile(char* filename, unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    FILE* file;
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename << endl;
+        exit(1);
+    }
+    write3DImage(file, imageData, width, height, 3);
+    fclose(file);
+}
+
+
+void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel,int edgesize) {
+    for (int row = 0; row < height+2*edgesize; row++) {
+        for (int col = 0; col < width + 2 * edgesize; col++) {
+            //the
+            if (row < edgesize && col < edgesize) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][edgesize - 1 - col];
+            }
+
+            if (row<edgesize && col>= edgesize&& col<width+edgesize) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][col-edgesize]; 
+            }
+
+            if (row < edgesize && col >= edgesize + width) {
+                extendedImage[row][col] = imageData[edgesize - 1 - row][edgesize + 2 * width - 1-col]; 
+            }
+
+
+            if (row >= edgesize && row < edgesize + height && col < edgesize) {
+                extendedImage[row][col] = imageData[row-edgesize][edgesize-col-1]; 
+            }
+            if (row >= edgesize && row < edgesize + height && col >= edgesize && col < edgesize + width) {
+                extendedImage[row][col] = imageData[row-edgesize][col-edgesize]; 
+            }
+            if (row >= edgesize && row < edgesize + height && col >= edgesize+width&&col<edgesize*2+width) {
+                extendedImage[row][col] = imageData[row-edgesize][edgesize + 2 * width - 1 - col]; 
+            }
+
+
+
+            if (row >= edgesize + height && row < edgesize * 2 + height && col < edgesize) {
+                extendedImage[row][col] = imageData[2 * height + edgesize - 1 - row][edgesize - 1 - col]; 
+            }
+            if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize && col < edgesize + width) {
+                extendedImage[row][col] = imageData[2*height+edgesize-1-row][col-edgesize]; 
+            }
+            if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                extendedImage[row][col] = imageData[2 * height + edgesize - 1 - row][2 * width + edgesize - 1 - col]; 
+            }
+
+
+        }
+    
+    }
+
+}
+
+void extend3DImageEdge(unsigned char*** imageData, unsigned char*** extendedImage, int width, int height, int BytesPerPixel,int edgesize) {
+    for (int row = 0; row < height + 2 * edgesize; row++) {
+        for (int col = 0; col < width + 2 * edgesize; col++) {
+            for (int cor = 0; cor < BytesPerPixel; cor++) {
+                if (row < edgesize && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][edgesize - 1 - col][cor];
+                }
+
+                if (row < edgesize && col >= edgesize && col < width + edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][col-edgesize][cor];
+                }
+
+                if (row < edgesize && col >= edgesize + width && col<width + 2*edgesize) {
+                    extendedImage[row][col][cor] = imageData[edgesize - 1 - row][edgesize + 2 * width - 1 - col][cor];
+                }
+
+                if (row >= edgesize && row < edgesize + height && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[row-edgesize][edgesize - 1 - col][cor];
+                }
+                if (row >= edgesize && row < edgesize + height && col >= edgesize && col < edgesize + width) {
+                    extendedImage[row][col][cor] = imageData[row - edgesize][col - edgesize][cor];
+                }
+                if (row >= edgesize && row < edgesize + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[row - edgesize][edgesize + 2 * width - 1 - col][cor];
+                }
+                if (row >= edgesize + height && row < edgesize * 2 + height && col < edgesize) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][edgesize - 1 - col][cor];
+                }
+                if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize && col < edgesize + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][col-edgesize][cor];
+                }
+                if (row >= edgesize + height && row < edgesize * 2 + height && col >= edgesize + width && col < edgesize * 2 + width) {
+                    extendedImage[row][col][cor] = imageData[2 * height + edgesize - 1 - row][2 * width + edgesize - 1 - col][cor];
+                }
+
+            }
+        }
+
+    }
+}
+
+unsigned char** alloc2DImage(int width, int height, int BytePerPixel) {
+    unsigned char** imageData; 
+    imageData = new unsigned char* [height]; 
+    for (int row = 0; row < height; row++) {
+        imageData[row] = new unsigned char[width]; 
+    }
+    return imageData;  
+}
+
+unsigned char *** alloc3DImage(int width, int height, int BytePerPixel) {
+    unsigned char*** imageData; 
+    imageData = new unsigned char**[height]; 
+	for(int row=0 ; row<height ; row++){
+		imageData[row] = new unsigned char *[width];
+		for(int col=0; col<width; col++){
+			imageData[row][col] = new unsigned char[3]; 
+		}
+	}
+    return imageData; 
+}
+
+unsigned char* alloc1DArray(int len) {
+    unsigned char* arr;
+    arr = new unsigned char [len]; 
+    return arr; 
+}
+
+unsigned char** alloc2DArray(int rows, int cols) {
+    unsigned char** arr; 
+    arr = new unsigned char* [rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new unsigned char[cols]; 
+    }
+    return arr; 
+
+}
+
+unsigned char*** alloc3DArray(int rows, int cols , int deps) {
+    unsigned char*** arr;
+    arr = new unsigned char** [rows];
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new unsigned char*[cols];
+        for (int col = 0; col < cols; col++) {
+            arr[row][col] = new unsigned char[deps]; 
+        }
+    }
+    return arr;
+
+}
+
+double* alloc1DArrayDouble(int len) {
+    double* arr; 
+    arr = new double[len]; 
+    return arr;
+}
+double** alloc2DArrayDouble(int rows, int cols) {
+    double** arr; 
+    arr = new double*[rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new double[cols]; 
+    }
+    return arr; 
+}
+
+double*** alloc3DArrayDouble(int rows, int cols, int deps) {
+    double*** arr; 
+    arr = new double** [rows]; 
+    for (int row = 0; row < rows; row++) {
+        arr[row] = new double* [cols]; 
+        for (int col = 0; col < cols; col++) {
+            arr[row][col] = new double[deps];
+        }
+    }
+    return arr; 
+}
+int dip_init(int argc , char *argv[],int *height, int *width ,int *BytePerPixel ) {
+    // Define file pointer and variables
+    FILE* file;
+//  const  int BytesPerPixel;
+    const  int Size = 256;
+    int rows;
+    int cols;
+
+
+    // Check for proper syntax
+    if (argc < 3) {
+        cout << "Syntax Error - Incorrect Parameter Usage:" << endl;
+        cout << "program_name input_image.raw output_image.raw [BytesPerPixel = 1] [Size = 256]" << endl;
+        return 0;
+    }
+
+    // Check if image is grayscale or color
+    if (argc < 4) {
+       // BytesPerPixel = 1; // default is grey image
+    }
+    else {
+       // BytesPerPixel = atoi(argv[3]);
+        // Check if size is specified
+        if (argc >= 5) {
+       //     Size = atoi(argv[4]);
+            *width = atoi(argv[4]); 
+            *height = atoi(argv[5]); 
+        }
+    }
+
+    // Allocate image data array
+ //   unsigned char Imagedata[Size][Size][BytesPerPixel];
+
+    // Read image (filename specified by first argument) into image data matrix
+    if (!(file = fopen(argv[1], "rb"))) {
+        cout << "Cannot open file: " << argv[1] << endl;
+        exit(1);
+    }
+ //   fread(Imagedata, sizeof(unsigned char), Size * Size * BytesPerPixel, file);
+    fclose(file);
+
+    ///////////////////////// INSERT YOUR PROCESSING CODE HERE /////////////////////////
+
+    // Write image data (filename specified by second argument) from image data matrix
+
+    if (!(file = fopen(argv[2], "wb"))) {
+        cout << "Cannot open file: " << argv[2] << endl;
+        exit(1);
+    }
+//    fwrite(Imagedata, sizeof(unsigned char), Size * Size * BytesPerPixel, file);
+    fclose(file);
+
+    return 0;
+
+}
+
+double eval2DImagePSNR(unsigned char **oriImage , unsigned char** tarImage ,int width ,int height, int BytesPerPixel) {
+    double result = 0.0;  
+    double sum = 0;  
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]); 
+        }
+    }
+    result = sum / (width * height); 
+    result = 10*log10(255*255/result); 
+        return result; 
+}
+
+double eval3DImagePSNR(unsigned char ***oriImage , unsigned char ***tarImage, int width , int height , int BytesPerPixel) {
+    double result = 0.0; 
+    double sum = 0;
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            for (int cor = 0; cor < BytesPerPixel; cor++) {
+                sum += (oriImage[row][col] - tarImage[row][col]) * (oriImage[row][col] - tarImage[row][col]);
+            }
+        }
+    }
+    double totalpixels = width * height * BytesPerPixel; 
+    result = sum / totalpixels; 
+    result = 10 * log10(255*255/result); 
+    return result; 
+}
+
+
+
+
+
+int delete2DImage(unsigned char ** imageData, int width, int height, int BytesPerPixe) {
+    for (int row = 0; row < height; row++) {
+        delete[] imageData[row]; 
+    }
+    delete imageData; 
+    return 1; 
+}
+
+
+int delete3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            delete[] imageData[row][col];
+        }
+        delete[] imageData[row]; 
+    }
+    delete[] imageData; 
+    return 1; 
+}
+
+
+void print2DImage(unsigned char** imageData, int width, int height, int BytesPerPixel ) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            cout << imageData[row][col] << " "; 
+        }
+        cout << endl;
+    }
+}
+
+
+void print3DImage(unsigned char*** imageData, int width, int height, int BytesPerPixel) {
+    for (int row = 0; row < height; row++) {
+        for (int col = 0; col < width; col++) {
+            for (int cor = 0; cor < 3; cor++) {
+                cout << imageData[row][col] << " ";
+
+            }
+        }
+        cout << endl;
+    }
+}
+
+int compareUnsignedChar(const void* a, const void* b)
+{
+    if (*(unsigned char *)a < *(unsigned char *)b) return -1;
+    if (*(unsigned char *)a == *(unsigned char *)b) return 0;
+    if (*(unsigned char *)a > * (unsigned char *)b) return 1;
+}
+
+int compareInt(const void* a, const void* b)
+{
+    if (*(int*)a < *(int*)b) return -1;
+    if (*(int*)a == *(int*)b) return 0;
+    if (*(int*)a > * (int*)b) return 1;
+}
+
+void writeHistogramArray(int* array, char* filename) {
+    FILE *file; 
+    if (!(file = fopen(filename, "wb"))) {
+        cout << "Cannot open file: " << filename<< endl;
+        exit(1);
+    }
+    fwrite(array, sizeof(int), 256, file); 
+    fclose(file);
+
+}
+
+
+
+/*
+// if the input image only contains one pixel, this will return null ;  
+// the copied image obeys the reflection rule
+void extend2DImageEdge(unsigned char** imageData, unsigned char** extendedImage, int width, int height, int BytePerPixel) {
+    int extendedWidth = width + 4;
+    int extendedHeight = height + 4;
+    for (int row = 0; row < extendedHeight; row++) {
+        for (int col = 0; col < extendedWidth; col++) {
+            //assign space for columns 
+
+            if (row == 0) {
+                extendedImage[0][0] = imageData[1][1];
+                extendedImage[0][1] = imageData[0][1];
+                extendedImage[0][width + 2] = imageData[0][width - 2];
+                extendedImage[0][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[0][col] = imageData[1][col - 2];
+                }
+            }
+
+            if (row == 1) {
+                extendedImage[1][0] = imageData[1][1];
+                extendedImage[1][1] = imageData[0][1];
+                extendedImage[1][width + 2] = imageData[0][width - 2];
+                extendedImage[1][width + 3] = imageData[0][width - 1];
+                for (int col = 2; col < extendedWidth - 2; col++) {
+                    extendedImage[1][col] = imageData[0][col - 2];
+                }
+            }
+
+            if (row == extendedHeight - 1) {
+                extendedImage[extendedHeight - 1][0] = imageData[height - 1][1];
+                extendedImage[extendedHeight - 1][1] = imageData[height - 1][0];
+            }
+
+            if (row == extendedHeight - 2) {
+
+            }
+            if (row >= 2 && col == 0 && row < extendedHeight - 2) {
+
+            }
+            if (col == 1 && row >= 2 && row < extendedHeight - 2) {
+
+            }
+
+
+
+       }
+//
+//   }
+//
+//
+//}
+
+*/
