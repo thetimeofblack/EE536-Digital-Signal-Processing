@@ -1,0 +1,15 @@
+﻿  thinning.cpp
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(102,22): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(104,22): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(112,19): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(118,19): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(125,19): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(132,19): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(140,22): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(142,22): warning C4244: '=': conversion from 'double' to 'unsigned char', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(386,9): warning C4101: 'rows': unreferenced local variable
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(387,9): warning C4101: 'cols': unreferenced local variable
+C:\EE 569 Image processing\previous work\EE569\hw3\thinning.cpp(22,9): warning C4244: 'return': conversion from 'float' to 'int', possible loss of data
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(518): warning C4715: 'compareUnsignedChar': not all control paths return a value
+C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\dipHeader.h(525): warning C4715: 'compareInt': not all control paths return a value
+  Project1.vcxproj -> C:\EE 569 Image processing\EE569-Digital-Signal-Processing\hw3\opencv_test\Project1\Debug\Project1.exe

@@ -17,7 +17,7 @@ tic, model=edgesTrain(opts); toc; % will load model if already trained
 %% set detection parameters (can set after training)
 model.opts.multiscale=1;          % for top accuracy set multiscale=1
 model.opts.sharpen=0;             % for top speed set sharpen=0
-model.opts.nTreesEval=6;          % for top speed set nTreesEval=1
+model.opts.nTreesEval=9;          % for top speed set nTreesEval=1
 model.opts.nThreads=6;            % max number threads for evaluation
 model.opts.nms=0;                 % set to true to enable nms
 
